@@ -1,0 +1,6 @@
+# Ignore artifacts:
+vendor
+public
+storage
+node_modules
+bootstrap
