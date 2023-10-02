@@ -11,9 +11,8 @@ class Image extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Get the parent imageable model (user or post).
-     */
+    protected $guarded = [];
+
     public function imageable(): MorphTo
     {
         return $this->morphTo();

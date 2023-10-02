@@ -6,6 +6,7 @@ use App\Helpers\WorkLogHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -48,9 +49,19 @@ class WorkLog extends Model
         return $this->belongsTo(WorkScope::class);
     }
 
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(Revision::class);
+    }
+
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function scopeWithWhereHas($query, $relation, $constraint){
+        return $query->whereHas($relation, $constraint)
+        ->with([$relation => $constraint]);
     }
 
 }

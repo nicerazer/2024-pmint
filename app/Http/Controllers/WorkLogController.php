@@ -61,13 +61,13 @@ class WorkLogController extends Controller
     public function create()
     {
         if (! Gate::allows('worklog-add')) {
-            return redirect()->back(Response::HTTP_UNAUTHORIZED)->with([
+            return redirect()->back()->with([
                 'message' => 'Pengguna bukan staff, sila hubungi admin.',
                 'status' => 'error',
             ]);
         }
 
-        return view('worklog.create');
+        return view('pages.work-logs.create');
     }
 
     /**
@@ -76,7 +76,7 @@ class WorkLogController extends Controller
     public function store(StoreWorkLogRequest $request)
     {
         if (! Gate::allows('worklog-add')) {
-            return redirect()->back(Response::HTTP_UNAUTHORIZED)->with([
+            return redirect()->back()->with([
                 'message' => 'Pengguna bukan staff, sila hubungi admin.',
                 'status' => 'error',
             ]);
@@ -103,13 +103,13 @@ class WorkLogController extends Controller
     public function edit(WorkLog $worklog)
     {
         if (! Gate::allows('worklog-update-basic')) {
-            return redirect()->back(Response::HTTP_UNAUTHORIZED)->with([
+            return redirect()->back()->with([
                 'message' => 'Pengguna bukan staff / Masalah data, sila hubungi admin.',
                 'status' => 'error',
             ]);
         }
 
-        if ($worklog == null) return redirect()->back(Response::HTTP_NOT_FOUND)->with([
+        if ($worklog == null) return redirect()->back()->with([
             'message' => 'Log kerja tidak wujud!',
             'status' => 'error',
         ]);
@@ -123,7 +123,7 @@ class WorkLogController extends Controller
     public function update(UpdateWorkLogRequest $request, WorkLog $worklog)
     {
         if (! Gate::allows('worklog-update-basic')) {
-            return redirect()->back(Response::HTTP_UNAUTHORIZED)->with([
+            return redirect()->back()->with([
                 'message' => 'Pengguna bukan staff / Masalah data, sila hubungi admin.',
                 'status' => 'error',
             ]);

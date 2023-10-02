@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\WorkLogHelper;
 use App\Models\User;
 use App\Models\WorkScope;
 use Illuminate\Database\Migrations\Migration;
@@ -19,7 +20,7 @@ return new class extends Migration
             $table->string('description')->default('')->nullable();
 
             // status
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(WorkLogHelper::ONGOING);
             $table->decimal('rating', 2, 1)->nullable();
 
             $table->boolean('has_archived')->default(false);
@@ -28,8 +29,8 @@ return new class extends Migration
             $table->dateTime('expected_at')->nullable();
             $table->dateTime('submitted_at')->nullable();
 
-            $table->timestamp('accepted_level_1_at')->nullable();
-            $table->timestamp('accepted_level_2_at')->nullable();
+            $table->timestamp('level_1_accepted_at')->nullable();
+            $table->timestamp('level_2_accepted_at')->nullable();
 
             // Related tables:
             // Revisions

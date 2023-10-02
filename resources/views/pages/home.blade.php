@@ -27,7 +27,7 @@
                 <h2 class="font-normal text-gray-600 card-title">Kerja Berlangsung</h2>
 
                 <div class="flex flex-col">
-                    @foreach ($workLogs['ongoing'] as $workLog)
+                    @forelse ($workLogs['ongoing'] as $workLog)
                         {{-- <a --}}
                         <a href="{{ route('workLogs.show', $workLog) }}" wire:link
                             class="flex flex-row items-center justify-between px-2 py-3 -mx-2 transition-colors rounded-lg hover:bg-gray-200">
@@ -49,7 +49,9 @@
                             </span>
                         </a>
                         <div class="my-0 divider"></div>
-                    @endforeach
+                    @empty
+                        <div class="w-full my-32 text-center">Empty</div>
+                    @endforelse
                 </div>
 
                 <div class="justify-center card-actions">
@@ -67,7 +69,7 @@
                 </h2>
 
                 <div class="flex flex-col">
-                    @foreach ($workLogs['with_comments'] as $workLog)
+                    @forelse ($workLogs['with_comments'] as $workLog)
                         <a href="/" class="px-2 py-3 -mx-2 transition-colors rounded-lg hover:bg-gray-200">
                             <div class="flex">
                                 <div>
@@ -101,7 +103,9 @@
                             </div>
                         </a>
                         <div class="-mx-8 divider"></div>
-                    @endforeach
+                    @empty
+                        <div class="w-full my-32 text-center">Empty</div>
+                    @endforelse
                 </div>
             </div>
         </div>

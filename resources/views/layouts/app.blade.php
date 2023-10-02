@@ -23,7 +23,7 @@
 
     @if (request()->route()->getName() == 'home')
         {{ $header }}
-        <main class="flex w-8/12 mx-auto my-8">
+        <main class="flex w-10/12 mx-auto my-8 2xl:w-9/12">
             {{ $slot }}
         </main>
     @else
@@ -32,6 +32,7 @@
         </main>
     @endif
     @livewireScripts
+    @stack('scripts')
 </body>
 
 </html>

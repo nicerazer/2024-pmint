@@ -75,4 +75,9 @@ class User extends Authenticatable
         return $this->hasMany(WorkLog::class, 'author_id');
     }
 
+    public function getRating(): int
+    {
+        return $this->workLogs()->count();
+    }
+
 }

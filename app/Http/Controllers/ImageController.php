@@ -9,43 +9,49 @@ use App\Http\Requests\UpdateImageRequest;
 class ImageController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreImageRequest $request)
     {
-        //
-    }
+        // validate the incoming file
+        if (!$request->hasFile('file')) {
+            return response()->json(['error' => 'There is no file present.'], 400);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Image $image)
-    {
-        //
-    }
+        $request->validate([
+            'image' => 'required|file|image|mimetypes:
+                image/*,
+                application/vnd.ms-excel,
+                application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+                application/x-7z-compressed,
+                application/vnd.rar,
+                application/vnd.openxmlformats-officedocument.presentationml.presentation,
+                application/vnd.ms-powerpoint,
+                application/pdf,
+                application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+                application/msword
+            '
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Image $image)
-    {
-        //
+        // save the file in storage
+        $path = $request->file('image')->store('public/images');
+
+        if (!$path) {
+            return response()->json(['error' => 'The file could not be saved.'], 500);
+        }
+
+        $uploadedFile = $request->file('image');
+
+        // create image model
+        $image = Image::create([
+            'name' => $uploadedFile->hasName(),
+            'extension' => $uploadedFile->extension(),
+            'size' => $uploadedFile->getSize()
+        ]);
+
+        // return that image model back to the frontend
+        return $image;
     }
 
     /**

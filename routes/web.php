@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 // })->middleware(['auth', 'verified'])->name('dashboard');
 // // })
 
+Route::get('/test-page', function() {
+    return view('test-page');
+});
+
 Route::middleware('auth')->group(function () {
 
     Route::get('/', Home::class)->name('home');
@@ -31,9 +35,8 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(WorkLogController::class)->group(function () {
         Route::get('/logkerja', 'index')->name('workLogs.index');
-        // Route::get('/logkerja/cipta', 'create');
-        // Route::post('/logkerja', 'store');
-        // Route::get('/logkerja/{worklog}', 'show')->name('worklog.show'); // + Edit
+        Route::get('/logkerja/rekod-baharu', 'create')->name('workLogs.create');
+        Route::post('/logkerja', 'store')->name('workLogs.store');
         Route::get('/logkerja/{workLog}', 'show')->name('workLogs.show'); // + Edit
         Route::put('/logkerja/{workLog}/update', 'update')->name('workLogs.update');
         // Creates revisions for every rejects, attaches comments if have any

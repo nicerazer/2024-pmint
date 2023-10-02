@@ -24,7 +24,7 @@ return new class extends Migration
             $table->dateTime('expected_at');
             $table->dateTime('submitted_at')->nullable();
 
-            $table->dateTime('seen_at')->nullable;
+            $table->dateTime('seen_at')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

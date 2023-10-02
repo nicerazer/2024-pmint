@@ -8,11 +8,11 @@ use Livewire\Component;
 
 class SetStatus extends Component
 {
-    public $worklog;
+    public $workLog;
 
-    public function mount(WorkLog $worklog)
+    public function mount(WorkLog $workLog)
     {
-        $this->worklog = $worklog;
+        $this->workLog = $workLog;
     }
 
     public function accept()
@@ -22,7 +22,7 @@ class SetStatus extends Component
                 'status' => WorkLogHelper::COMPLETED,
         ]);
 
-        return $this->redirect('/worklogs/'. $worklog->id)
+        return $this->redirect()->back()
             ->with('status', 'Worklog has been set as complete.');
     }
 
@@ -39,6 +39,6 @@ class SetStatus extends Component
 
     public function render()
     {
-        return view('livewire.worklogs.edit.set-status');
+        return view('livewire.work-logs.edit.set-status');
     }
 }

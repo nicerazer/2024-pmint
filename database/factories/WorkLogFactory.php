@@ -46,8 +46,8 @@ class WorkLogFactory extends Factory
         }
 
         return [
-            'accepted_level_1_at' => $level_1_at,
-            'accepted_level_2_at' => $level_2_at,
+            'level_1_accepted_at' => $level_1_at,
+            'level_2_accepted_at' => $level_2_at,
 
             'rating' => round(mt_rand(0, 50) / 10 * 2 ) / 2,
 
