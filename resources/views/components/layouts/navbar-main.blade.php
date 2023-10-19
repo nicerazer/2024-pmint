@@ -3,7 +3,13 @@
         <a class="text-xl text-white normal-case btn btn-ghost">Log Kerja</a>
         <div class="ml-12 text-white">
             <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Utama</a>
-            <a href="/logkerja" wire:navigate class="text-white capitalize btn btn-ghost">Kerja</a>
+            @if (auth()->user()->isStaff() ||
+                    auth()->user()->isAnEvaluator())
+                <a href="/logkerja" wire:navigate class="text-white capitalize btn btn-ghost">Kerja</a>
+            @else
+                <a href="/staff-units" wire:navigate class="text-white capitalize btn btn-ghost">Unit</a>
+                <a href="/staff-sections" wire:navigate class="text-white capitalize btn btn-ghost">Bahagian</a>
+            @endif
         </div>
     </div>
     <div class="navbar-center">

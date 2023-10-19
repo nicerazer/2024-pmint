@@ -36,7 +36,8 @@ return new class extends Migration
             // Revisions
             // Images
             $table->foreignIdFor(User::class, 'author_id');
-            $table->foreignIdFor(WorkScope::class);
+            $table->foreignIdFor(WorkScope::class)->nullable();
+            $table->string('custom_workscope')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

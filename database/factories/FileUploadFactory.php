@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\File>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FileUpload>
  */
 class FileUploadFactory extends Factory
 {

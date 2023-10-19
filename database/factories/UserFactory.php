@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Helpers\UserRoleCodes;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,12 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'role' => collect([
+                UserRoleCodes::HR,
+                UserRoleCodes::EVALUATOR_1,
+                UserRoleCodes::EVALUATOR_2,
+                UserRoleCodes::STAFF,
+            ])->random(),
             'remember_token' => Str::random(10),
         ];
     }

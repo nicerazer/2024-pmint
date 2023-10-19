@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Helpers\UserRoleCodes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -49,18 +51,17 @@ class User extends Authenticatable
     ];
 
     /*
-    0 - Admin
-    1 - HR
+    1 - Admin
     2 - Evaluator / Penilai 1
     3 - Evaluator / Penilai 2
     4 - Staff / WargaKerja
     */
 
-    public function isAdmin(): bool { return $this->role        == 0; }
-    public function isHR(): bool { return $this->role           == 1; }
-    public function isEvaluator1(): bool { return $this->role   == 2; }
-    public function isEvaluator2(): bool { return $this->role   == 3; }
-    public function isStaff(): bool { return $this->role        == 4; }
+    public function isHR(): bool {          return $this->role == UserRoleCodes::HR; }
+    public function isEvaluator1(): bool {  return $this->role == UserRoleCodes::EVALUATOR_1; }
+    public function isEvaluator2(): bool {  return $this->role == UserRoleCodes::EVALUATOR_2; }
+    public function isAnEvaluator(): bool {  return $this->role == UserRoleCodes::EVALUATOR_1 || $this->role == UserRoleCodes::EVALUATOR_2; }
+    public function isStaff(): bool {       return $this->role == UserRoleCodes::STAFF; }
 
     /**
      * Get the post's image.

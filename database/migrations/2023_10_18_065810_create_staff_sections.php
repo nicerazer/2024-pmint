@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\StaffSection;
+use App\Models\StaffUnit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,15 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('images', function (Blueprint $table) {
+        Schema::create('staff_sections', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('extension');
-            $table->string('path');
-            $table->integer('size');
-            $table->morphs('imageable');
+            $table->foreignIdFor(StaffUnit::class);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('images');
+        Schema::dropIfExists('staff_sections');
     }
 };

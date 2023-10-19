@@ -2,19 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\WorkLog;
+use App\Models\StaffSection;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class ImageSeeder extends Seeder
+class StaffSectionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        foreach (WorkLog::all() as $key => $value) {
-            # code...
-        }
+        // StaffSection::create([
+        //     ''
+        // ])
     }
 }

@@ -11,12 +11,14 @@ class Home extends Controller
      */
     public function __invoke(Request $request)
     {
+        if (auth()->user()->isHR()) {
+            return view('pages.home.hr');
+        }
+
         $workLogs = array('ongoing' => [], 'with_comments' => []);
 
         $workLogs['ongoing'] = auth()->user()->workLogs()
-        // return auth()->user()->workLogs()
         ->select('*')
-        // ->select(['expected_at'])
         ->selectRaw('TIMEDIFF(expected_at, now()) AS time_left')
         ->orderBy('time_left', 'desc')
         ->limit(5)->get();
@@ -26,6 +28,6 @@ class Home extends Controller
         // return $workLogs['ongoing'];
         // return now();
         // "2023-09-26T08:39:29.322770Z"
-        return view('pages.home', compact('workLogs'));
+        return view('pages.home.staff-evaluators', compact('workLogs'));
     }
 }

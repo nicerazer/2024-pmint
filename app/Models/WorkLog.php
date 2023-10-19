@@ -59,9 +59,18 @@ class WorkLog extends Model
         return $this->morphMany(Image::class, 'imageable');
     }
 
+    public function documents(): MorphMany
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
+    // public function sea?rch($search) {
+        // return $thiswhere('', 'like', '')
+    // }
+
+
     public function scopeWithWhereHas($query, $relation, $constraint){
         return $query->whereHas($relation, $constraint)
         ->with([$relation => $constraint]);
     }
-
 }

@@ -17,15 +17,25 @@ class WorkLogSeeder extends Seeder
     {
         $workScopes = WorkScope::all();
 
-        $admin = User::where('name', 'super-admin')->first();
-        $test_staff = User::where('name', 'test_staff')->first();
+        $hr = User::where('name', 'hr')->first();
+        $staff = User::where('name', 'staff')->first();
 
-        WorkLog::factory()->count(5)->for($admin, 'author')->for($workScopes[0])->hasRevisions(2)->create();
-        WorkLog::factory()->count(5)->for($test_staff, 'author')->for($workScopes[0])->hasRevisions(2)->create();
+        // Admin and Staff
+        WorkLog::factory()->count(5)->for($hr, 'author')->for($workScopes[0])->hasRevisions(2)->hasImages(2)->create();
+        WorkLog::factory()->count(5)->for($staff, 'author')->for($workScopes[0])->hasRevisions(2)->hasImages(2)->create();
 
-        foreach($workScopes as $workScope) {
-            $user = User::inRandomOrder()->first();
-            WorkLog::factory()->count(100)->for($user, 'author')->for($workScope)->hasRevisions(2)->create();
-        }
+        // foreach($workScopes as $workScope) {
+        //     $user = User::inRandomOrder()->first();
+        //     WorkLog::factory()->count(10)->for($user, 'author')->for($workScope)->hasRevisions(2)->hasImages(3)->create();
+        //     WorkLog::factory()->count(10)->for($user, 'author')->for($workScope)->hasImages(3)->create();
+        //     WorkLog::factory()->count(10)->for($user, 'author')->for($workScope)->create();
+        // }
+
+        // $users = User::factory()
+        // ->count(10)
+        // ->state(new Sequence(
+        //     fn (Sequence $sequence) => ['role' => UserRoles::all()->random()],
+        // ))
+        // ->create();
     }
 }

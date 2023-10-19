@@ -9,7 +9,6 @@ use App\Http\Requests\UpdateImageRequest;
 class ImageController extends Controller
 {
     /**
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreImageRequest $request)

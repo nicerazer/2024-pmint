@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             /*
-            0 - Admin
+            0 - Admin X
             1 - HR
             2 - Penilai 1
             3 - Penilai 1

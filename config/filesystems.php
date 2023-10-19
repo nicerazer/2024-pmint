@@ -36,6 +36,15 @@ return [
             'throw' => false,
         ],
 
+        // 'images' => [
+        //     'avatars' => [
+        //         'driver' => 'local',
+        //         'root' => public_path('assets/itemImages/'),
+        //         'url' => env('APP_URL').'/assets/itemImages/',
+        //         'visibility' => 'public',
+        //     ],
+        // ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

@@ -5,8 +5,7 @@
 @endphp
 <x-app-layout>
 
-
-    <div class="max-w-4xl mx-auto mt-16 pb-80" x-data="{ selectedWindowTitle: 'submitWorkLog' }"> <!-- main container -->
+    <div class="max-w-4xl mx-auto mt-16 pb-80" x-data="{ selectedWindowTitle: 'showWorkLog' }"> <!-- main container -->
         <div class="flex items-start justify-between max-w-4xl mb-12">
             <div>
                 <h1 class="text-2xl font-bold" x-show="selectedWindowTitle == 'showWorkLog'">Ringkasan Kerja</h1>
@@ -29,7 +28,7 @@
         </div>
 
         @if (!auth()->user()->isStaff())
-            <div class="flex mt-8">
+            <div class="flex mt-8" x-show="selectedWindowTitle == 'showWorkLog'">
                 <div class="w-52">
                     <h4 class="w-52">Staff</h4>
                 </div>
@@ -78,6 +77,7 @@
                 </div>
             </div>
             @unless ($workLog->submitted_at && ($workLog->level_1_accepted_at || $workLog->level_2_accepted_at))
+                {{-- Update --}}
                 @unless ($workLog->submitted_at)
                     <div class="w-full" x-show="selectedWindowTitle == 'editWorkLog'" x-transition>
                         <div class="flex mt-8">
@@ -123,14 +123,18 @@
                         </div>
                     </div>
                 @endunless
+                {{-- Submit --}}
                 <div class="w-full" x-show="selectedWindowTitle == 'submitWorkLog'" x-transition>
                     <div class="flex items-start gap-12">
 
                         <div id="right-side" class="w-[38rem]">
                             {{-- <div class="divider"></div> --}}
                             <div class="w-full">
-                                <input type="file" />
+                                <input name="image-upload" type="file" id="image-upload" />
+                                <input name="document-upload" type="file" id="document-upload" />
                             </div>
+
+
                             {{-- <div class="divider"></div> --}}
 
                             {{--
@@ -218,14 +222,20 @@
 
                 <div class="flex items-center justify-end w-full gap-4 mt-20" x-show="selectedWindowTitle == 'editWorkLog'"
                     x-transition>
-                    <button type="button" class="text-white capitalize btn btn-primary">Hantar</button>
+                    <form action="">
+                        <button type="button" class="text-white capitalize btn btn-primary">Hantar</button>
+                    </form>
                     <button type="button" class="capitalize btn btn-ghost"
                         @click="selectedWindowTitle = 'showWorkLog'">Batal</button>
                 </div>
 
                 <div class="flex items-center justify-end w-full gap-4 mt-20"
                     x-show="selectedWindowTitle == 'submitWorkLog'" x-transition>
-                    <button type="button" class="text-white capitalize btn btn-primary">Hantar</button>
+                    <form action="/workLogs/{{ $workLog->id }}/submit" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <button type="button" class="text-white capitalize btn btn-primary">Hantar</button>
+                    </form>
                     <button type="button" class="capitalize btn btn-ghost"
                         @click="selectedWindowTitle = 'showWorkLog'">Batal</button>
                 </div>
@@ -236,146 +246,196 @@
             @endif
         @endif
 
-        @if ($workLog->revisions)
-        @endif
-        @if ($workLog->submitted_at)
+        {{-- @if ($workLog->revisions)
+            @foreach ($workLog->revisions as $revision)
+                {{ $revision }}
+            @endforeach
+        @endif --}}
+        {{-- @if ($workLog->submitted_at != null) --}}
+        @if (true)
             <!-- Related documents -->
-            <div class="mb-12 text-center mt-44">
-                <h2 class="mb-4 text-xl">Dokumen yang disertakan</h2>
-                <span class="mb-5 badge badge-lg badge-ghost">15 gambar, 12 .docx, 10.xlsx, 3 lain-lain</span>
-                <div class="w-10 h-1 mx-auto rounded-lg bg-primary"></div>
-            </div>
-
-            <!-- Gambar-gambar -->
-            <div class="mb-24">
-                <div class="flex items-center gap-6 mb-5">
-                    <h4 class="text-lg">Gambar-gambar</h4>
-                    <a href="/" class="flex items-center gap-1 link link-primary">
-                        <span>muat turun semua</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                            class="w-5 h-5">
-                            <path fill-rule="evenodd"
-                                d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </a>
-                </div>
-                <div class="flex gap-4 overflow-x-auto">
-                    {{-- <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52">
-                <img src="ex1.jpg" alt="" class="rounded-lg h-52"> --}}
-                </div>
-            </div>
-
-            <!-- Dokumen-dokumen -->
-            <div class="mb-24">
-                <div class="flex items-center gap-6 mb-5">
-                    <h4 class="text-lg">Dokumen-dokumen</h4>
-                    <a href="/" class="flex items-center gap-1 link link-primary">
-                        <span>muat turun semua</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                            class="w-5 h-5">
-                            <path fill-rule="evenodd"
-                                d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </a>
-                </div>
-                <div class="flex flex-wrap w-full gap-4">
-                    <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
-                        <span>ascnklanlkanscacs.docx</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                            class="w-5 h-5">
-                            <path
-                                d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-                            <path
-                                d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
-                        </svg>
-                    </button>
-                    <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
-                        <span>14145.docx</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                            class="w-5 h-5">
-                            <path
-                                d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-                            <path
-                                d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
-                        </svg>
-                    </button>
-                    <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
-                        <span>ascnklanlkanscacs.docx</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                            class="w-5 h-5">
-                            <path
-                                d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-                            <path
-                                d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
-                        </svg>
-                    </button>
-                    <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
-                        <span>ascnklanlkanscacs.docx</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                            class="w-5 h-5">
-                            <path
-                                d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-                            <path
-                                d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
-                        </svg>
-                    </button>
-                    <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
-                        <span>ascnklanlkanscacs.docx</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                            class="w-5 h-5">
-                            <path
-                                d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
-                            <path
-                                d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
-                        </svg>
-                    </button>
+            <div x-show="selectedWindowTitle == 'showWorkLog'" x-transition>
+                <div class="mb-12 text-center mt-44">
+                    <h2 class="mb-4 text-xl">Dokumen yang disertakan</h2>
+                    <span class="mb-5 badge badge-lg badge-ghost">{{ $workLog->images->count() }} gambar, 12 .docx,
+                        10.xlsx, 3 lain-lain</span>
+                    <div class="w-10 h-1 mx-auto rounded-lg bg-primary"></div>
                 </div>
 
-            </div> <!-- Dokumen-dokumen -->
-
-            <!-- Penolakan / Komen -->
-            <div class="mb-12 text-center mt-44">
-                <h2 class="mb-4 text-2xl">Penolakan & Komen</h2>
-                <div class="w-10 h-1 mx-auto rounded-lg bg-primary"></div>
-            </div>
-
-            <div class="flex flex-col gap-16 mt-8">
-                @foreach ($workLog->revisions()->oldest()->get() as $revision)
-                    <div class="flex">
-                        <div class="w-72">
-                            <h4 class="text-lg w-72">Penolakan no. {{ $loop->iteration }}</h4>
-                            {{-- <h4 class="w-72 text-slate-500">12.30pm, 12 May 2023</h4> --}}
-                            <h4 class="w-72 text-slate-500">
-                                {{ $workLog->revisions()->first()->created_at->format('g:i a, d M Y') }}
-                            </h4>
-                        </div>
-                        <div>
-                            <h5 class="text-slate-600">{{ $revision->body }}</h5>
-                        </div>
+                <!-- Gambar-gambar -->
+                <div class="mb-24">
+                    <div class="flex items-center gap-6 mb-5">
+                        <h4 class="text-lg">Gambar-gambar</h4>
+                        <a href="/" class="flex items-center gap-1 link link-primary">
+                            <span>muat turun semua</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path fill-rule="evenodd"
+                                    d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
                     </div>
-                    <hr>
-                @endforeach
+                    <div class="flex gap-4 overflow-x-auto">
+                        @foreach ($workLog->images as $image)
+                            <img src="{{ url('storage\\' . $image->path) }}" alt="missing picture"
+                                class="rounded-lg h-52">
+                        @endforeach
+                        {{-- <img src="ex1.jpg" alt="" class="rounded-lg h-52">
+                    <img src="ex1.jpg" alt="" class="rounded-lg h-52">
+                    <img src="ex1.jpg" alt="" class="rounded-lg h-52">
+                    <img src="ex1.jpg" alt="" class="rounded-lg h-52">
+                    <img src="ex1.jpg" alt="" class="rounded-lg h-52">
+                    <img src="ex1.jpg" alt="" class="rounded-lg h-52">
+                    <img src="ex1.jpg" alt="" class="rounded-lg h-52">
+                    <img src="ex1.jpg" alt="" class="rounded-lg h-52"> --}}
+                    </div>
+                </div>
+
+                <!-- Dokumen-dokumen -->
+                <div class="mb-24">
+                    <div class="flex items-center gap-6 mb-5">
+                        <h4 class="text-lg">Dokumen-dokumen</h4>
+                        <a href="/" class="flex items-center gap-1 link link-primary">
+                            <span>muat turun semua</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path fill-rule="evenodd"
+                                    d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="flex flex-wrap w-full gap-4">
+                        <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
+                            <span>ascnklanlkanscacs.docx</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                                <path
+                                    d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+                            </svg>
+                        </button>
+                        <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
+                            <span>14145.docx</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                                <path
+                                    d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+                            </svg>
+                        </button>
+                        <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
+                            <span>ascnklanlkanscacs.docx</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                                <path
+                                    d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+                            </svg>
+                        </button>
+                        <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
+                            <span>ascnklanlkanscacs.docx</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                                <path
+                                    d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+                            </svg>
+                        </button>
+                        <button class="flex items-center gap-2 btn btn-sm btn-neutral rounded-box">
+                            <span>ascnklanlkanscacs.docx</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="w-5 h-5">
+                                <path
+                                    d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                                <path
+                                    d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                </div> <!-- Dokumen-dokumen -->
+
+                <!-- Penolakan / Komen -->
+                <div class="mb-12 text-center mt-44">
+                    <h2 class="mb-4 text-2xl">Penolakan & Komen</h2>
+                    <div class="w-10 h-1 mx-auto rounded-lg bg-primary"></div>
+                </div>
+
+                <div class="flex flex-col gap-16 mt-8">
+                    @foreach ($workLog->revisions()->oldest()->get() as $revision)
+                        <div class="flex">
+                            <div class="w-72">
+                                <h4 class="text-lg w-72">Penolakan no. {{ $loop->iteration }}</h4>
+                                {{-- <h4 class="w-72 text-slate-500">12.30pm, 12 May 2023</h4> --}}
+                                <h4 class="w-72 text-slate-500">
+                                    {{ $workLog->revisions()->first()->created_at->format('g:i a, d M Y') }}
+                                </h4>
+                            </div>
+                            <div>
+                                <h5 class="text-slate-600">{{ $revision->body }}</h5>
+                            </div>
+                        </div>
+                        <hr>
+                    @endforeach
+                </div>
             </div>
+
         @endif
 
     </div> <!-- main container -->
 
     @push('scripts')
-        <script type="module">
+        {{-- <script type="module">
             // Get a reference to the file input element
             const inputElement = document.querySelector('input[type="file"]');
 
             // Create a FilePond instance
             const pond = FilePond.create(inputElement);
+        </script> --}}
+
+        <script type="module">
+            // Get a reference to the file input element
+            const imageUploadElement = document.getElementById('image-upload');
+            const documentUploadElement = document.querySelector('#document-upload');
+
+            const workLogId = {{ $workLog->id }};
+
+            // Create a FilePond instance
+            const pondImages = FilePond.create(imageUploadElement, {
+                allowMultiple: true,
+                server: {
+                    process: {
+                        url: `/workLogs/${workLogId}/images`,
+                        headers: {
+                            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content
+                        },
+                    },
+                },
+                labelIdle: 'Tarik & Letak <span class="font-bold">gambar</span> atau <span class="filepond--label-action"> Buka Carian </span>',
+                imageValidateSizeMaxWidth: 10000,
+                imageValidateSizeMaxHeight: 10000,
+                maxFileSize: 10000000,
+                acceptedFileTypes: 'image/*',
+            });
+
+            const pondDocuments = FilePond.create(documentUploadElement, {
+                server: 'workLogs/1/documents',
+                labelIdle: 'Drag & Drop your <span class="font-bold">documents</span> or <span class="filepond--label-action"> Browse </span>',
+                maxFileSize: 50000000,
+                acceptedFileTypes: [
+                    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/x-7z-compressed', 'application/vnd.rar',
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    'application/vnd.ms-powerpoint', 'application/pdf', 'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                ],
+            });
         </script>
     @endpush
 </x-app-layout>

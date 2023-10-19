@@ -10,6 +10,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
+use App\Helpers\FlashStatusCode;
 
 class WorkLogController extends Controller
 {
@@ -18,40 +19,6 @@ class WorkLogController extends Controller
      */
     public function index(Request $request)
     {
-        // Query types?
-        // Admin, Penilai 1, Penilai 2, Warga Kerja
-        // Sort By Status (Ongoing, Submitted, To Revise, Completed, Rejected)
-
-        // $worklogs = WorkLog::latest();
-
-        // Statuses from include to exclude them.
-
-        // ONGOING   0
-        // SUBMITTED 1
-        // TOREVISE  2
-        // COMPLETED 3
-        // REJECTED  4
-        // $statuses = ['ongoing', 'submitted', 'torevise', 'completed', 'rejected'];
-
-        // $worklogs->when($statuses, function (Builder $query, array $statuses) {
-        //     foreach ($statuses as $status) {
-        //         $query->orWhere('status', $status);
-        //     }
-        // });
-
-        // $sort_by = $request->query('sort_by');
-
-        // // Status sortings
-        // $worklogs->when($sort_by['expected_at'], function (Builder $query, string $expected_at) {
-        //     $expected_at = in_array("asc", ['asc', 'desc']) ? $expected_at : 'asc'; // Make sure safe
-        //     $query->orderBy('expected_at', $expected_at);
-        // })->when($sort_by['started_at'], function (Builder $query, string $started_at) {
-        //     $started_at = in_array("asc", ['asc', 'desc']) ? $started_at : 'asc'; // Make sure safe
-        //     $query->orderBy('started_at', $started_at);
-        // })->when($sort_by['submitted_at'], function (Builder $query, string $submitted_at) {
-        //     $submitted_at = in_array("asc", ['asc', 'desc']) ? $submitted_at : 'asc'; // Make sure safe
-        //     $query->orderBy('submitted_at', $submitted_at);
-        // });
         return view('pages.work-logs.index');
     }
 
@@ -115,6 +82,14 @@ class WorkLogController extends Controller
         ]);
 
         return view('pages.worklogs.edit', compact('worklog'));
+    }
+
+    public function submit(WorkLog $workLog)
+    {
+        return redirect()->route('work-scopes.index')->with([
+            'status' => FlashStatusCode::SUCCESS,
+            'message' => 'Log kerja selesai dihantar',
+        ]);
     }
 
     /**

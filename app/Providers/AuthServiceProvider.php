@@ -30,12 +30,12 @@ class AuthServiceProvider extends ServiceProvider
         // Penilai 1 - Update worklog evaluate: rating, accepted_at
         // Wargakerja - Update worklog set completed
 
-        Gate::define('worklog-add', function(User $user) {
-            return $user->isStaff();
+        Gate::define('worklog-add', function() {
+            return auth()->user()->isStaff() || auth()->user()->isAdmin();
         });
 
-        Gate::define('worklog-update-basic', function(User $user, WorkLog $worklog) {
-            return $user->isStaff() &&
+        Gate::define('worklog-update-basic', function(WorkLog $worklog) {
+            return auth()->user()->isStaff() &&
             $worklog->started_at != null && $worklog->expected_at != null &&
             // -----
             $worklog->submitted_at == null &&
