@@ -12,7 +12,7 @@ class Home extends Controller
     public function __invoke(Request $request)
     {
         if (auth()->user()->isHR()) {
-            return view('pages.home.hr');
+            return view('pages.staff-sections.index');
         }
 
         $workLogs = array('ongoing' => [], 'with_comments' => []);

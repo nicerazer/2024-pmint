@@ -1,4 +1,4 @@
-<div>
+<div class="uppercase">
     @php
         use App\Helpers\WorkLogHelper;
         use Carbon\Carbon;

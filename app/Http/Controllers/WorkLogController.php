@@ -61,7 +61,7 @@ class WorkLogController extends Controller
      */
     public function show(WorkLog $workLog)
     {
-        return view('pages.work-logs.show', compact('workLog'));
+        return view('pages.work-logs.show.index', compact('workLog'));
     }
 
     /**

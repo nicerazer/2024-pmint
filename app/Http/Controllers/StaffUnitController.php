@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StaffUnit;
 use Illuminate\Http\Request;
 
 class StaffUnitController extends Controller
@@ -15,8 +16,7 @@ class StaffUnitController extends Controller
     }
 
     public function index() {
-
-
+        return StaffUnit::count();
     }
 
     public function show() {

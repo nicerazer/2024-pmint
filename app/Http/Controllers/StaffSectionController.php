@@ -16,7 +16,7 @@ class StaffSectionController extends Controller
     }
 
     public function index() {
-        return view('pages.staff-hirearchy.index', StaffSection::all());
+        return view('pages.staff-sections.index', StaffSection::all());
     }
 
     public function show() {

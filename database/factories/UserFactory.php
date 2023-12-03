@@ -30,6 +30,7 @@ class UserFactory extends Factory
                 UserRoleCodes::STAFF,
             ])->random(),
             'remember_token' => Str::random(10),
+            'staff_unit_id' => 1,
         ];
     }
 

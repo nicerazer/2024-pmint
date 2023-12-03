@@ -9,6 +9,7 @@ use App\Http\Controllers\WorkLogDocumentController;
 use App\Http\Controllers\WorkLogImageController;
 use App\Http\Controllers\WorkScopeController;
 use App\Http\Middleware\HRIsPermitted;
+use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -33,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 // // })
 
 // if (! auth()->check())
-//     auth()->login(User::where('email', 'test_staff@mail.com')->first());
+//     auth()->login(User::where('email', 'hr@mail.com')->first());
 
 Route::get('/that-query', function () {
     return '';
@@ -56,20 +57,20 @@ Route::middleware('auth')->group(function () {
     });
 
     // HR uses
-    Route::controller(StaffUnitController::class)->middleware([HRIsPermitted::class])->group(function() {
-        Route::get('/staff-units/create', 'create')->name('staff-units.create');
-        Route::get('/staff-units', 'index')->name('staff-units.index');
-        Route::get('/staff-units/{staffUnits}', 'show')->name('staff-units.show');
-        Route::post('/staff-units', 'store')->name('staff-units.store');
+    Route::controller(StaffSectionController::class)->middleware([HRIsPermitted::class])->group(function() {
+        Route::get('/staff-sections/create', 'create')->name('staff-sections.create');
+        Route::get('/staff-sections', 'index')->name('staff-sections.index');
+        Route::get('/staff-sections/{staffSectionSlug}', 'show')->name('staff-sections.show');
+        Route::post('/staff-sections', 'store')->name('staff-sections.store');
         // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
     });
 
     // HR uses
-    Route::controller(StaffSectionController::class)->middleware([HRIsPermitted::class])->group(function() {
-        Route::get('/work-sections/create', 'create')->name('work-sections.create');
-        Route::get('/work-sections', 'index')->name('work-sections.index');
-        Route::get('/work-sections/{worksections}', 'show')->name('work-sections.show');
-        Route::post('/work-sections', 'store')->name('work-sections.store');
+    Route::controller(StaffUnitController::class)->middleware([HRIsPermitted::class])->group(function() {
+        Route::get('staff-sections/{staffSectionSlug}/staff-units/create', 'create')->name('staff-units.create');
+        Route::get('staff-sections/{staffSectionSlug}/staff-units', 'index')->name('staff-units.index');
+        Route::get('staff-sections/{staffSectionSlug}/staff-units/{staffUnitSlug}', 'show')->name('staff-units.show');
+        Route::post('staff-sections/{staffSectionSlug}/staff-units', 'store')->name('staff-units.store');
         // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
     });
 
@@ -81,6 +82,7 @@ Route::middleware('auth')->group(function () {
         // Route::delete('/work-scopes', 'destroy')->name('work-scopes.destroy');
     });
 
+    // HR uses
     Route::controller(UserController::class)->middleware([HRIsPermitted::class])->group(function() {
         Route::get('/users/create', 'create')->name('users.create');
         Route::post('/users', 'store')->name('users.store');

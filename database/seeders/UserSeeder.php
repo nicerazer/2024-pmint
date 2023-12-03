@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
             'email' => 'hr@mail.com',
             'email_verified_at' => now(),
             'role' => UserRoleCodes::HR,
+            'staff_unit_id' => 1,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ]);
@@ -28,6 +29,7 @@ class UserSeeder extends Seeder
             'email' => 'evaluator-1@mail.com',
             'email_verified_at' => now(),
             'role' => UserRoleCodes::EVALUATOR_1,
+            'staff_unit_id' => 1,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ]);
@@ -37,6 +39,7 @@ class UserSeeder extends Seeder
             'email' => 'evaluator-2@mail.com',
             'email_verified_at' => now(),
             'role' => UserRoleCodes::EVALUATOR_2,
+            'staff_unit_id' => 1,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ]);
@@ -45,6 +48,7 @@ class UserSeeder extends Seeder
             'name' => 'staff',
             'email' => 'staff@mail.com',
             'role' => UserRoleCodes::STAFF,
+            'staff_unit_id' => 1,
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),

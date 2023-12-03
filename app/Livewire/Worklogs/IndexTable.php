@@ -47,11 +47,13 @@ class IndexTable extends Component
         $this->status_index = 0;
         $this->search = '';
 
+        // Should also count by month but rn it doesnt work like that
         $workLog_count_all = WorkLog::select(DB::raw('COUNT(*) AS count'))
-        ->when(auth()->user()->isStaff(), function (Builder $query, bool $isStaff) {
+        ->when($this->selected_month, function (Builder $query) {
+                $query->whereMonth('created_at', $this->selected_month);
+        })->when(auth()->user()->isStaff(), function (Builder $query, bool $isStaff) {
                 $query->where('author_id', auth()->user()->id);
-        })
-        ->first();
+        })->first();
 
         $workLog_count_statuses = WorkLog::select(['status', DB::raw('COUNT(*) AS count')])
         ->when($this->selected_month, function (Builder $query) {
@@ -87,7 +89,6 @@ class IndexTable extends Component
         // Evaluators gets everything scoped by?
         // Monthlies or dailies, but basically all...
         // They have actions to
-
 
         $workLogs->when($status_is_valid, function (Builder $query) {
             $query->where('status', $this->status_index);

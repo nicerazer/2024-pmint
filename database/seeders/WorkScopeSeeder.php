@@ -16,20 +16,20 @@ class WorkScopeSeeder extends Seeder
         WorkScope::upsert([
         [
             'title' => 'Isi Jawatan Baru',
-            'unit' => 'Unit Perkhidmatan',
+            'staff_unit_id' => 1,
         ],
         [
             'title' => 'Lantik Jawatan Baru / Penempatan Warga Kerja',
-            'unit' => 'Unit Perkhidmatsan',
+            'staff_unit_id' => 1,
         ],
         [
             'title' => 'Serah PGT',
-            'unit' => 'Unit Perkhidmsatan',
+            'staff_unit_id' => 1,
         ],
         [
             'title' => 'Tuntut perbelanjaan kemudahan perubatan / rawatan',
-            'unit' => 'Unit Perkhsidmatan',
+            'staff_unit_id' => 1,
         ],
-        ], ['title', 'unit']);
+        ], ['title', 'staff_unit_id']);
     }
 }

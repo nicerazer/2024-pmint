@@ -49,6 +49,13 @@ class WorkLog extends Model
         return $this->belongsTo(WorkScope::class);
     }
 
+    public function workScopeTitle(): string
+    {
+        if ($this->workScope)
+            return $this->workScope->title;
+        return $this->custom_workscope_title;
+    }
+
     public function revisions(): HasMany
     {
         return $this->hasMany(Revision::class);
@@ -63,6 +70,7 @@ class WorkLog extends Model
     {
         return $this->morphMany(Document::class, 'documentable');
     }
+
 
     // public function sea?rch($search) {
         // return $thiswhere('', 'like', '')
