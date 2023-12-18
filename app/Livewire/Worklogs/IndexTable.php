@@ -2,6 +2,7 @@
 
 namespace App\Livewire\WorkLogs;
 
+use App\Helpers\WorkLogCountForAYear;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\Computed;
 use App\Helpers\WorkLogHelper;
@@ -22,6 +23,7 @@ class IndexTable extends Component
 
     public $status_index;
     public $workLog_by_statuses_count;
+    public $worklogs_in_a_month;
 
     #[Url(as: 'q')]
     public $search;
@@ -33,9 +35,31 @@ class IndexTable extends Component
     // COMPLETED    3
     // CLOSED       4
 
+    // public function generateMonths(){
+    //     WorkLogCountForAYear::make(now());
+    // }
+
     public function selectStatus($selected_status_index) {
-        $this->resetPage();
         $this->status_index = $selected_status_index;
+        $this->resetPage();
+    }
+
+    public function addYear() {
+        $this->selected_month->addYear();
+        // $this->worklogs_in_a_month = WorkLogCountForAYear::make($this->selected_month);
+        $this->resetPage();
+    }
+
+    public function subYear() {
+        $this->selected_month->subYear();
+        // $this->worklogs_in_a_month = WorkLogCountForAYear::make($this->selected_month);
+        $this->resetPage();
+    }
+
+    public function setMonth(string $month_name): void {
+        $this->selected_month = new Carbon($month_name);
+        // $this->worklogs_in_a_month = WorkLogCountForAYear::make($this->selected_month);
+        $this->resetPage();
     }
 
     // public function selectedMonthFormatted() {
@@ -46,7 +70,55 @@ class IndexTable extends Component
         $this->selected_month = now();
         $this->status_index = 0;
         $this->search = '';
+        $this->worklogs_in_a_month = array();
+    }
 
+    public function render()
+    {
+        $this->initCounts();
+        $status_is_valid = $this->status_index >= 0 & $this->status_index <= 4;
+        $_month = $this->selected_month->copy();
+        $this->worklogs_in_a_month = WorkLogCountForAYear::make($_month);
+
+        info('Livewire: Rendering');
+
+        $workLogs = auth()->user()->isStaff() ? auth()->user()->workLogs() : WorkLog::select('*');
+
+        // Staff? Evaluator?
+        // Staff gets only their worklogs
+        // Evaluators gets everything scoped by?
+        // Monthlies or dailies, but basically all...
+        // They have actions to
+
+        /**
+         * - worklogs
+         * - Only valid statuses
+         * - Selected Months
+         * - Follows search
+         * - authed user own worklogs
+         */
+        $workLogs->when($status_is_valid, function (Builder $query) {
+            $query->where('status', $this->status_index);
+        })->when($this->selected_month, function (Builder $query) {
+            $query->whereMonth('work_logs.created_at', $this->selected_month);
+        })->when($this->search, function (Builder $query) {
+            $query->where('LOWER(users.name)', 'like', "%{$this->search}%");
+            $query->orWhere('LOWER(work_scopes.title)', 'like', "%{$this->search}%");
+        })->when($this->search, function (Builder $query) {
+        })
+        ->join('users', 'work_logs.author_id', '=', 'users.id')
+        ->join('work_scopes', 'work_logs.work_scope_id', '=', 'work_scopes.id')
+        ->select('work_logs.*', 'users.name', 'work_scopes.title');
+
+        return view('livewire.work-logs.index-table', [
+            'workLogs' => $workLogs->paginate(15),
+            'workLog_counts_by_statuses' => $this->workLog_by_statuses_count,
+            'status_index' => $this->status_index,
+            'selected_month' => $this->selected_month,
+        ]);
+    }
+
+    private function initCounts() {
         // Should also count by month but rn it doesnt work like that
         $workLog_count_all = WorkLog::select(DB::raw('COUNT(*) AS count'))
         ->when($this->selected_month, function (Builder $query) {
@@ -73,42 +145,6 @@ class IndexTable extends Component
         $workLog_union->each(function(int $count, int $key) {
             $this->workLog_by_statuses_count[$key] = $count;
         });
-
-    }
-
-    public function render()
-    {
-        $status_is_valid = $this->status_index >= 0 & $this->status_index <= 4;
-
-        info('asdasd');
-
-        $workLogs = auth()->user()->isStaff() ? auth()->user()->workLogs() : WorkLog::select('*');
-
-        // Staff? Evaluator?
-        // Staff gets only their worklogs
-        // Evaluators gets everything scoped by?
-        // Monthlies or dailies, but basically all...
-        // They have actions to
-
-        $workLogs->when($status_is_valid, function (Builder $query) {
-            $query->where('status', $this->status_index);
-        })->when($this->selected_month, function (Builder $query) {
-            $query->whereMonth('work_logs.created_at', $this->selected_month);
-        })->when($this->search, function (Builder $query) {
-            $query->where('LOWER(users.name)', 'like', "%{$this->search}%");
-            $query->orWhere('LOWER(work_scopes.title)', 'like', "%{$this->search}%");
-        })->when($this->search, function (Builder $query) {
-        })
-        ->join('users', 'work_logs.author_id', '=', 'users.id')
-        ->join('work_scopes', 'work_logs.work_scope_id', '=', 'work_scopes.id')
-        ->select('work_logs.*', 'users.name', 'work_scopes.title');
-
-        return view('livewire.work-logs.index-table', [
-            'workLogs' => $workLogs->paginate(15),
-            'workLog_counts_by_statuses' => $this->workLog_by_statuses_count,
-            'status_index' => $this->status_index,
-            'selected_month' => $this->selected_month,
-        ]);
     }
 }
 // https://dev.to/othmane_nemli/laravel-wherehas-and-with-550o

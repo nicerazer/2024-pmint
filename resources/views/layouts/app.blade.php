@@ -20,17 +20,10 @@
 
     <x-layouts.navbar-main />
 
+    <main class="flex w-9/12 py-8 mx-auto">
+        {{ $slot }}
+    </main>
 
-    @if (request()->route()->getName() == 'home')
-        {{ $header }}
-        <main class="flex w-10/12 mx-auto my-8 2xl:w-9/12">
-            {{ $slot }}
-        </main>
-    @else
-        <main class="flex w-11/12 mx-auto my-8">
-            {{ $slot }}
-        </main>
-    @endif
     @livewireScripts
     @stack('scripts')
 </body>

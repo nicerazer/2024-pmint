@@ -1,7 +1,10 @@
 import "./bootstrap";
 
 import Alpine from "alpinejs";
+import intersect from "@alpinejs/intersect";
+
 import * as FilePond from "filepond";
+
 // File pond plugins
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginImageValidateSize from "filepond-plugin-image-validate-size";
@@ -13,8 +16,9 @@ import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 
 window.Alpine = Alpine;
-
 window.FilePond = FilePond;
+
+Alpine.plugin(intersect);
 FilePond.registerPlugin(FilePondPluginImagePreview);
 FilePond.registerPlugin(FilePondPluginImageValidateSize);
 FilePond.registerPlugin(FilePondPluginFileValidateType);

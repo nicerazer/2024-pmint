@@ -23,7 +23,7 @@ class ImageFactory extends Factory
 
     public function definition(): array
     {
-        info('imageing creatinoing');
+        info('creating an image...');
         // $generated_image_url = fake()->image();
 
         // $image = fake()->image();

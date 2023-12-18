@@ -10,7 +10,6 @@
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.2",
         "axios": "^1.1.2",
-        "daisyui": "^3.7.6",
         "laravel-vite-plugin": "^0.8.0",
         "postcss": "^8.4.6",
         "prettier": "3.0.3",
@@ -18,6 +17,8 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@alpinejs/intersect": "^3.13.3",
+        "daisyui": "^4.4.17",
         "filepond": "^4.30.4",
         "filepond-plugin-file-rename": "^1.1.8",
         "filepond-plugin-file-validate-size": "^2.2.8",

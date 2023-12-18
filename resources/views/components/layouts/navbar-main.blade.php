@@ -7,18 +7,33 @@
                     auth()->user()->isAnEvaluator())
                 <a href="/logkerja" wire:navigate class="text-white capitalize btn btn-ghost">Kerja</a>
             @else
-                <a href="/staff-units" wire:navigate class="text-white capitalize btn btn-ghost">Unit</a>
-                <a href="/staff-sections" wire:navigate class="text-white capitalize btn btn-ghost">Bahagian</a>
+                {{-- <a href="/staff-units" wire:navigate class="text-white capitalize btn btn-ghost">Unit</a> --}}
             @endif
         </div>
     </div>
     <div class="navbar-center">
         <div class="form-control">
-            <input type="text" placeholder="Search" class="text-black input input-bordered w-80" />
+            <input type="text" placeholder="Search" class="text-black input input-bordered w-80 input-md" />
         </div>
     </div>
     <div class="navbar-end">
+
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">Admin</div>
+            <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+                @foreach (auth()->user()->roles as $role)
+                    <li>
+                        <form action="{{ route('switch-role', $role) }}" method="POST">
+                            @csrf @method('PUT')
+                            <button href="">Admin</button>
+                        </form>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
         <button class="text-white btn btn-ghost btn-circle">
+            {{-- Notifications --}}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -26,6 +41,7 @@
             </svg>
         </button>
         <button class="text-white btn btn-ghost btn-circle">
+            {{-- Messages --}}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"

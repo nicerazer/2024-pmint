@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkLog extends Model
@@ -54,6 +55,10 @@ class WorkLog extends Model
         if ($this->workScope)
             return $this->workScope->title;
         return $this->custom_workscope_title;
+    }
+
+    public function reject(): MorphOne {
+        return $this->morphOne(Reject::class, 'rejectable');
     }
 
     public function revisions(): HasMany

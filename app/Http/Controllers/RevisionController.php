@@ -29,7 +29,7 @@ class RevisionController extends Controller
      */
     public function store(StoreRevisionRequest $request)
     {
-        //
+
     }
 
     /**

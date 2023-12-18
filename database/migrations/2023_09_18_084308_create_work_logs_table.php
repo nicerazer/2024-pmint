@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\WorkLogHelper;
+use App\Models\Reject;
 use App\Models\User;
 use App\Models\WorkScope;
 use Illuminate\Database\Migrations\Migration;
@@ -25,19 +26,26 @@ return new class extends Migration
 
             $table->boolean('has_archived')->default(false);
 
-            $table->dateTime('started_at')->nullable();
-            $table->dateTime('expected_at')->nullable();
-            $table->dateTime('submitted_at')->nullable();
+            $table->date('started_at')->nullable();
+            $table->date('expected_at')->nullable();
 
-            $table->timestamp('level_1_accepted_at')->nullable();
-            $table->timestamp('level_2_accepted_at')->nullable();
+            $table->date('submitted_at')->nullable();
+            $table->date('submitted_body')->nullable();
+
+            $table->foreignIdFor(Reject::class);
+
+            // $table->string('reject_title')->nullable();
+            // $table->string('reject_body')->nullable();
+            // $table->foreignIdFor(User::class, 'reject_author_id')->nullable();
+
 
             // Related tables:
+
             // Revisions
             // Images
             $table->foreignIdFor(User::class, 'author_id');
-            $table->foreignIdFor(WorkScope::class)->nullable();
-            $table->string('custom_workscope_title')->nullable();
+            $table->foreignIdFor(WorkScope::class)->nullable(); // Alternative fields
+            $table->string('custom_workscope_title')->nullable(); // Alternative fields
 
             $table->timestamps();
             $table->softDeletes();

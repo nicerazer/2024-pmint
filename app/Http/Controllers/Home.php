@@ -11,8 +11,16 @@ class Home extends Controller
      */
     public function __invoke(Request $request)
     {
-        if (auth()->user()->isHR()) {
-            return view('pages.staff-sections.index');
+        if (auth()->user()->isAdmin()) {
+            return view('pages.home.admin');
+        }
+
+        if (auth()->user()->isEvaluator1()) {
+            return view('pages.home.evaluator-1');
+        }
+
+        if (auth()->user()->isEvaluator2()) {
+            return view('pages.home.evaluator-2');
         }
 
         $workLogs = array('ongoing' => [], 'with_comments' => []);
@@ -28,6 +36,6 @@ class Home extends Controller
         // return $workLogs['ongoing'];
         // return now();
         // "2023-09-26T08:39:29.322770Z"
-        return view('pages.home.staff-evaluators', compact('workLogs'));
+        return view('pages.home.staff', compact('workLogs'));
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Worklogs\Edit;
+namespace App\Livewire\WorkLogs\Edit;
 
 use App\Helpers\WorkLogHelper;
 use App\Models\WorkLog;

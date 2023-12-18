@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StaffSection;
 use App\Models\StaffUnit;
 use Illuminate\Http\Request;
 
 class StaffUnitController extends Controller
 {
     public function create() {
+        return view('pages.infostructure-units.create');
 
     }
 
@@ -19,16 +21,18 @@ class StaffUnitController extends Controller
         return StaffUnit::count();
     }
 
-    public function show() {
-
+    public function show(StaffSection $staffSection, StaffUnit $staffUnit) {
+        return view('pages.infostructure-units.show', compact('staffSection', 'staffUnit'));
     }
 
-    public function edit() {
+    public function update(Request $request, StaffSection $staffSection, StaffUnit $staffUnit) {
+        $staffUnit->name = $request->name;
+        $staffUnit->save();
 
-    }
-
-    public function update() {
-
+        return redirect()->back()->with([
+            'status' => 'success',
+            'message' => 'Nama ditukar kepada ' . $request->name
+        ]);
     }
 
     public function destroy() {

@@ -12,6 +12,11 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.',
+        );
+
         $response = $this->get('/');
 
         $response->assertStatus(200);

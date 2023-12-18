@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\StaffSection;
 use App\Models\StaffUnit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,15 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            /*
-            0 - Admin X
-            1 - HR
-            2 - Penilai 1
-            3 - Penilai 1
-            4 - Warga Kerja
-            */
-            $table->integer('role')->default(4);
-            $table->foreignIdFor(StaffUnit::class);
+            $table->foreignIdFor(StaffSection::class);
+            $table->foreignIdFor(StaffUnit::class)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

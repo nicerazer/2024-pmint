@@ -16,15 +16,20 @@ return new class extends Migration
             $table->id();
 
             $table->foreignIdFor(Worklog::class);
-
-            $table->string('title');
+            // $table->string('title');
             $table->string('body');
 
-            $table->dateTime('started_at');
-            $table->dateTime('expected_at');
-            $table->dateTime('submitted_at')->nullable();
+            $table->date('started_at');
+            $table->date('expected_at');
+            $table->date('submitted_at')->nullable();
 
-            $table->dateTime('seen_at')->nullable();
+            // Relationships
+            // Images, Reject Or Accept
+
+            // $table->string('reject_title');
+            // $table->string('reject_body');
+            // $table->date('rejected_at');
+            // $table->date('seen_at')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

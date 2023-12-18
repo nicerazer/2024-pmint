@@ -2,50 +2,31 @@
 
 use App\Http\Controllers\Home;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffSectionController;
 use App\Http\Controllers\StaffUnitController;
+use App\Http\Controllers\SwitchRoleController;
+use App\Http\Controllers\UserWithoutRoleController;
 use App\Http\Controllers\WorkLogController;
 use App\Http\Controllers\WorkLogDocumentController;
 use App\Http\Controllers\WorkLogImageController;
 use App\Http\Controllers\WorkScopeController;
 use App\Http\Middleware\HRIsPermitted;
 use App\Models\User;
+use App\Models\WorkLog;
+use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-
-// Extend to the next day, dalam proses, tindakan selanjutnya sambungan => workLog baru, selesai (extend),
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-// // })
 
 // if (! auth()->check())
 //     auth()->login(User::where('email', 'hr@mail.com')->first());
 
-Route::get('/that-query', function () {
-    return '';
-});
-
-Route::get('/test-page', function() {
-    return view('test-page');
-});
-
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     Route::get('/', Home::class)->name('home');
+    Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
+    Route::put('/switch-role', SwitchRoleController::class)->name('switch-role');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -56,22 +37,30 @@ Route::middleware('auth')->group(function () {
         Route::delete('/profile/workLogs/{workLog}/images/{image}', 'destroy')->name('workLogs.images.destroy');
     });
 
-    // HR uses
     Route::controller(StaffSectionController::class)->middleware([HRIsPermitted::class])->group(function() {
-        Route::get('/staff-sections/create', 'create')->name('staff-sections.create');
-        Route::get('/staff-sections', 'index')->name('staff-sections.index');
-        Route::get('/staff-sections/{staffSectionSlug}', 'show')->name('staff-sections.show');
-        Route::post('/staff-sections', 'store')->name('staff-sections.store');
+        Route::get('/bahagian/{staffSection}/unit/{staffUnit}/warga-kerja/cipta', 'create')->name('staff-sections.create');
+        Route::post('/bahagian/{staffSection}/unit/{staffUnit}/warga-kerja', 'store')->name('staff-sections.store');
+        Route::get('/bahagian/{staffSection}/unit/{staffUnit}/warga-kerja/{staff}', 'show')->name('staff-sections.show');
+    });
+
+    //     // HR uses
+    Route::controller(StaffSectionController::class)->middleware([HRIsPermitted::class])->group(function() {
+        Route::get('/bahagian/cipta', 'create')->name('staff-sections.create');
+        Route::post('/bahagian', 'store')->name('staff-sections.store');
+        Route::get('/bahagian', 'index')->name('staff-sections.index');
+        Route::get('/bahagian/{staffSection}', 'show')->name('staff-sections.show');
+        Route::post('/bahagian', 'store')->name('staff-sections.store');
         // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
     });
 
     // HR uses
     Route::controller(StaffUnitController::class)->middleware([HRIsPermitted::class])->group(function() {
-        Route::get('staff-sections/{staffSectionSlug}/staff-units/create', 'create')->name('staff-units.create');
-        Route::get('staff-sections/{staffSectionSlug}/staff-units', 'index')->name('staff-units.index');
-        Route::get('staff-sections/{staffSectionSlug}/staff-units/{staffUnitSlug}', 'show')->name('staff-units.show');
-        Route::post('staff-sections/{staffSectionSlug}/staff-units', 'store')->name('staff-units.store');
-        // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
+        Route::get('/bahagian/{staffSection}/unit/cipta', 'create')->name('staff-units.create');
+        Route::get('/bahagian/{staffSection}/unit', 'index')->name('staff-units.index');
+        Route::get('/bahagian/{staffSection}/unit/{staffUnit}', 'show')->name('staff-units.show');
+        Route::post('/bahagian/{staffSection}/unit', 'store')->name('staff-units.store');
+        Route::put('/bahagian/{staffSection}/unit/{staffUnit}', 'update')->name('staff-sections.update');
+       // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
     });
 
     Route::controller(WorkScopeController::class)->middleware([HRIsPermitted::class])->group(function() {
@@ -92,8 +81,16 @@ Route::middleware('auth')->group(function () {
         Route::delete('/users/{user}')->name('users.destory');
     });
 
+    // Staff | Evaluators share uses
     Route::controller(WorkLogController::class)->group(function () {
         // Accessible from UI
+
+        // === Staff
+        // index, show (edit), update (submit), destroy (only before submission)
+
+        // === Evaluators
+        // index, show (edit), update (accept, reject, close)
+
         Route::get('/logkerja', 'index')->name('workLogs.index');
         Route::get('/logkerja/rekod-baharu', 'create')->name('workLogs.create');
         Route::get('/logkerja/{workLog}', 'show')->name('workLogs.show'); // + Edit
@@ -108,6 +105,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/workLogs/{workLog}/update', 'update')->name('workLogs.update');
 
     });
+
+    /* -------------------  */
+    /*  Content Management  */
+    /* -------------------  */
 
     // Actions, hidden from UI, for system
     // Want to hide only for some people
@@ -132,23 +133,55 @@ Route::middleware('auth')->group(function () {
 
 });
 
+Route::get('/that-query', function () {
+    // OUTDATEDDDDD CHECK APP\HELPERS\WORKLOGCOUNTFORAYEAR
+    $months_and_total_worklogs = WorkLog::join('users', 'work_logs.author_id', '=', 'users.id')
+    ->join('staff_units', 'users.staff_unit_id', '=', 'staff_units.id')
+    ->select(
+        DB::raw("DATE_FORMAT(work_logs.started_at, '%M %Y') AS month"),
+        DB::raw("COUNT(work_logs.id) as total")
+    )
+    ->groupBy('month')
+    ->where('staff_units.id', 1)->distinct()->get()->toArray();
+    // Transform into collection and make it into associative array; ['MONTH' => 'TOTAL']
+    // Example: ['September 2023' => 5]
+    $months_and_total_worklogs = collect($months_and_total_worklogs);
+    $months_and_total_worklogs = $months_and_total_worklogs->mapWithKeys(function (array $item, int $key) {
+        return [$item['month'] => $item['total']];
+    });
 
-// Could be used by penilai 1, penilai 2
-// Route::name('rejects.')->prefix('rejects')->controller(CommentController::class)->group(function () {
-//     Route::post('/commments', 'store');
-//     Route::put('/commments/{comment}', 'update');
-//     Route::delete('/commments/buang', 'destroy');
-// });
+    // Year to be prepared to generate months
+    $searchYear = now()->subMonths(11)->format('Y');
+    // Check if search year same as the current year
+    $isCurrentYear = now()->format('Y') == $searchYear;
 
-// // By Role
-// //
-// Route::name('admin.')->prefix('admin')->group(function () {
-//     Route::get('/users/{user}', function (User $user) {
-//     })->name('users');
-// });
+    // Track month to be iterated to prepare for the generated month
+    $trackMonth = now()->setTime(0,0,0,0)->setDay(1);
+    // If the current year is NOT the same as the search year (past years), generate for the whole year
+    // If it's the same year, generate only up until current month (if right now is april, generate the list until april)
+    if (! $isCurrentYear) $trackMonth->setMonth(12);
 
-// Route::prefix('admin')->group(function () {
-//     Route::get('/users', function () {
-//         // Matches The "/admin/users" URL
-//     });
-// });
+    $infiniteMonths = collect();
+    Log::info('Starting year: '.$trackMonth->year);
+
+    while ($trackMonth->year == $searchYear) {
+        // Get total worklog from database for the created array
+        $total_worklog_cursor =
+            isset($months_and_total_worklogs[$trackMonth->format('F Y')])
+                ? $months_and_total_worklogs[$trackMonth->format('F Y')] : 0;
+
+        $infiniteMonths->push([
+            'month' => $trackMonth->format('F Y'),
+            'total' => $total_worklog_cursor,
+        ]);
+
+        Log::info('Before sub: '.$trackMonth);
+        $trackMonth->subMonth();
+        Log::info('After sub: '.$trackMonth);
+    }
+
+    // dd($trackMonth->year);
+    dd($infiniteMonths);
+
+    return '';
+});

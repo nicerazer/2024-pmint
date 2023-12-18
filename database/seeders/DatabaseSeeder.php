@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         Storage::deleteDirectory('public/work-logs-test');
 
         $this->call([
+            RoleSeeder::class,
             StaffUnitSeeder::class,
             UserSeeder::class,
             WorkScopeSeeder::class,
