@@ -63,8 +63,8 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class);
     }
 
-    public function reject(): HasOne {
-        return $this->hasOne(Reject::class);
+    public function reject(): MorphOne {
+        return $this->morphOne(SubmissionReject::class, 'rejectable');
     }
 
     /**

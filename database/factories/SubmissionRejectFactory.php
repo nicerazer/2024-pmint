@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Reject>
  */
-class RejectFactory extends Factory
+class SubmissionRejectFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,7 @@ class RejectFactory extends Factory
     {
         return [
             'body' => fake()->sentence(),
-            'author' => rand(1, 10)
+            'evaluator_id' => rand(1, 10)
         ];
     }
 }

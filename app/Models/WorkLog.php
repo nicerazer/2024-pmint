@@ -58,7 +58,11 @@ class WorkLog extends Model
     }
 
     public function reject(): MorphOne {
-        return $this->morphOne(Reject::class, 'rejectable');
+        return $this->morphOne(SubmissionReject::class, 'rejectable');
+    }
+
+    public function accept(): MorphOne {
+        return $this->morphOne(SubmissionAccept::class, 'acceptable');
     }
 
     public function revisions(): HasMany

@@ -17,7 +17,7 @@ return new class extends Migration
 
             // $table->string('title')->nullable();
             $table->string('body')->nullable();
-            $table->morphs('submission_rejectable');
+            $table->morphs('rejectable');
 
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable();
             $table->timestamps();

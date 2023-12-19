@@ -8,8 +8,8 @@
 <x-app-layout>
 
     <div class="flex w-10/12 gap-8 mx-auto mt-16 pb-80" x-data="{ selectedWindowTitle: 'showWorkLog', isEditing: false }"> <!-- main container -->
-        {{-- Ringkasan Kerja* Title --}}
-        <div class="flex flex-col basis-5/12">
+
+        <div class="flex flex-col basis-5/12"> {{-- Left Side : Worklog Summary --}}
             <div class="flex items-start justify-between">
                 <div>
                     {{-- Worklog Title --}}
@@ -97,13 +97,13 @@
                 </div>
                 <div class="divider divider-vertical"></div>
             </div>
-        </div>
+        </div>{{-- Left Side : Worklog Summary --}}
 
-        <div class="flex flex-col basis-7/12">
+        <div class="flex flex-col basis-7/12"> {{-- Right Side : Submissions --}}
             <div class="card @if ($workLogAccepted) bg-green-100 @else bg-white @endif">
                 <div class="card-body">
                     <div class="flex items-center justify-between w-full">
-                        <h1 class="text-2xl font-bold">Penghantaran Ke-1</h1>
+                        <h1 class="text-2xl font-bold">Penghantaran No-1</h1>
                         @if ($workLogAccepted)
                             <span class="flex items-center gap-2 font-bold text-green-600">
                                 DITERIMA
@@ -156,7 +156,10 @@
                         </a>
                     </h3>
                     <div class="flex flex-wrap w-full gap-4">
+                        @if ($workLog->submitted_at)
+                        @endif
                         @for ($i = 0; $i < 10; ++$i)
+                            {{-- <livewire:worklogs-show- /> --}}
                             {{-- <div class="flex items-center gap-1 p-2 bg-white border rounded-lg"> --}}
                             <div class="flex items-center gap-1 p-2 bg-white border rounded-lg">
                                 <div class="flex flex-col items-start justify-center gap-2">
@@ -206,7 +209,6 @@
 
                             </div>
                         @endfor
-                        <div class="divider"></div>
                     </div>
                 </div>
             </div>
@@ -278,68 +280,10 @@
                         <div class="flex items-start gap-12">
 
                             <div id="right-side" class="w-[38rem]">
-                                {{-- <div class="divider"></div> --}}
                                 <div class="w-full">
                                     <input name="image-upload" type="file" id="image-upload" />
                                     <input name="document-upload" type="file" id="document-upload" />
                                 </div>
-
-
-                                {{-- <div class="divider"></div> --}}
-
-                                {{--
-                            <button type="button"
-                                class="group w-full py-12 px-8 btn btn-outline btn-primary hover:!text-white flex flex-col items-center justify-center h-fit capitalize mb-6 bg-white">
-                                <div class="flex items-center gap-4">
-                                    <span>Tambah Fail</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                                    </svg>
-
-                                </div>
-                                <div class="bg-primary h-0.5 group-hover:bg-white w-8 transition-colors my-2"></div>
-                                <div class="whitespace-break-spaces">Tarik fail ke ruang ini / tekan untuk muat naik</div>
-                            </button>
-                            --}}
-
-                                {{-- <h3 class="mb-3 text-lg text-gray-600">Dokumen</h3>
-                            <div class="flex flex-wrap w-full mb-6 gap-x-2 gap-y-3">
-                                @for ($i = 0; $i < 5; $i++)
-                                    <div
-                                        class="flex items-center gap-2 px-3 py-2 border bg-accent text-accent-content rounded-box">
-                                        <span>alksndlaksd.docx</span>
-                                        <button type="button" class="opacity-60 hover:opacity-100">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                                class="w-5 h-5">
-                                                <path
-                                                    d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                @endfor
-                            </div>
-
-                            <h3 class="mb-3 text-lg text-gray-600">Gambar</h3>
-                            <div class="flex flex-wrap w-full mb-6 gap-x-2 gap-y-3">
-                                @for ($i = 0; $i < 5; $i++)
-                                    <div class="relative w-fit">
-                                        <img src="{{ asset('images/photo-1550258987-190a2d41a8ba.jpg') }}" alt=""
-                                            class="h-64 border rounded-box">
-                                        <button type="button"
-                                            class="absolute z-10 top-3 right-3 opacity-60 hover:opacity-100">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                                class="w-5 h-5">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                @endfor
-                            </div> --}}
-
                             </div>
 
                             <div id="left-side" class="shrink w-[18rem]">

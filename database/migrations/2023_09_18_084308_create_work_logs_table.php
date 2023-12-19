@@ -2,6 +2,7 @@
 
 use App\Helpers\WorkLogHelper;
 use App\Models\Reject;
+use App\Models\SubmissionReject;
 use App\Models\User;
 use App\Models\WorkScope;
 use Illuminate\Database\Migrations\Migration;
@@ -30,9 +31,9 @@ return new class extends Migration
             $table->date('expected_at')->nullable();
 
             $table->date('submitted_at')->nullable();
-            $table->date('submitted_body')->nullable();
+            $table->string('submitted_body')->nullable();
 
-            $table->foreignIdFor(Reject::class);
+            // $table->foreignIdFor(SubmissionReject::class);
 
             // $table->string('reject_title')->nullable();
             // $table->string('reject_body')->nullable();

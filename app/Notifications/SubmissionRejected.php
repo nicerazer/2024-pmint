@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\DatabaseMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class WorkLogRejected extends Notification
+class SubmissionRejected extends Notification
 {
     use Queueable;
 
@@ -31,7 +31,7 @@ class WorkLogRejected extends Notification
     }
 
     public function toDatabase(): DatabaseMessage {
-        return (new DatabaseMessage)
+        return (new DatabaseMessage);
     }
 
     /**

@@ -16,8 +16,8 @@ class WorkLogFactory extends Factory
      */
     public function definition(): array
     {
-        $level_1_at = mt_rand(0,1) == 1 ? now() : null;
-        $level_2_at = mt_rand(0,1) == 1 && $level_1_at ? now()->addHours(mt_rand(0,50)) : null;
+        // $level_1_at = mt_rand(0,1) == 1 ? now() : null;
+        // $level_2_at = mt_rand(0,1) == 1 && $level_1_at ? now()->addHours(mt_rand(0,50)) : null;
 
         // Status
 
@@ -46,14 +46,17 @@ class WorkLogFactory extends Factory
         }
 
         return [
-            'level_1_accepted_at' => $level_1_at,
-            'level_2_accepted_at' => $level_2_at,
+            // 'level_1_accepted_at' => $level_1_at,
+            // 'level_2_accepted_at' => $level_2_at,
 
             'rating' => round(mt_rand(0, 50) / 10 * 2 ) / 2,
 
             'status' => $status,
 
             'description' => fake()->realText($maxNbChars = 100, $indexSize = 2),
+
+            'submitted_at' => now(),
+            'submitted_body' => fake()->realText($maxNbChars = 100, $indexSize = 2),
 
             'started_at' => $started_at,
             'expected_at' => $expected_at,

@@ -6,6 +6,7 @@ use App\Models\WorkLog;
 use App\Http\Requests\StoreWorkLogRequest;
 use App\Http\Requests\UpdateWorkLogRequest;
 use App\Models\Revision;
+use App\Notifications\SubmissionRejected;
 use App\Notifications\WorkLogRejected;
 
 class WorkLogRejectController extends Controller
@@ -18,7 +19,7 @@ class WorkLogRejectController extends Controller
         if(!($worklog->rejected_at != null && $worklog->revisions()->count())) {
             $worklog->rejected_at = now();
             $worklog->rejected_body = $validated['body'];
-            auth()->user->notify(new WorkLogRejected());
+            auth()->user->notify(new SubmissionRejected());
         }
 
         $revision = new Revision();

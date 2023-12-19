@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class RejectSeeder extends Seeder
+class SubmissionRejectSeeder extends Seeder
 {
     /**
      * Run the database seeds.

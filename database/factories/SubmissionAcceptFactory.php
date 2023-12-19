@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\WorkLogAccept>
  */
-class WorkLogAcceptFactory extends Factory
+class SubmissionAcceptFactory extends Factory
 {
     /**
      * Define the model's default state.

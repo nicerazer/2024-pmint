@@ -18,14 +18,15 @@
     </div>
     <div class="navbar-end">
 
-        <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">Admin</div>
+        <div class="mr-4 dropdown dropdown-end">
+            <div tabindex="0" role="button" class="text-white capitalize btn btn-ghost rounded-btn">
+                {{ App\Models\Role::find(session('selected_role_id'))->title }}</div>
             <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
                 @foreach (auth()->user()->roles as $role)
                     <li>
-                        <form action="{{ route('switch-role', $role) }}" method="POST">
+                        <form action="{{ route('switch-role', $role->id) }}" method="POST" class="flex p-0">
                             @csrf @method('PUT')
-                            <button href="">Admin</button>
+                            <button class="w-full btn btn-ghost text-start">{{ ucfirst($role->title) }}</button>
                         </form>
                     </li>
                 @endforeach

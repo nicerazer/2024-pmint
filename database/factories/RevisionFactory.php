@@ -31,12 +31,12 @@ class RevisionFactory extends Factory
             case 3:case 4:
                 $started_at     = now()->subHours(3);
                 $expected_at    = now()->subHours(3)->addHours(2,40);
-                $submitted_at   = now()->subHours(3)->addHours(4,50);
+            $submitted_at   = now()->subHours(3)->addHours(4,50);
                 break;
         }
 
         return [
-            'title' => fake()->jobTitle(),
+            // 'title' => fake()->jobTitle(),
             'body' => fake()->realText(50),
 
             'started_at' => $started_at,

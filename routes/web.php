@@ -22,11 +22,11 @@ use Illuminate\Support\Facades\Route;
 
 // if (! auth()->check())
 //     auth()->login(User::where('email', 'hr@mail.com')->first());
+Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
 
 Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     Route::get('/', Home::class)->name('home');
-    Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
-    Route::put('/switch-role', SwitchRoleController::class)->name('switch-role');
+    Route::put('/switch-role/{role}', SwitchRoleController::class)->name('switch-role');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -83,14 +83,6 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
 
     // Staff | Evaluators share uses
     Route::controller(WorkLogController::class)->group(function () {
-        // Accessible from UI
-
-        // === Staff
-        // index, show (edit), update (submit), destroy (only before submission)
-
-        // === Evaluators
-        // index, show (edit), update (accept, reject, close)
-
         Route::get('/logkerja', 'index')->name('workLogs.index');
         Route::get('/logkerja/rekod-baharu', 'create')->name('workLogs.create');
         Route::get('/logkerja/{workLog}', 'show')->name('workLogs.show'); // + Edit
@@ -99,6 +91,13 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
         // Route::put('/logkerja/{workLog}/submit', 'submit');
         // Route::put('/logkerja/{workLog}/accept', 'accept');
         // Route::delete('/logkerja/buang', 'destroy');
+        // Accessible from UI
+
+        // === Staff
+        // index, show (edit), update (submit), destroy (only before submission)
+
+        // === Evaluators
+        // index, show (edit), update (accept, reject, close)
 
         // Actions, hidden from UI, for system
         Route::post('/workLogs', 'store')->name('workLogs.store');

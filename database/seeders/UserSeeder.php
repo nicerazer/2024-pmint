@@ -23,8 +23,8 @@ class UserSeeder extends Seeder
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ]);
+        $admin->roles()->attach([UserRoleCodes::ADMIN, UserRoleCodes::STAFF, UserRoleCodes::EVALUATOR_1, UserRoleCodes::EVALUATOR_2,]);
 
-        $admin->roles()->attach([UserRoleCodes::ADMIN,UserRoleCodes::STAFF]);
 
         $user2 = User::create([
             'name' => 'evaluator-1',
@@ -48,9 +48,9 @@ class UserSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-        $user3->roles()->attach([UserRoleCodes::ADMIN, UserRoleCodes::STAFF, UserRoleCodes::EVALUATOR_1, UserRoleCodes::EVALUATOR_2,]);
+        $user3->roles()->attach([UserRoleCodes::ADMIN,UserRoleCodes::STAFF]);
 
-        User::create([
+        $userStaff = User::create([
             'name' => 'staff',
             'email' => 'staff@mail.com',
             'staff_section_id' => 1,
@@ -59,6 +59,7 @@ class UserSeeder extends Seeder
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ]);
+        $userStaff->roles()->attach([UserRoleCodes::STAFF]);
 
         User::factory()->count(50)->create();
     }

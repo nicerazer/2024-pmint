@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\UserRoleCodes;
 use Illuminate\Http\Request;
 
 class Home extends Controller
@@ -11,15 +12,15 @@ class Home extends Controller
      */
     public function __invoke(Request $request)
     {
-        if (auth()->user()->isAdmin()) {
+        if (session('selected_role_id') == UserRoleCodes::ADMIN) {
             return view('pages.home.admin');
         }
 
-        if (auth()->user()->isEvaluator1()) {
+        if (session('selected_role_id') == UserRoleCodes::EVALUATOR_1) {
             return view('pages.home.evaluator-1');
         }
 
-        if (auth()->user()->isEvaluator2()) {
+        if (session('selected_role_id') == UserRoleCodes::EVALUATOR_2) {
             return view('pages.home.evaluator-2');
         }
 

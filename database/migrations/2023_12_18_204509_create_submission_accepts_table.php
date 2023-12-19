@@ -17,12 +17,12 @@ return new class extends Migration
 
             // Body is from evaluator 1 only
             $table->string('body')->nullable();
-            $table->morphs('submission_acceptable');
+            $table->morphs('acceptable');
 
             $table->timestamp('evaluator_1_accepted_at')->nullable();
-            $table->foreignIdFor(User::class(), 'evaluator_1_id')->nullable();
-            $table->timestamp('level_2_accepted_at')->nullable();
-            $table->foreignIdFor(User::class(), 'evaluator_1_id')->nullable();
+            $table->foreignIdFor(User::class, 'evaluator_1_id')->nullable();
+            $table->timestamp('evaluator_2_accepted_at')->nullable();
+            $table->foreignIdFor(User::class, 'evaluator_2_id')->nullable();
 
             $table->timestamps();
         });

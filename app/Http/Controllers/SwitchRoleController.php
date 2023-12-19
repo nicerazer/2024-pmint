@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\Auth;
 class SwitchRoleController extends Controller
 {
     public function __invoke(Role $role) {
+
+
         // Check if the user has the role he wants to switch
-        if (Auth::user()->roles->contains($role->id))
+        if (!Auth::user()->roles->pluck('id')->contains($role->id))
+            // dd ($role->id);
             return redirect()->back()->with([
                 ['status' => 'error'],
                 ['message' => 'Anda tiada kebenaran untuk tukar jawatan ' . $role->name],
@@ -18,7 +21,8 @@ class SwitchRoleController extends Controller
 
         session(['selected_role_id' => $role->id]);
 
-        return redirect()->route('/')->with([
+
+        return redirect()->route('home')->with([
             ['status' => 'info'],
             ['message' => 'Jawatan ditukar kepada ' . $role->name],
         ]);
