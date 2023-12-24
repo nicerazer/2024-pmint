@@ -29,11 +29,11 @@ class User extends Authenticatable
     4 - Staff / WargaKerja
     */
 
-    public function isAdmin(): bool {          return $this->role == UserRoleCodes::ADMIN; }
-    public function isEvaluator1(): bool {  return $this->role == UserRoleCodes::EVALUATOR_1; }
-    public function isEvaluator2(): bool {  return $this->role == UserRoleCodes::EVALUATOR_2; }
-    public function isAnEvaluator(): bool {  return $this->role == UserRoleCodes::EVALUATOR_1 || $this->role == UserRoleCodes::EVALUATOR_2; }
-    public function isStaff(): bool {       return $this->role == UserRoleCodes::STAFF; }
+    public function isAdmin():          bool {  return session('selected_role_id') == UserRoleCodes::ADMIN; }
+    public function isEvaluator1():     bool {  return session('selected_role_id') == UserRoleCodes::EVALUATOR_1; }
+    public function isEvaluator2():     bool {  return session('selected_role_id') == UserRoleCodes::EVALUATOR_2; }
+    public function isAnEvaluator():    bool {  return session('selected_role_id') == UserRoleCodes::EVALUATOR_1 || session('selected_role_id') == UserRoleCodes::EVALUATOR_2; }
+    public function isStaff():          bool {  return session('selected_role_id') == UserRoleCodes::STAFF; }
 
     /**
      * Get the post's image.

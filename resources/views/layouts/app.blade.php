@@ -20,11 +20,11 @@
 
     <x-layouts.navbar-main />
 
-    <main class="flex w-9/12 py-8 mx-auto">
+    <main class="flex w-11/12 py-8 mx-auto">
         {{ $slot }}
     </main>
 
-    @livewireScripts
+    @livewireScriptConfig
     @stack('scripts')
 </body>
 

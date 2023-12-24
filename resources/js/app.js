@@ -1,6 +1,9 @@
 import "./bootstrap";
 
-import Alpine from "alpinejs";
+import {
+    Livewire,
+    Alpine,
+} from "../../vendor/livewire/livewire/dist/livewire.esm";
 import intersect from "@alpinejs/intersect";
 
 import * as FilePond from "filepond";
@@ -25,4 +28,5 @@ FilePond.registerPlugin(FilePondPluginFileValidateType);
 FilePond.registerPlugin(FilePondPluginFileValidateSize);
 FilePond.registerPlugin(FilePondPluginFileRename);
 
-Alpine.start();
+// Alpine.start();
+Livewire.start();

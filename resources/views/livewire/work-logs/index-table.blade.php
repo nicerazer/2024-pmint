@@ -1,114 +1,19 @@
 @php
-    use App\Helpers\WorkLogHelper;
+    use App\Helpers\WorkLogCodes;
     use Carbon\Carbon;
 @endphp
-<div>
-
+<div class="w-full grow">
     <div class="flex items-center justify-between gap-4 mb-4">
-        <div class="flex items-center gap-4 justify-self-start">
-            {{-- <input type="month" wire:model.live="selected_month" class="bg-white input input-bordered w-80 shrink-0" /> --}}
-            <button class="align-middle btn btn-neutral w-80 shrink-0" type="button"
-                onclick="select_month_modal.showModal()">
-                {{ $this->selected_month->format('Y F') }}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-6 h-6 ml-1">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-            </button>
-            <dialog id="select_month_modal" class="modal">
-                <div class="modal-box">
-                    <div class="flex justify-between w-full">
-                        <div class="mb-3">
-                            <h3 class="flex items-end gap-3 mb-2 text-2xl font-bold">Tahun
-                                <span class="inline-flex items-center self-end gap-1">
-                                    <button type="button" @click="$wire.subYear(); select_month_modal.close();"
-                                        class="btn btn-xs btn-ghost">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                            class="w-5 h-5">
-                                            <path fill-rule="evenodd"
-                                                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                    {{ $this->selected_month->format('Y') }}
-                                    <button type="button" @click="$wire.addYear(); select_month_modal.close();"
-                                        class="btn btn-xs btn-ghost">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                            class="w-5 h-5">
-                                            <path fill-rule="evenodd"
-                                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </span>
-                            </h3>
-                            <h3 class="text-lg font-bold">Pilih bulan</h3>
-                        </div>
-                        <form method="dialog">
-                            <!-- if there is a button in form, it will close the modal -->
-                            <button class="text-gray-600 hover:text-gray-950"><svg xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                    class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th class="px-2 py-1">Bulan</th>
-                                <th class="px-2 py-1">Jumlah Kerja</th>
-                                <th class="px-2 py-1"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($this->worklogs_in_a_month as $item)
-                                <tr class="cursor-pointer hover" x-id="['monthPicker']">
-                                    <th class="p-0">
-                                        <button :id="$id('monthPicker')" type="button"
-                                            class="w-full px-2 py-1 text-start"
-                                            @click="$wire.setMonth('{{ $item['month'] }}'); select_month_modal.close();">{{ $item['month'] }}</button>
-                                    </th>
-                                    <td class="p-0">
-                                        <button :id="$id('monthPicker')" type="button"
-                                            class="w-full px-2 py-1 text-start"
-                                            @click="$wire.setMonth('December 2023'); select_month_modal.close();">{{ $item['total'] }}</button>
-                                    </td>
-                                    <td class="p-0">
-                                        <button :id="$id('monthPicker')" type="button"
-                                            class="w-full px-2 py-1 text-start"
-                                            @click="$wire.setMonth('December 2023'); select_month_modal.close();">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                                fill="currentColor" class="w-5 h-5">
-                                                <path fill-rule="evenodd"
-                                                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            <tr>
-                                {{-- <th><span class="h-60" x-intersect="$wire.loadMoreMonths()"></span></th> --}}
-                                <th><span class="h-60"></span></th>
-                                <td><span class="h-60"></span></td>
-                                <td><span class="h-60"></span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <form method="dialog" class="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
-            {{-- <input type="month" value="{{ $selected_month->format('Y-m') }}" wire:model.live="month"
-                class="bg-white input input-bordered w-80 shrink-0" /> --}}
-            <input type="text" wire:model.live="search" placeholder="Cari log kerja"
-                class="bg-white input input-bordered w-[24rem]" />
-        </div>
-        <div class="flex items-center gap-2 justify-self-end">
+        <button class="mb-3 -mx-4 text-xl btn btn-ghost" type="button" onclick="select_month_modal.showModal()">
+            {{ $this->selected_month->format('Y F') }}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+
+        </button>
+        <div class="flex items-center gap-2 justify-self-end shrink-0">
             <p class="mr-6 text-gray-500">Paparan {{ $workLogs->count() * $workLogs->currentPage() }} dari
                 {{ $workLogs->total() }} kerja</p>
 
@@ -123,65 +28,102 @@
         </div>
     </div>
 
-    <div class="flex items-start gap-4">
-
-        {{--
-          ONGOING   0
-          SUBMITTED 1
-          TOREVISE  2
-          COMPLETED 3
-          CLOSED  4
-        --}}
-        <div class="overflow-hidden bg-white border rounded-lg w-80 shrink-0" x-data="{ status: 0 }">
-            <button wire:click="selectStatus('{{ WorkLogHelper::ALL }}')" @click="status = {{ WorkLogHelper::ALL }}"
-                :class="status == -1 ? 'btn-primary text-white' : 'btn-ghost'"
-                class="w-full font-normal capitalize rounded-none btn">
-                <span class="mr-auto">Semua</span>
-                <div class="ml-auto badge" :class="status == -1 ? ' badge-accent' : ''">
-                    {{ $workLog_by_statuses_count[WorkLogHelper::ALL] }}</div>
-            </button>
-            <button wire:click="selectStatus('{{ WorkLogHelper::ONGOING }}')"
-                @click="status = {{ WorkLogHelper::ONGOING }}"
-                :class="status == 0 ? 'btn-primary text-white' : 'btn-ghost'"
-                class="w-full font-normal capitalize rounded-none btn">
-                <span class="mr-auto">Berjalan</span>
-                <div class="ml-auto badge" :class="status == 0 ? ' badge-accent' : ''">
-                    {{ $workLog_by_statuses_count[WorkLogHelper::ONGOING] }}</div>
-            </button>
-            <button wire:click="selectStatus('{{ WorkLogHelper::SUBMITTED }}')"
-                @click="status = {{ WorkLogHelper::SUBMITTED }}"
-                :class="status == 1 ? 'btn-primary text-white' : 'btn-ghost'"
-                class="w-full font-normal capitalize rounded-none btn">
-                <span class="mr-auto">Telah Hantar</span>
-                <div class="ml-auto badge" :class="status == 1 ? ' badge-accent' : ''">
-                    {{ $workLog_by_statuses_count[WorkLogHelper::SUBMITTED] }}</div>
-            </button>
-            <button wire:click="selectStatus('{{ WorkLogHelper::TOREVISE }}')"
-                @click="status = {{ WorkLogHelper::TOREVISE }}"
-                :class="status == 2 ? 'btn-primary text-white' : 'btn-ghost'"
-                class="w-full font-normal capitalize rounded-none btn">
-                <span class="mr-auto">Ditolak</span>
-                <div class="ml-auto badge" :class="status == 2 ? ' badge-accent' : ''">
-                    {{ $workLog_by_statuses_count[WorkLogHelper::TOREVISE] }}</div>
-            </button>
-            <button wire:click="selectStatus('{{ WorkLogHelper::COMPLETED }}')"
-                @click="status = {{ WorkLogHelper::COMPLETED }}"
-                :class="status == 3 ? 'btn-primary text-white' : 'btn-ghost'"
-                class="w-full font-normal capitalize rounded-none btn">
-                <span class="mr-auto">Selesai</span>
-                <div class="ml-auto badge" :class="status == 3 ? ' badge-accent' : ''">
-                    {{ $workLog_by_statuses_count[WorkLogHelper::COMPLETED] }}</div>
-            </button>
-            <button wire:click="selectStatus('{{ WorkLogHelper::CLOSED }}')"
-                @click="status = {{ WorkLogHelper::CLOSED }}"
-                :class="status == 4 ? 'btn-primary text-white' : 'btn-ghost'"
-                class="w-full font-normal capitalize rounded-none btn">
-                <span class="mr-auto">Ditutup</span>
-                <div class="ml-auto badge" :class="status == 4 ? ' badge-accent' : ''">
-                    {{ $workLog_by_statuses_count[WorkLogHelper::CLOSED] }}</div>
-            </button>
+    <dialog id="select_month_modal" class="modal">
+        <div class="modal-box">
+            <div class="flex justify-between w-full">
+                <div class="mb-3">
+                    <h3 class="flex items-end gap-3 mb-2 text-2xl font-bold">Tahun
+                        <span class="inline-flex items-center self-end gap-1">
+                            <button type="button" @click="$wire.subYear(); select_month_modal.close();"
+                                class="btn btn-xs btn-ghost">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="w-5 h-5">
+                                    <path fill-rule="evenodd"
+                                        d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            {{ $this->selected_month->format('Y') }}
+                            <button type="button" @click="$wire.addYear(); select_month_modal.close();"
+                                class="btn btn-xs btn-ghost">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="w-5 h-5">
+                                    <path fill-rule="evenodd"
+                                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </span>
+                    </h3>
+                    <h3 class="text-lg font-bold">Pilih bulan</h3>
+                </div>
+                <form method="dialog">
+                    <!-- if there is a button in form, it will close the modal -->
+                    <button class="text-gray-600 hover:text-gray-950"><svg xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="px-2 py-1">Bulan</th>
+                        <th class="px-2 py-1">Jumlah Kerja</th>
+                        <th class="px-2 py-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($this->worklogs_in_a_month as $item)
+                        <tr class="cursor-pointer hover" x-id="['monthPicker']">
+                            <th class="p-0">
+                                <button :id="$id('monthPicker')" type="button" class="w-full px-2 py-1 text-start"
+                                    @click="$wire.setMonth('{{ $item['month'] }}'); select_month_modal.close();">{{ $item['month'] }}</button>
+                            </th>
+                            <td class="p-0">
+                                <button :id="$id('monthPicker')" type="button" class="w-full px-2 py-1 text-start"
+                                    @click="$wire.setMonth('{{ $item['month'] }}'); select_month_modal.close();">{{ $item['total'] }}</button>
+                            </td>
+                            <td class="p-0">
+                                <button :id="$id('monthPicker')" type="button" class="w-full px-2 py-1 text-start"
+                                    @click="$wire.setMonth('{{ $item['month'] }}'); select_month_modal.close();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        class="w-5 h-5">
+                                        <path fill-rule="evenodd"
+                                            d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        {{-- <th><span class="h-60" x-intersect="$wire.loadMoreMonths()"></span></th> --}}
+                        <th><span class="h-60"></span></th>
+                        <td><span class="h-60"></span></td>
+                        <td><span class="h-60"></span></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="flex flex-col w-full">
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <div class="flex items-center justify-between gap-4 mb-4">
+
+        <input type="text" wire:model.live="search" placeholder="Cari log kerja"
+            class="w-full bg-white input input-bordered" />
+
+        <livewire:work-logs.filters.statuses-dropdown />
+
+    </div>
+
+    <div class="flex items-start w-full gap-4">
+
+        <div class="flex flex-col grow"> <!-- Table Data -->
             <div class="w-full mb-2 overflow-x-auto bg-white border rounded-lg">
                 <table class="table">
                     <!-- head -->
@@ -272,7 +214,22 @@
                 <button class="join-item btn btn-neutral">100</button> --}}
                 {{ $workLogs->links() }}
             </div>
-        </div>
+        </div> <!-- Table Data -->
 
     </div>
+    asdasd
+    {{ var_dump($workLogs->items()) }}
+    <div x-data="months()">
+        <template x-for="item in items " :key="item">
+            <div x-text=" item.name "></div>
+            asd
+        </template>
+    </div>
 </div>
+@push('scripts')
+    <script>
+        Alpine.data('months', () => ({
+            items: {{ Js::from($workLogs->items()) }}
+        }));
+    </script>
+@endpush

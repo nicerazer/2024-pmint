@@ -7,10 +7,13 @@ use Livewire\Attributes\Url;
 use Livewire\Attributes\Computed;
 use App\Helpers\WorkLogHelper;
 use App\Models\WorkLog;
+use App\Models\WorkScope;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -18,14 +21,17 @@ class IndexTable extends Component
 {
     use WithPagination;
 
-    #[Url(as: 'month')]
+    // #[Url(as: 'month')]
     public Carbon $selected_month;
 
+    #[Url]
     public $status_index;
+
     public $workLog_by_statuses_count;
     public $worklogs_in_a_month;
 
-    #[Url(as: 'q')]
+    // #[Url(as: 'search')]
+    #[Url]
     public $search;
 
     // ALL          -1
@@ -39,9 +45,10 @@ class IndexTable extends Component
     //     WorkLogCountForAYear::make(now());
     // }
 
+    #[On('select-status')]
     public function selectStatus($selected_status_index) {
         $this->status_index = $selected_status_index;
-        $this->resetPage();
+        // $this->resetPage();
     }
 
     public function addYear() {
@@ -97,18 +104,35 @@ class IndexTable extends Component
          * - Follows search
          * - authed user own worklogs
          */
-        $workLogs->when($status_is_valid, function (Builder $query) {
+
+        $workLogs
+        ->join('work_scopes','work_scopes.id', '=', 'work_logs.work_scope_id')
+        ->join('users','users.id', '=', 'work_logs.author_id')
+        ->when($this->status_index != -1, function (Builder $query) {
             $query->where('status', $this->status_index);
-        })->when($this->selected_month, function (Builder $query) {
-            $query->whereMonth('work_logs.created_at', $this->selected_month);
-        })->when($this->search, function (Builder $query) {
-            $query->where('LOWER(users.name)', 'like', "%{$this->search}%");
-            $query->orWhere('LOWER(work_scopes.title)', 'like', "%{$this->search}%");
-        })->when($this->search, function (Builder $query) {
         })
-        ->join('users', 'work_logs.author_id', '=', 'users.id')
-        ->join('work_scopes', 'work_logs.work_scope_id', '=', 'work_scopes.id')
+        ->when($this->search, function (Builder $query) {
+            $query->where(function (Builder $query) {
+                $query->whereRaw("LOWER(users.name) like '%{$this->search}%'")
+                ->orWhereRaw("work_scopes.title like '%{$this->search}%'");
+            });
+        })
         ->select('work_logs.*', 'users.name', 'work_scopes.title');
+
+        // ->select('work_logs.*', 'users.name', 'work_scopes.title');
+        // ->when($status_is_valid, function (Builder $query) {
+        //     $query->where('status', $this->status_index);
+        // })->whereMonth('work_logs.created_at', $this->selected_month)
+        // ->when($this->search, function (Builder $query) {
+        //     $query->where('status', $this->status_index);
+        //     // $query->whereRaw("LOWER(users.name) like '%{$this->search}%'");
+            // $query->orWhereRaw("work_scopes.title like '%{$this->search}%'");
+        //     // $query->whereRaw("LOWER(users.name) like %{$this->search}%");
+        //     // $query->orWhere("work_scopes.title like 'asd");
+        // });
+
+        // dd($workLogs);
+
 
         return view('livewire.work-logs.index-table', [
             'workLogs' => $workLogs->paginate(15),

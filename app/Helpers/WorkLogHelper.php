@@ -9,4 +9,5 @@ class WorkLogHelper {
     public const TOREVISE  = 2;
     public const COMPLETED = 3;
     public const CLOSED    = 4;
+
 }
