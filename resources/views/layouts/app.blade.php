@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Route;
+@endphp
+
 <!DOCTYPE html>
 <html data-theme="cupcake">
 
@@ -14,13 +18,22 @@
     @livewireStyles
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
 </head>
 
-<body class="min-h-screen antialiased bg-sky-50">
+<body @class([
+    'min-h-screen antialiased',
+    'bg-white' => Route::currentRouteName() == 'workLogs.create',
+    'bg-sky-50' => Route::currentRouteName() != 'workLogs.create',
+])>
 
-    <x-layouts.navbar-main />
+    @if (Route::currentRouteName() == 'workLogs.create')
+        <x-layouts.navbar-worklogs-create />
+    @else
+        <x-layouts.navbar-main />
+    @endif
 
-    <main class="flex w-11/12 py-8 mx-auto">
+    <main class="flex w-11/12 py-4 mx-auto">
         {{ $slot }}
     </main>
 

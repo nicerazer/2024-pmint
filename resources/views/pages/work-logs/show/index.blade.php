@@ -1,19 +1,38 @@
 @php
+    use App\Helpers\WorkLogCodes;
     use App\Helpers\WorkLogHelper;
     use App\Models\WorkScope;
     use Illuminate\Support\Facades\Storage;
 
-    $workLogAccepted = true;
 @endphp
+
 <x-app-layout>
 
-    <div class="flex w-10/12 gap-8 mx-auto mt-16 pb-80" x-data="{ selectedWindowTitle: 'showWorkLog', isEditing: false }"> <!-- main container -->
+    <style>
+        .masonry-with-columns {
+            columns: 3;
+            column-gap: .5rem;
+        }
+
+        .masonry-with-columns>img {
+            margin: 0 1rem 1rem 0;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            font-family: system-ui;
+            font-weight: 900;
+            font-size: 2rem;
+        }
+    </style>
+
+    <div class="flex w-10/12 gap-16 mx-auto mt-4 pb-80" x-data="{ selectedWindowTitle: 'showWorkLog', isEditing: false }"> <!-- main container -->
 
         <div class="flex flex-col basis-5/12"> {{-- Left Side : Worklog Summary --}}
             <div class="flex items-start justify-between">
                 <div>
                     {{-- Worklog Title --}}
-                    <h1 class="text-2xl font-bold" x-show="selectedWindowTitle == 'showWorkLog'">Ringkasan Kerja</h1>
+                    <h1 class="text-2xl font-bold" x-show="selectedWindowTitle == 'showWorkLog'">
+                        {{ $workLog->workScopeName }}</h1>
                     {{-- <h1 class="text-2xl font-bold" x-show="selectedWindowTitle == 'editWorkLog'">Kemaskini Kerja</h1>
                     <h1 class="text-2xl font-bold" x-show="selectedWindowTitle == 'submitWorkLog'">Hantar Kerja</h1> --}}
                     <h2>No.{{ $workLog->id }}</h2>
@@ -88,130 +107,160 @@
                 <p class="my-5">{{ $workLog->description }}</p>
                 <div class="divider divider-vertical"></div>
                 <div class="flex justify-between my-5">
-                    <span class="text-gray-500">Waktu mula</span>
-                    <span>{{ $workLog->created_at->format('jS M Y, g:i a') }}</span>
+                    <span class="text-gray-500">Tarikh mula</span>
+                    <span>{{ $workLog->created_at->format('jS M Y') }}</span>
                 </div>
                 <div class="flex justify-between my-5">
-                    <span class="text-gray-500">Waktu tamat</span>
-                    <span>{{ $workLog->created_at->format('jS M Y, g:i a') }}</span>
+                    <span class="text-gray-500">Jangka Siap</span>
+                    <span>{{ $workLog->expected_at->format('jS M Y') }}</span>
+                </div>
+                <div class="flex justify-between my-5">
+                    <span class="text-gray-500">Tarikh Selesai</span>
+                    <span>{{ $workLog->created_at->format('jS M Y') }}</span>
+                </div>
+                <div class="flex justify-between my-5">
+                    <span class="text-gray-500">Tarikh Terima</span>
+                    <span>{{ $workLog->created_at->format('jS M Y') }}</span>
                 </div>
                 <div class="divider divider-vertical"></div>
             </div>
         </div>{{-- Left Side : Worklog Summary --}}
 
-        <div class="flex flex-col basis-7/12"> {{-- Right Side : Submissions --}}
-            <div class="card @if ($workLogAccepted) bg-green-100 @else bg-white @endif">
-                <div class="card-body">
-                    <div class="flex items-center justify-between w-full">
-                        <h1 class="text-2xl font-bold">Penghantaran No-1</h1>
-                        @if ($workLogAccepted)
-                            <span class="flex items-center gap-2 font-bold text-green-600">
-                                DITERIMA
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                    class="w-5 h-5">
-                                    <path fill-rule="evenodd"
-                                        d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                                        clip-rule="evenodd" />
-                                </svg>
+        <div class="flex flex-col gap-8 basis-7/12"> {{-- Right Side : Submissions --}}
+            @foreach ($workLog->submissions as $submission)
+                <div class="shadow-xl card @if ($submission->accept) bg-[#E7F7E5] @else bg-white @endif">
+                    <div class="card-body">
+                        <div class="flex items-center justify-between w-full">
+                            <h1 class="text-xl font-bold text-gray-800">Penghantaran No {{ $loop->remaining + 1 }}</h1>
+                            @if ($submission->accept)
+                                <span class="flex items-center gap-2 font-bold text-green-600">
+                                    DITERIMA
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        class="w-5 h-5">
+                                        <path fill-rule="evenodd"
+                                            d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                                            clip-rule="evenodd" />
+                                    </svg>
 
-                            </span>
-                        @endif
+                                </span>
+                            @endif
 
-                    </div>
-                    <p class="mb-4 text-gray-500">16 May 2024</p>
-                    <p class="text-gray-600">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Itaque
-                        repudiandae voluptas deleniti
-                        tenetur eius sit porro nemo, maiores et rem vitae excepturi dicta cupiditate, soluta architecto
-                        dolores magnam ea amet aspernatur mollitia voluptatem harum. Modi voluptatum, quia iure quas,
-                        accusantium incidunt aspernatur aperiam adipisci saepe quod qui cupiditate recusandae nobis!</p>
-
-                    <div class="divider"></div>
-                    <div class="mb-5">
-                        <h3 class="mb-3">Gambar-gambar
-                            <a class="ml-2 btn btn-secondary btn-xs">
-                                Muat Turun Semua
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                    class="w-5 h-5">
-                                    <path fill-rule="evenodd"
-                                        d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </a>
-                        </h3>
-                        <div class="flex flex-wrap w-full gap-4">
-                            @for ($i = 0; $i < 4; ++$i)
-                                <img src="https://picsum.photos/150/150" class="rounded">
-                            @endfor
                         </div>
-                    </div>
-                    <h3 class="mb-3">Dokumen-dokumen
-                        <a class="ml-2 btn btn-secondary btn-xs">
-                            Muat Turun Semua
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                class="w-5 h-5">
-                                <path fill-rule="evenodd"
-                                    d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </a>
-                    </h3>
-                    <div class="flex flex-wrap w-full gap-4">
-                        @if ($workLog->submitted_at)
-                        @endif
-                        @for ($i = 0; $i < 10; ++$i)
-                            {{-- <livewire:worklogs-show- /> --}}
-                            {{-- <div class="flex items-center gap-1 p-2 bg-white border rounded-lg"> --}}
-                            <div class="flex items-center gap-1 p-2 bg-white border rounded-lg">
-                                <div class="flex flex-col items-start justify-center gap-2">
-                                    Evidence {{ $i }}
-                                    <div class="flex gap-2">
-                                        {{-- <div class="rounded badge badge-neutral badge-sm">XLSX</div>
-                                        <div class="rounded badge badge-neutral badge-sm">4.5MB</div> --}}
-                                        <div class="rounded badge badge-ghost badge-sm">XLSX</div>
-                                        <div class="rounded badge badge-ghost badge-sm">4.5MB</div>
-                                        {{-- <div class="rounded badge badge-neutral badge-sm">No-Lock</div </div> --}}
-                                    </div>
-                                </div>
-                                <div class="dropdown dropdown-bottom dropdown-end">
-                                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle btn-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                            fill="currentColor" class="w-5 h-5">
-                                            <path
-                                                d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
-                                        </svg>
-                                    </div>
-                                    <ul tabindex="0"
-                                        class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                                        <li>
-                                            <a>
-                                                <span>Muat Turun</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                                    class="w-6 h-6 ml-auto">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                </svg>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a>
-                                                <span>Buang</span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                                    class="w-6 h-6 ml-auto">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                </svg>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                        <div class="flex items-end justify-between w-full">
+                            <p class="text-green-700">Pada 16 May 2024</p>
+                            <p class="text-right text-green-700">Pada 16 May 2024</p>
+                        </div>
+                        <div class="divider divider-success opacity-10"></div>
+                        <h3 class="font-bold text-green-900">Nota</h3>
+                        <p class="text-green-800">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Itaque
+                            repudiandae voluptas deleniti
+                            tenetur eius sit porro nemo, maiores et rem vitae excepturi dicta cupiditate, soluta
+                            architecto
+                            dolores magnam ea amet aspernatur mollitia voluptatem harum. Modi voluptatum, quia iure
+                            quas,
+                            accusantium incidunt aspernatur aperiam adipisci saepe quod qui cupiditate recusandae nobis!
+                        </p>
 
+                        <div class="divider"></div>
+                        <div x-data="{ expanded: false }">
+                            <div class="flex items-center justify-between gap-4 mb-3" @click="expanded = ! expanded">
+                                <h3 class="text-lg font-bold text-slate-600">
+                                    Gambar-gambar
+                                    <div class="ml-1 text-white badge badge-neutral">12</div>
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        class="inline w-5 h-5 transition-transform" :class="expanded && 'rotate-180'">
+                                        <path fill-rule="evenodd"
+                                            d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+
+                                </h3>
+                                <a class="ml-2 btn btn-outline btn-sm">
+                                    Muat Turun Semua
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        class="w-5 h-5">
+                                        <path fill-rule="evenodd"
+                                            d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </a>
                             </div>
-                        @endfor
+                            <div class="transition-all masonry-with-columns" :class="expanded && 'mb-8'"
+                                x-show="expanded" x-collapse>
+                                @for ($i = 0; $i < 8; ++$i)
+                                    <div class="p-1 border h-fit rounded-xl bg-slate-100 border-slate-200">
+                                        <div class="relative rounded-lg overflow-clip group">
+                                            <div
+                                                class="absolute z-10 w-full h-full transition-opacity duration-200 ease-in-out bg-black opacity-0 group-hover:opacity-60">
+                                            </div>
+
+                                            @if ($i / 2 == 0)
+                                                <img src="https://picsum.photos/150/150"
+                                                    class="w-full transition-transform duration-200 ease-in-out group-hover:scale-125">
+                                            @else
+                                                <img src="https://picsum.photos/300/150"
+                                                    class="w-full transition-transform duration-200 ease-in-out group-hover:scale-125">
+                                            @endif
+
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+                        </div>
+
+                        <div x-data="{ expanded: false }"> <!-- Dokumen -->
+
+                            <div class="flex items-center justify-between gap-4 mb-3" @click="expanded = ! expanded">
+                                <h3 class="text-lg font-bold text-slate-600">
+                                    Dokumen-dokumen
+                                    <div class="ml-1 text-white badge badge-neutral">12</div>
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        class="inline w-5 h-5 transition-transform" :class="expanded && 'rotate-180'">
+                                        <path fill-rule="evenodd"
+                                            d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+
+                                </h3>
+                                <a class="ml-2 btn btn-outline btn-sm">
+                                    Muat Turun Semua
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        class="w-5 h-5">
+                                        <path fill-rule="evenodd"
+                                            d="M8 1a.75.75 0 01.75.75V6h-1.5V1.75A.75.75 0 018 1zm-.75 5v3.296l-.943-1.048a.75.75 0 10-1.114 1.004l2.25 2.5a.75.75 0 001.114 0l2.25-2.5a.75.75 0 00-1.114-1.004L8.75 9.296V6h2A2.25 2.25 0 0113 8.25v4.5A2.25 2.25 0 0110.75 15h-5.5A2.25 2.25 0 013 12.75v-4.5A2.25 2.25 0 015.25 6h2zM7 16.75v-.25h3.75a3.75 3.75 0 003.75-3.75V10h.25A2.25 2.25 0 0117 12.25v4.5A2.25 2.25 0 0114.75 19h-5.5A2.25 2.25 0 017 16.75z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="flex flex-wrap w-full gap-4" x-show="expanded" x-collapse>
+                                @if ($workLog->submitted_at)
+                                @endif
+                                @for ($i = 0; $i < 10; ++$i)
+                                    <div class="flex items-center gap-1 pl-2 pr-4 border rounded-lg bg-slate-50">
+                                        <div class="flex flex-row items-center justify-center gap-4">
+                                            <div class="btn btn-circle btn-ghost btn-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+                                                    fill="currentColor" class="w-4 h-4">
+                                                    <path
+                                                        d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z" />
+                                                    <path
+                                                        d="M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z" />
+                                                </svg>
+
+                                            </div>
+                                            <div class="-ml-2 rounded badge badge-ghost badge-xs">4.5MB</div>
+                                            <span>{{ str(fake()->name . fake()->name . fake()->name)->kebab() . '.pdf' }}</span>
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+                        </div> <!-- Dokumen -->
+
                     </div>
                 </div>
-            </div>
+            @endforeach
 
             {{-- @if (!auth()->user()->isStaff())
             <div class="flex mt-8" x-show="selectedWindowTitle == 'showWorkLog'">

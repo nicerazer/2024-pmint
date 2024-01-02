@@ -11,6 +11,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Request;
 use App\Helpers\FlashStatusCode;
+use App\Models\SubmissionAccept;
+use Illuminate\Support\Facades\DB;
 
 class WorkLogController extends Controller
 {
@@ -51,7 +53,10 @@ class WorkLogController extends Controller
 
         $validated = $request->safe()->all();
 
-        WorkLog::create($validated);
+        DB::transaction(function () use ($validated) {
+            $worklog = WorkLog::create($validated);
+            $worklog->submissionAccept()->create();
+        });
 
         redirect()->route('worklog.index');
     }

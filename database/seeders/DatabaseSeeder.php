@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
@@ -13,6 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Log::info('=== === === === === === ===');
+        Log::info('// Initiating seeding //');
+        Log::info('=== === === === === === ===');
         // \App\Models\User::factory(10)->create();
 
         // \App\Models\User::factory()->create([
@@ -26,11 +30,12 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             RoleSeeder::class,
+            StaffSectionSeeder::class,
             StaffUnitSeeder::class,
+            EvaluatorSeeder::class,
             UserSeeder::class,
             WorkScopeSeeder::class,
             WorkLogSeeder::class,
-            ImageSeeder::class,
         ]);
     }
 }

@@ -9,16 +9,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\Conversions\Manipulations;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, InteractsWithMedia;
 
     // Easier to reach things
 
@@ -38,9 +42,22 @@ class User extends Authenticatable
     /**
      * Get the post's image.
      */
-    public function image(): MorphOne
+    public function avatar(): MorphOne
     {
         return $this->morphOne(Image::class, 'imageable');
+    }
+
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Manipulations::FIT_CROP, 300, 300)
+            ->nonQueued();
+    }
+
+    public function rating(): int
+    {
+        return $this->workLogs()->count();
     }
 
     public function worklogs(): HasMany
@@ -53,18 +70,27 @@ class User extends Authenticatable
         return $this->belongsTo(StaffUnit::class, 'staff_unit_id');
     }
 
-    public function getRating(): int
-    {
-        return $this->workLogs()->count();
-    }
-
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class)->using(RoleUser::class);
     }
 
-    public function reject(): MorphOne {
-        return $this->morphOne(SubmissionReject::class, 'rejectable');
+    // public function evaluator1s(): BelongsToMany
+    // {
+    //     return $this->roles->wherePivot('role', UserRoleCodes::EVALUATOR_1);
+    // }
+
+    // public function evaluator2s(): BelongsToMany
+    // {
+    //     return $this->roles->wherePivot('role', UserRoleCodes::EVALUATOR_2);
+    // }
+
+    public function evaluator1(): BelongsTo {
+        return $this->belongsTo(User::class, 'evaluator1_id', 'id');
+    }
+
+    public function evaluator2(): BelongsTo {
+        return $this->belongsTo(User::class, 'evaluator2_id', 'id');
     }
 
     /**
@@ -99,4 +125,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(function (User $user) {
+            if ($user->evaluator1()->is($user) || $user->evaluator2()->is($user)) {
+                Log::notice('Trying to set evaluator as it\'s own. Forbidden!' . $user->id );
+            }
+        });
+    }
 }

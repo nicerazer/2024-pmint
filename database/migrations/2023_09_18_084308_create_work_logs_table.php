@@ -29,24 +29,17 @@ return new class extends Migration
 
             $table->date('started_at')->nullable();
             $table->date('expected_at')->nullable();
+            // Submission date comes from the latest submission
+            // isLatestSubmissionEvaluated
 
-            $table->date('submitted_at')->nullable();
-            $table->string('submitted_body')->nullable();
-
-            // $table->foreignIdFor(SubmissionReject::class);
-
-            // $table->string('reject_title')->nullable();
-            // $table->string('reject_body')->nullable();
-            // $table->foreignIdFor(User::class, 'reject_author_id')->nullable();
-
-
-            // Related tables:
-
+            //// Related tables:
             // Revisions
             // Images
+
             $table->foreignIdFor(User::class, 'author_id');
             $table->foreignIdFor(WorkScope::class)->nullable(); // Alternative fields
             $table->string('custom_workscope_title')->nullable(); // Alternative fields
+            $table->boolean('is_workscope_custom'); // Alternative fields
 
             $table->timestamps();
             $table->softDeletes();

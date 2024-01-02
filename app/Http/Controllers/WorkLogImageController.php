@@ -31,8 +31,7 @@ class WorkLogImageController extends Controller
             return response()->json(['error' => 'There is no image present.'], 400);
         }
         // return response('', 200);
-
-        info($request->all());
+        // info($request->all());
 
         $validated = $request->validate([
             'image-upload' => 'required|file|image|mimetypes:image/*'
@@ -45,7 +44,9 @@ class WorkLogImageController extends Controller
 
         Storage::makeDirectory("public\work-logs\\{$workLog->id}\images");
         // good
-
+        // $yourModel
+        // ->addMedia($pathToFile)
+        // ->toMediaCollection();
         $uploadedImage['name'] = $request->file('image-upload')->hashName();
         $uploadedImage['extension'] = $request->file('image-upload')->extension();
         $uploadedImage['size'] = $request->file('image-upload')->getSize();

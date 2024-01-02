@@ -17,6 +17,7 @@
         "vite": "^4.0.0"
     },
     "dependencies": {
+        "@alpinejs/collapse": "^3.13.3",
         "@alpinejs/intersect": "^3.13.3",
         "daisyui": "^4.4.17",
         "filepond": "^4.30.4",

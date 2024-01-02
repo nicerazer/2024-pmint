@@ -5,6 +5,7 @@ import {
     Alpine,
 } from "../../vendor/livewire/livewire/dist/livewire.esm";
 import intersect from "@alpinejs/intersect";
+import collapse from "@alpinejs/collapse";
 
 import * as FilePond from "filepond";
 
@@ -22,6 +23,7 @@ window.Alpine = Alpine;
 window.FilePond = FilePond;
 
 Alpine.plugin(intersect);
+Alpine.plugin(collapse);
 FilePond.registerPlugin(FilePondPluginImagePreview);
 FilePond.registerPlugin(FilePondPluginImageValidateSize);
 FilePond.registerPlugin(FilePondPluginFileValidateType);

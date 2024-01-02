@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* .filepond--root {
+    max-height: 20em;
+} */
+#image-upload .filepond--item {
+    width: calc(25% - 0.5em);
+}

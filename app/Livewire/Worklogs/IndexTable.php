@@ -21,17 +21,17 @@ class IndexTable extends Component
 {
     use WithPagination;
 
-    // #[Url(as: 'month')]
     public Carbon $selected_month;
+    #[Url(as: 'bulan')]
+    public string $month_translated;
 
-    #[Url]
     public $status_index;
 
-    public $workLog_by_statuses_count;
+    public $workLog_counts_by_statuses;
     public $worklogs_in_a_month;
 
-    // #[Url(as: 'search')]
-    #[Url]
+    #[Url(as: 'carian')]
+    // #[Url]
     public $search;
 
     // ALL          -1
@@ -53,18 +53,24 @@ class IndexTable extends Component
 
     public function addYear() {
         $this->selected_month->addYear();
+        $this->month_translated = $this->selected_month->monthName;
         // $this->worklogs_in_a_month = WorkLogCountForAYear::make($this->selected_month);
+        $this->initCounts();
         $this->resetPage();
     }
 
     public function subYear() {
         $this->selected_month->subYear();
+        $this->month_translated = $this->selected_month->monthName;
+        $this->initCounts();
         // $this->worklogs_in_a_month = WorkLogCountForAYear::make($this->selected_month);
         $this->resetPage();
     }
 
     public function setMonth(string $month_name): void {
         $this->selected_month = new Carbon($month_name);
+        $this->month_translated = $this->selected_month->monthName;
+        $this->initCounts();
         // $this->worklogs_in_a_month = WorkLogCountForAYear::make($this->selected_month);
         $this->resetPage();
     }
@@ -108,15 +114,22 @@ class IndexTable extends Component
         $workLogs
         ->join('work_scopes','work_scopes.id', '=', 'work_logs.work_scope_id')
         ->join('users','users.id', '=', 'work_logs.author_id')
+        ->whereYear('work_logs.created_at', $this->selected_month->year)
+        ->whereMonth('work_logs.created_at', $this->selected_month->month)
         ->when($this->status_index != -1, function (Builder $query) {
             $query->where('status', $this->status_index);
         })
         ->when($this->search, function (Builder $query) {
             $query->where(function (Builder $query) {
-                $query->whereRaw("LOWER(users.name) like '%{$this->search}%'")
-                ->orWhereRaw("work_scopes.title like '%{$this->search}%'");
+                $query->whereRaw("LOWER(work_scopes.title) like LOWER('%{$this->search}%')");
+                // Add this to query outside of mode:staff scope
+                $query->when(!auth()->user()->isStaff(), function (Builder $query) {
+                    $query->orWhereRaw("LOWER(users.name) like LOWER('%{$this->search}%')");
+                });
             });
         })
+        // Includes relationship to scope the created_at
+        ->with('latestSubmission')
         ->select('work_logs.*', 'users.name', 'work_scopes.title');
 
         // ->select('work_logs.*', 'users.name', 'work_scopes.title');
@@ -136,7 +149,7 @@ class IndexTable extends Component
 
         return view('livewire.work-logs.index-table', [
             'workLogs' => $workLogs->paginate(15),
-            'workLog_counts_by_statuses' => $this->workLog_by_statuses_count,
+            'workLog_counts_by_statuses' => $this->workLog_counts_by_statuses,
             'status_index' => $this->status_index,
             'selected_month' => $this->selected_month,
         ]);
@@ -164,10 +177,10 @@ class IndexTable extends Component
 
         $workLog_union = collect([-1 => $workLog_count_all['count']])->union($workLog_keyed);
 
-        $this->workLog_by_statuses_count = collect([-1,0,1,2,3,4])->mapWithKeys(fn($index) => [$index => 0]);
+        $this->workLog_counts_by_statuses = collect([-1,0,1,2,3,4])->mapWithKeys(fn($index) => [$index => 0]);
 
         $workLog_union->each(function(int $count, int $key) {
-            $this->workLog_by_statuses_count[$key] = $count;
+            $this->workLog_counts_by_statuses[$key] = $count;
         });
     }
 }

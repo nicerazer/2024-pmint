@@ -3,105 +3,110 @@
     use App\Models\Workscope;
 @endphp
 
-<form wire:submit="save">
-    <div class="flex flex-col gap-12 mt-12">
+<form wire:submit="save" class="flex flex-col gap-12">
+
+    <div class="flex gap-8"> <!-- Activity Section -->
+        <div class="w-[30rem]">
+            <label class="block mb-3 text-lg font-semibold">Unit</label>
+            <select class="w-full select select-bordered">
+                <option disabled selected>Pilih Unit</option>
+                <option>Latihan & Kualiti</option>
+                <option>Perhubungan Korporat</option>
+                <option>Pekhidmatan</option>
+            </select>
+        </div>
+        <div class="w-full">
+            <label class="block mb-3 text-lg font-semibold">Aktiviti</label>
+            <div class="w-full join">
+                <select class="select select-bordered join-item" name="activity-type">
+                    <option disabled selected>Jenis Aktiviti</option>
+                    <option value="main">Aktiviti Utama</option>
+                    <option value="side">Aktiviti Sampingan</option>
+                </select>
+
+                <input class="w-full input input-bordered join-item" placeholder="Tajuk aktiviti" />
+                {{-- <div class="w-full h-12 skeleton join-item"></div> --}}
+            </div>
+
+        </div>
+    </div> <!-- Activity Section -->
+
+    <div> <!-- Description Section -->
+        <label for="" class="block mb-3 text-lg font-semibold">Nota Aktiviti</label>
+        <textarea class="w-full textarea textarea-bordered" placeholder="" rows="5"></textarea>
+    </div> <!-- Description Section -->
+
+    <div class="divider"></div>
+
+    <div class="flex gap-8"> <!-- Activity and Dates Section -->
+        <div class="w-[30rem]">
+            <label class="block mb-3 text-lg font-semibold">Status Aktiviti</label>
+            <select class="w-full select select-bordered">
+                <option disabled selected>Pilih Status</option>
+                <option>Dalam Tindakan</option>
+                <option>Penghantaran</option>
+                <option>Dibatalkan</option>
+            </select>
+        </div>
+        <div class="w-full">
+            <div class="flex">
+                <div class="flex-1 w-full">
+                    <label class="block mb-3 text-lg font-semibold">Tarikh Mula</label>
+                </div>
+                <div class="flex-1 w-full">
+                    <label class="block mb-3 text-lg font-semibold">Tarikh Akhir</label>
+                </div>
+            </div>
+            <div class="w-full join">
+                <input type="date" class="w-full input input-bordered join-item" />
+                <input type="date" class="w-full input input-bordered join-item" />
+            </div>
+        </div>
+    </div> <!-- Activity and Dates Section -->
+
+    <div>
+        <h2 class="block mb-3 text-lg font-semibold">Hantar Bahan Bukti</h2>
         <div class="flex w-full gap-8">
-            <div class="w-80">
-                <h4 class="mb-2 text-xl font-bold w-80">Skop Kerja</h4>
-                <p class="text-gray-600 w-80">Pilih Kerja yang berkaitan dengan bahagian anda</p>
-            </div>
-            <div class="flex flex-col w-full gap-4 grow">
-                <div class="flex gap-2">
-                    <input type="radio" name="radio-10" class="radio checked:bg-red-500" checked />
-
-                    <div class="flex flex-col">
-                        <label for="work_scope" class="mb-3">Skop Kerja dari bahagian</label>
-                        <select class="w-full border-gray-300 select " wire:model="work_scope_id">
-                            <option disabled selected value="">Pilih kerja</option>
-                            @foreach (WorkScope::all() as $workScope)
-                                <option value="{{ $workScope->id }}">{{ $workScope->title }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <input type="radio" name="radio-10" class="radio checked:bg-red-500" checked />
-
-                    <div class="flex flex-col">
-                        <label for="work_scope" class="mb-3">Skop Kerja Manual Custom</label>
-                        <input type="text" placeholder="Tajuk log kerja" class="input-bordered input">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="flex w-full gap-8">
-            <div class="w-80">
-                <h4 class="mb-2 text-xl font-bold w-80">Keterangan</h4>
-                <p class="text-gray-600 w-80">Isi keterangan kerja anda (optional)</p>
-            </div>
-            <div class="w-full grow">
-                <div class="w-full">
-                    <textarea wire:model="description" placeholder="Keterangan..." class="w-full textarea textarea-bordered" rows="5"></textarea>
-                </div>
-            </div>
+            <div class="w-full grow"><input name="document-upload" type="file" id="document-upload" /></div>
+            <div class="w-full grow"><input name="image-upload" type="file" id="image-upload" /></div>
         </div>
     </div>
 
-    <hr class="mt-16 mb-12">
-
-    <div class="flex w-full gap-8 mb-16">
-        <div class="w-80">
-            <h4 class="mb-2 text-xl font-bold w-80">Jangka Waktu</h4>
-            <p class="text-gray-600 w-80">Jangka log kerja bermula dan berakhir</p>
-        </div>
-        <div class="w-full grow">
-            <div class="w-full"> <!-- Masa kerja-->
-                <h4 class="mb-2">Masa mula kerja</h4>
-                <div class="flex items-end gap-4 mb-1">
-                    <div wire:poll class="w-full max-w-xs form-control">
-                        <label class="label">
-                            <span class="label-text">Mula</span>
-                        </label>
-                        <input type="time" value="{{ now()->second(0)->toTimeString() }}"
-                            class="w-full input input-bordered" disabled />
-                    </div>
-                    <div class="w-full max-w-xs form-control">
-                        {{-- <label class="label">
-                                    <span class="label-text">Tarikh</span>
-                                </label> --}}
-                        <input type="date" value="{{ now()->toDateString() }}" class="w-full input input-bordered"
-                            disabled />
-                    </div>
-                </div>
-            </div> <!-- Masa kerja-->
-            <div></div>
-        </div>
-    </div>
-
-    <div class="flex w-full gap-8 mb-16">
-        <div class="w-80">
-            <h4 class="mb-2 text-xl font-bold w-80">Penilai-penilai</h4>
-            <p class="text-gray-600 w-80">Penilai-penilai yang akan nilai log kerja ini</p>
-        </div>
-        <div class="w-full grow">
-            <div class="w-full"> <!-- Penilai-->
-                <div class="mb-8">
-                    <h4 class="mb-2">Penilai 1</h4>
-                    <input type="text" value="Amin bin Razi" class="w-full input input-bordered" disabled />
-                </div>
-
-                <div class="mb-8">
-                    <h4 class="mb-2">Penilai 1</h4>
-                    <input type="text" value="Amin bin Razi" class="w-full input input-bordered" disabled />
-                </div>
-            </div> <!-- Penilai-->
-        </div>
-    </div>
-
-    <div class="flex items-center justify-end w-full gap-8 mt-20">
-        <button type="submit" class="text-white btn btn-primary">Mula Kerja</button>
-    </div>
+    <button type="submit" class="self-center px-40 mt-8 text-2xl text-white btn btn-primary btn-lg">Mula
+        Aktiviti</button>
 
 </form>
+
+@push('scripts')
+    <script type="module">
+        // Get a reference to the file input element
+        const imageUploadElement = document.getElementById('image-upload');
+        const documentUploadElement = document.querySelector('#document-upload');
+
+        // Create a FilePond instance
+        const pondImages = FilePond.create(imageUploadElement, {
+            allowMultiple: true,
+            // server: 'workLogs/1/documents',
+            labelIdle: 'Pilih <span class="font-bold">gambar</span> untuk dimuat naik',
+            imageValidateSizeMaxWidth: 10000,
+            imageValidateSizeMaxHeight: 10000,
+            maxFileSize: 10000000,
+            acceptedFileTypes: 'image/*',
+            imagePreviewHeight: '100'
+        });
+
+        const pondDocuments = FilePond.create(documentUploadElement, {
+            allowMultiple: true,
+            // server: 'workLogs/1/documents',
+            labelIdle: 'Pilih <span class="font-bold">dokumen</span> untuk dimuat naik',
+            maxFileSize: 50000000,
+            acceptedFileTypes: [
+                'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/x-7z-compressed', 'application/vnd.rar',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/vnd.ms-powerpoint', 'application/pdf', 'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            ],
+        });
+    </script>
+@endpush

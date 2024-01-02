@@ -7,13 +7,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+// use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
+// use Staudenmeir\EloquentEagerLimit\Relations\HasOne;
 
 class WorkLog extends Model
 {
     use HasFactory, SoftDeletes;
+
+    // protected $with = ['submissions:number'];
+
+    // TODO CHECK IF THERES A PROBLEM WITH SUBMISSION SEQUENCE
+    // - The sequence needs to have reject in the middle and only ONE accept in the end
+    // - Can use oncreate submission observer/listener
+    // === === ===
+    // Example (Pass)
+    // Sub 1 <=> Reject
+    // Sub 2 <=> Reject
+    // Sub 3 <=> Accept
+    // === === ===
+    // Example (Fail)
+    // Sub 1 <=> Reject
+    // Sub 2 <=> Accept
+    // Sub 3 <=> Accept
 
     protected $casts = [
         'started_at' => 'date',
@@ -40,6 +58,12 @@ class WorkLog extends Model
     public function setArchive(): WorkLog { $this->has_archived = true; return $this; }
     public function setUnarchive(): WorkLog { $this->has_archived = false; return $this; }
 
+    public function workScopeTitle (): string {
+        if ($this->is_workscope_custom)
+            return $this->custom_workscope_title;
+        return $this->workScope->title;
+    }
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -50,44 +74,48 @@ class WorkLog extends Model
         return $this->belongsTo(WorkScope::class);
     }
 
-    public function workScopeTitle(): string
-    {
-        if ($this->workScope)
-            return $this->workScope->title;
-        return $this->custom_workscope_title;
+    // Submission place starts
+
+    public function submissions(): HasMany {
+        return $this->hasMany(Submission::class);
     }
 
-    public function reject(): MorphOne {
-        return $this->morphOne(SubmissionReject::class, 'rejectable');
+    public function latestSubmission(): HasOne {
+        return $this->hasOne(Submission::class)->orderBy('number', 'desc')->limit(1);
     }
 
-    public function accept(): MorphOne {
-        return $this->morphOne(SubmissionAccept::class, 'acceptable');
+    public function isLatestSubmissionEvaluated(): bool {
+        return $this->latestSubmission->evaluator != null;
     }
 
-    public function revisions(): HasMany
-    {
-        return $this->hasMany(Revision::class);
-    }
-
-    public function images(): MorphMany
-    {
-        return $this->morphMany(Image::class, 'imageable');
-    }
+    // Submission Place ends
 
     public function documents(): MorphMany
     {
         return $this->morphMany(Document::class, 'documentable');
     }
 
+    // protected static function booted(): void
+    // {
+    //     static::creating(function (WorkLog $workLog) {
+    //         // WorkScope from database should be chosen if custom workscope title is not filled
+    //         if (!($workLog->custom_workscope_title == null || !$workLog->workScope))
+    //             return false;
 
-    // public function sea?rch($search) {
-        // return $thiswhere('', 'like', '')
+    //         $workLog->is_workscope_custom = false;
+    //         if ($workLog->custom_workscope_title) {
+    //             $workLog->is_workscope_custom = true;
+    //         }
+    //     });
+
+    //     static::created(function (WorkLog $workLog) {
+    //         $workLog->status = WorkLogHelper::ONGOING;
+    //         $workLog->save();
+    //     });
     // }
 
-
-    public function scopeWithWhereHas($query, $relation, $constraint){
-        return $query->whereHas($relation, $constraint)
-        ->with([$relation => $constraint]);
-    }
+    // public function scopeWithWhereHas($query, $relation, $constraint){
+    //     return $query->whereHas($relation, $constraint)
+    //     ->with([$relation => $constraint]);
+    // }
 }

@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('role_user', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->foreignIdFor(User::class);
             $table->foreignIdFor(Role::class);
         });

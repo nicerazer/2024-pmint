@@ -117,7 +117,8 @@
         <input type="text" wire:model.live="search" placeholder="Cari log kerja"
             class="w-full bg-white input input-bordered" />
 
-        <livewire:work-logs.filters.statuses-dropdown />
+        <livewire:work-logs.filters.statuses-dropdown :$status_index :$workLog_counts_by_statuses />
+        {{-- <livewire:work-logs.filters.statuses-dropdown :$status_index :$workLog_counts_by_statuses /> --}}
 
     </div>
 

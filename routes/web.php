@@ -22,6 +22,10 @@ use Illuminate\Support\Facades\Route;
 
 // if (! auth()->check())
 //     auth()->login(User::where('email', 'hr@mail.com')->first());
+Route::get('/blade-test', function () {
+    return view('test-page');
+});
+
 Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
 
 Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
