@@ -28,9 +28,10 @@ class Home extends Controller
 
         $workLogs['ongoing'] = auth()->user()->workLogs()
         ->select('*')
-        ->selectRaw('TIMEDIFF(expected_at, now()) AS time_left')
-        ->orderBy('time_left', 'desc')
+        // ->selectRaw('TIMEDIFF(expected_at, \''.now()->format('Y-m-d').'\') AS time_left')
+        // ->orderBy('time_left', 'desc')
         ->limit(5)->get();
+        // return '';
 
         // return $workLogs['ongoing'][0];
 

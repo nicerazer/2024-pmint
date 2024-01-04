@@ -72,7 +72,7 @@ class User extends Authenticatable implements HasMedia
 
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class)->using(RoleUser::class);
+        return $this->belongsToMany(Role::class);
     }
 
     // public function evaluator1s(): BelongsToMany

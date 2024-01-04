@@ -2,14 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Role;
+use App\Helpers\UserRoleCodes;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureUserHasARole
+class RoleControl
 {
     /**
      * Handle an incoming request.
@@ -18,16 +17,17 @@ class EnsureUserHasARole
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // if (! Auth::user())
-        //     redirect()->route('login');
-
         if ( Auth::user()->roles()->count() == 0) {
             return redirect()->route('your-role-is-empty');
         }
-        // dd (Role::find(session('selected_role_id'))->title);
 
-        if (!session()->has('selected_role_id'))
-            session(['selected_role_id' => Auth::user()->roles()->first()->id]);
+        if (!session()->has('selected_role_id')) {
+            $availableRoles = Auth::user()->roles;
+            if ($availableRoles->contains(UserRoleCodes::STAFF))
+                session(['selected_role_id' => UserRoleCodes::STAFF]);
+            else
+                session(['selected_role_id' => $availableRoles->first()]);
+        }
 
         return $next($request);
     }

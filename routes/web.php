@@ -36,10 +36,10 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::controller(AvatarImageController::class)->group(function () {
-        Route::post('/profile/{workLog}/images', 'store')->name('workLogs.images.store');
-        Route::delete('/profile/workLogs/{workLog}/images/{image}', 'destroy')->name('workLogs.images.destroy');
-    });
+    // Route::controller(AvatarImageController::class)->group(function () {
+    //     Route::post('/profile/{workLog}/images', 'store')->name('workLogs.images.store');
+    //     Route::delete('/profile/workLogs/{workLog}/images/{image}', 'destroy')->name('workLogs.images.destroy');
+    // });
 
     Route::controller(StaffSectionController::class)->middleware([HRIsPermitted::class])->group(function() {
         Route::get('/bahagian/{staffSection}/unit/{staffUnit}/warga-kerja/cipta', 'create')->name('staff-sections.create');
@@ -76,14 +76,14 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     });
 
     // HR uses
-    Route::controller(UserController::class)->middleware([HRIsPermitted::class])->group(function() {
-        Route::get('/users/create', 'create')->name('users.create');
-        Route::post('/users', 'store')->name('users.store');
-        Route::post('/users', 'show')->name('users.show');
-        Route::get('/users/{user}')->name('users.edit');
-        Route::put('/users/{user}')->name('users.update');
-        Route::delete('/users/{user}')->name('users.destory');
-    });
+    // Route::controller(UserController::class)->middleware([HRIsPermitted::class])->group(function() {
+    //     Route::get('/users/create', 'create')->name('users.create');
+    //     Route::post('/users', 'store')->name('users.store');
+    //     Route::post('/users', 'show')->name('users.show');
+    //     Route::get('/users/{user}')->name('users.edit');
+    //     Route::put('/users/{user}')->name('users.update');
+    //     Route::delete('/users/{user}')->name('users.destory');
+    // });
 
     // Staff | Evaluators share uses
     Route::controller(WorkLogController::class)->group(function () {

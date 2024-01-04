@@ -3,3 +3,5 @@ Get-Content -Path "./storage/logs/laravel.log" -Wait
 Get-Content -Path "./storage/logs/laravel.log" -Wait -Tail 10
 
 logexpert
+
+php artisan test --filter RoleTest

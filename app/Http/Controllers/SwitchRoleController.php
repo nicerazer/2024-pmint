@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 class SwitchRoleController extends Controller
 {
     public function __invoke(Role $role) {
-
-
         // Check if the user has the role he wants to switch
         if (!Auth::user()->roles->pluck('id')->contains($role->id))
             // dd ($role->id);

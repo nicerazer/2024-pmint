@@ -23,7 +23,7 @@ class EvaluatorSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-        $evaluator1->roles()->attach([UserRoleCodes::EVALUATOR_1]);
+        $evaluator1->roles()->attach(UserRoleCodes::EVALUATOR_1);
 
         $evaluator2 = User::create([
             'name' => 'evaluator-2',
@@ -34,6 +34,6 @@ class EvaluatorSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-        $evaluator2->roles()->attach([UserRoleCodes::EVALUATOR_2]);
+        $evaluator2->roles()->attach(UserRoleCodes::EVALUATOR_2);
     }
 }

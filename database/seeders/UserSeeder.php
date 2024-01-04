@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\RoleUser;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
@@ -16,6 +17,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
         $admin = User::create([
             'name' => 'admin',
             'email' => 'admin@mail.com',
@@ -36,8 +38,12 @@ class UserSeeder extends Seeder
         ]);
         $userStaff->roles()->attach([UserRoleCodes::STAFF]);
 
-        $evaluator1 = RoleUser::where('role_id', UserRoleCodes::EVALUATOR_1)->first()->users()->first();
-        $evaluator2 = RoleUser::where('role_id', UserRoleCodes::EVALUATOR_2)->first()->users()->first();
+        Log::info("From DB: " . Role::find(UserRoleCodes::EVALUATOR_1));
+        // Log::info("From DB: " . Role::find(UserRoleCodes::EVALUATOR_1)->users()->first()->id);
+        // die();
+
+        $evaluator1 = Role::find(UserRoleCodes::EVALUATOR_1)->users()->first();
+        $evaluator2 = Role::find(UserRoleCodes::EVALUATOR_2)->users()->first();
 
         $admin->evaluator1_id = $evaluator1->id;
         $admin->evaluator2_id = $evaluator2->id;
