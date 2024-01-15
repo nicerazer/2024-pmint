@@ -19,6 +19,7 @@
     "dependencies": {
         "@alpinejs/collapse": "^3.13.3",
         "@alpinejs/intersect": "^3.13.3",
+        "chart.js": "^4.4.1",
         "daisyui": "^4.4.17",
         "filepond": "^4.30.4",
         "filepond-plugin-file-rename": "^1.1.8",

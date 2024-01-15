@@ -1,4 +1,4 @@
-Recommended Specifications
+Absolute Recommended Specifications
 MySQL 5.7+
 PHP 8.2
 

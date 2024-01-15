@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\StaffUnit;
+use App\Models\WorkUnit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('work_scopes', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignIdFor(StaffUnit::class);
+            $table->foreignIdFor(WorkUnit::class);
             $table->timestamps();
             $table->softDeletes();
         });

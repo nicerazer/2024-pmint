@@ -9,11 +9,11 @@ class StatusesDropdown extends Component {
     #[Reactive]
     public $status_index;
     #[Reactive]
-    public $workLog_counts_by_statuses;
+    public $worklog_counts_by_statuses;
 
     public function render()
     {
-        info($this->workLog_counts_by_statuses);
+        info($this->worklog_counts_by_statuses);
         return view('livewire.work-logs.filters.statuses-dropdown');
     }
 }

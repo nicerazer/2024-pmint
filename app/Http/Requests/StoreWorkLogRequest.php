@@ -23,6 +23,7 @@ class StoreWorkLogRequest extends FormRequest
     {
         return [
             'title' => 'required|unique:posts|max:255',
+            'image-uploads' => 'array', // TODO : of string?
             'body' => 'required',
         ];
     }

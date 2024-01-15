@@ -6,12 +6,14 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffSectionController;
 use App\Http\Controllers\StaffUnitController;
 use App\Http\Controllers\SwitchRoleController;
+use App\Http\Controllers\TemporaryUploadController;
 use App\Http\Controllers\UserWithoutRoleController;
 use App\Http\Controllers\WorkLogController;
 use App\Http\Controllers\WorkLogDocumentController;
 use App\Http\Controllers\WorkLogImageController;
 use App\Http\Controllers\WorkScopeController;
 use App\Http\Middleware\HRIsPermitted;
+use App\Models\StaffSection;
 use App\Models\User;
 use App\Models\WorkLog;
 use Carbon\Carbon;
@@ -20,10 +22,30 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
-// if (! auth()->check())
-//     auth()->login(User::where('email', 'hr@mail.com')->first());
-Route::get('/blade-test', function () {
-    return view('test-page');
+// auth()->logout();
+// session()->clear = null;
+
+if (! auth()->check())
+    auth()->login(User::where('email', 'evaluator-1@mail.com')->first());
+
+Route::get('/pic', function () {
+    return WorkLog::first()->getMedia();
+});
+
+Route::get('/report', function () {
+    $month = 1;
+    $year = 2024;
+    $date_cursor = new Carbon("$year-$month-01");
+
+    $selected_section = StaffSection::inRandomOrder()->first();
+    $worklogs = WorkLog::where([
+        ['started_at', '>=', $date_cursor->toDateString()],
+        ['expected_at', '<=', $date_cursor->addMonth()->subDay()->toDateString()],
+        ['staff_section_id', $selected_section->id]
+    ])
+    ->get();
+
+    return view('pages.reports.index', compact('worklogs'));
 });
 
 Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
@@ -87,9 +109,9 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
 
     // Staff | Evaluators share uses
     Route::controller(WorkLogController::class)->group(function () {
-        Route::get('/logkerja', 'index')->name('workLogs.index');
-        Route::get('/logkerja/rekod-baharu', 'create')->name('workLogs.create');
-        Route::get('/logkerja/{workLog}', 'show')->name('workLogs.show'); // + Edit
+        Route::get('/logkerja', 'index')->name('worklogs.index');
+        Route::get('/logkerja/rekod-baharu', 'create')->name('worklogs.create');
+        Route::get('/logkerja/{workLog}', 'show')->name('worklogs.show'); // + Edit
         // Creates revisions for every rejects, attaches comments if have any
         // Route::put('/logkerja/{workLog}/reject', 'reject');
         // Route::put('/logkerja/{workLog}/submit', 'submit');
@@ -133,6 +155,15 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     //         Route::delete('/users/buang', 'destroy');
     //     });
     // });
+
+    /* -------------------  */
+    /*  Temporary File Management  */
+    /* -------------------  */
+    Route::controller(TemporaryUploadController::class)->group(function () {
+        Route::post('/temporary-uploads', 'process')->name('temporary-uploads.process');
+        Route::delete('/temporary-uploads', 'revert')->name('temporary-uploads.revert');
+        Route::get('/temporary-uploads', 'restore')->name('temporary-uploads.restore');
+    });
 
 });
 

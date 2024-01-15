@@ -11,6 +11,7 @@ use App\Models\WorkScope;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
@@ -19,15 +20,16 @@ use Livewire\WithPagination;
 
 class IndexTable extends Component
 {
-    use WithPagination;
+    // use WithPagination;
 
     public Carbon $selected_month;
     #[Url(as: 'bulan')]
     public string $month_translated;
+    public array $bulk_edits;
 
     public $status_index;
 
-    public $workLog_counts_by_statuses;
+    public $worklog_counts_by_statuses;
     public $worklogs_in_a_month;
 
     #[Url(as: 'carian')]
@@ -86,6 +88,12 @@ class IndexTable extends Component
         $this->worklogs_in_a_month = array();
     }
 
+    public function bulkEditQueue(int $worklog_id, bool $isChecked) {
+        // TODO: Continue working on this
+        Log::info('Queue status: ' . $worklog_id . ' - ' .  $isChecked);
+        $this->bulk_edits[] = ['id' => $worklog_id, 'isChecked' => $isChecked];
+    }
+
     public function render()
     {
         $this->initCounts();
@@ -95,7 +103,10 @@ class IndexTable extends Component
 
         info('Livewire: Rendering');
 
-        $workLogs = auth()->user()->isStaff() ? auth()->user()->workLogs() : WorkLog::select('*');
+        // $worklogs = auth()->user()->isStaff() ? auth()->user()->workLogs() : WorkLog::select('*');
+        $worklogs = WorkLog::query()->when(Auth::user(), function ($q) {
+            $q->where('author_id', Auth::user()->id);
+        });
 
         // Staff? Evaluator?
         // Staff gets only their worklogs
@@ -111,8 +122,8 @@ class IndexTable extends Component
          * - authed user own worklogs
          */
 
-        $workLogs
-        ->join('work_scopes','work_scopes.id', '=', 'work_logs.work_scope_id')
+        $worklogs
+        ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
         ->join('users','users.id', '=', 'work_logs.author_id')
         ->whereYear('work_logs.created_at', $this->selected_month->year)
         ->whereMonth('work_logs.created_at', $this->selected_month->month)
@@ -129,7 +140,7 @@ class IndexTable extends Component
             });
         })
         // Includes relationship to scope the created_at
-        ->with('latestSubmission')
+        // ->with('latestSubmission')
         ->select('work_logs.*', 'users.name', 'work_scopes.title');
 
         // ->select('work_logs.*', 'users.name', 'work_scopes.title');
@@ -144,12 +155,12 @@ class IndexTable extends Component
         //     // $query->orWhere("work_scopes.title like 'asd");
         // });
 
-        // dd($workLogs);
+        // dd($worklogs);
 
 
         return view('livewire.work-logs.index-table', [
-            'workLogs' => $workLogs->paginate(15),
-            'workLog_counts_by_statuses' => $this->workLog_counts_by_statuses,
+            'worklogs' => $worklogs->paginate(50),
+            'worklog_counts_by_statuses' => $this->worklog_counts_by_statuses,
             'status_index' => $this->status_index,
             'selected_month' => $this->selected_month,
         ]);
@@ -157,30 +168,30 @@ class IndexTable extends Component
 
     private function initCounts() {
         // Should also count by month but rn it doesnt work like that
-        $workLog_count_all = WorkLog::select(DB::raw('COUNT(*) AS count'))
+        $worklog_count_all = WorkLog::select(DB::raw('COUNT(*) AS count'))
         ->when($this->selected_month, function (Builder $query) {
                 $query->whereMonth('created_at', $this->selected_month);
         })->when(auth()->user()->isStaff(), function (Builder $query, bool $isStaff) {
                 $query->where('author_id', auth()->user()->id);
         })->first();
 
-        $workLog_count_statuses = WorkLog::select(['status', DB::raw('COUNT(*) AS count')])
+        $worklog_count_statuses = WorkLog::select(['status', DB::raw('COUNT(*) AS count')])
         ->when($this->selected_month, function (Builder $query) {
                 $query->whereMonth('created_at', $this->selected_month);
         })->when(auth()->user()->isStaff(), function (Builder $query, bool $isStaff) {
                 $query->where('author_id', auth()->user()->id);
         })->groupBy('status')->get()->collect();
 
-        $workLog_keyed = $workLog_count_statuses->mapWithKeys(function (WorkLog $item, int $key) {
+        $worklog_keyed = $worklog_count_statuses->mapWithKeys(function (WorkLog $item, int $key) {
             return [$item['status'] => $item['count']];
         });
 
-        $workLog_union = collect([-1 => $workLog_count_all['count']])->union($workLog_keyed);
+        $worklog_union = collect([-1 => $worklog_count_all['count']])->union($worklog_keyed);
 
-        $this->workLog_counts_by_statuses = collect([-1,0,1,2,3,4])->mapWithKeys(fn($index) => [$index => 0]);
+        $this->worklog_counts_by_statuses = collect([-1,0,1,2,3,4])->mapWithKeys(fn($index) => [$index => 0]);
 
-        $workLog_union->each(function(int $count, int $key) {
-            $this->workLog_counts_by_statuses[$key] = $count;
+        $worklog_union->each(function(int $count, int $key) {
+            $this->worklog_counts_by_statuses[$key] = $count;
         });
     }
 }

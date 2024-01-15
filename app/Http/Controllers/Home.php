@@ -24,9 +24,9 @@ class Home extends Controller
             return view('pages.home.evaluator-2');
         }
 
-        $workLogs = array('ongoing' => [], 'with_comments' => []);
+        $worklogs = array('ongoing' => [], 'with_comments' => []);
 
-        $workLogs['ongoing'] = auth()->user()->workLogs()
+        $worklogs['ongoing'] = auth()->user()->worklogs()
         ->select('*')
         // ->selectRaw('TIMEDIFF(expected_at, \''.now()->format('Y-m-d').'\') AS time_left')
         // ->orderBy('time_left', 'desc')
@@ -38,6 +38,6 @@ class Home extends Controller
         // return $workLogs['ongoing'];
         // return now();
         // "2023-09-26T08:39:29.322770Z"
-        return view('pages.home.staff', compact('workLogs'));
+        return view('pages.home.staff');
     }
 }

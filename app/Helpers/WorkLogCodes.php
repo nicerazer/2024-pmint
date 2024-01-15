@@ -19,6 +19,17 @@ class WorkLogCodes {
         4 => 'Batal',
     ];
 
+    public static function GETOPTIONS(): array {
+        return [
+            self::ALL => self::TRANSLATION[-1],
+            self::ONGOING => self::TRANSLATION[0],
+            self::SUBMITTED => self::TRANSLATION[1],
+            self::TOREVISE => self::TRANSLATION[2],
+            self::COMPLETED => self::TRANSLATION[3],
+            self::CLOSED => self::TRANSLATION[4],
+        ];
+    }
+
     // public static function getTranslation() {
     //     return self::TRANSLATE;
     // }

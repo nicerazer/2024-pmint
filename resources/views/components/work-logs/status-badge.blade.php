@@ -18,19 +18,19 @@
     {{-- @if ($worklog->status == WorkLogHelper::ONGOING)
         <span class="badge badge-ghost badge-sm">{{ (new Carbon($worklog->expected_at))->diffForHumans() }}</span> --}}
     @if ($worklog->status == WorkLogHelper::ONGOING)
-        <span class="text-white badge badge-info badge-sm">Sedang Berjalan</span>
+        <span class="text-white badge badge-info badge-sm">Dalam Tindakan</span>
         {{-- Case where to submitted --}}
     @elseif ($worklog->status == WorkLogHelper::SUBMITTED)
-        <span class="badge badge-accent badge-sm">Submitted
+        <span class="badge badge-accent badge-sm">Telah Hantar
             {{ (new Carbon($worklog->expected_at))->diffForHumans() }}</span>
         {{-- Case where to revise --}}
     @elseif ($worklog->status == WorkLogHelper::TOREVISE)
-        <span class="badge badge-warning badge-sm">To revise</span>
+        <span class="badge badge-warning badge-sm">Ditolak</span>
         {{-- Case where to revise --}}
     @elseif ($worklog->status == WorkLogHelper::COMPLETED)
-        <span class="text-white badge badge-success badge-sm">Completed</span>
+        <span class="text-white badge badge-success badge-sm">Selesai</span>
     @elseif ($worklog->status == WorkLogHelper::CLOSED)
-        <span class="badge badge-neutral badge-sm">Closed</span>
+        <span class="badge badge-neutral badge-sm">Batal</span>
     @else
         <span class="badge badge-ghost badge-sm">error!</span>
     @endif

@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staff_units', function (Blueprint $table) {
+        Schema::create('work_units', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->foreignIdFor(StaffSection::class);
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('staff_units');
+        Schema::dropIfExists('work_units');
     }
 };

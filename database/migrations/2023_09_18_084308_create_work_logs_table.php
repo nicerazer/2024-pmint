@@ -2,6 +2,7 @@
 
 use App\Helpers\WorkLogHelper;
 use App\Models\Reject;
+use App\Models\StaffSection;
 use App\Models\SubmissionReject;
 use App\Models\User;
 use App\Models\WorkScope;
@@ -37,9 +38,9 @@ return new class extends Migration
             // Images
 
             $table->foreignIdFor(User::class, 'author_id');
-            $table->foreignIdFor(WorkScope::class)->nullable(); // Alternative fields
-            $table->string('custom_workscope_title')->nullable(); // Alternative fields
-            $table->boolean('is_workscope_custom'); // Alternative fields
+            $table->foreignIdFor(StaffSection::class)->nullable(); // Fallback field
+            $table->foreignIdFor(WorkScope::class)->nullable(); // Main field
+            $table->string('custom_workscope_title')->nullable(); // Alternative field
 
             $table->timestamps();
             $table->softDeletes();

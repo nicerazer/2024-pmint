@@ -18,21 +18,20 @@ class WorkLogSeeder extends Seeder
      */
     public function run(): void
     {
-        $workScopes = WorkScope::all();
+        $workScopes = WorkScope::first();
 
         $admin = User::where('name', 'admin')->first();
         $staff = User::where('name', 'staff')->first();
 
-        $generations = [];
-        $dateGenerate = now();
-        // for($i = 0; $i < 10; ++$i) {
-        //     array_push($generations, array('created_at' => $dateGenerate->subMonth(), 'updated_at' => $dateGenerate->subMonth()));
-        // }
         $reject_count = 3;
-        WorkLog::factory(3)->for($workScopes[0])->for($admin, 'author')
-        ->has(Submission::factory(3)->rejected())
+        WorkLog::factory(3)->for($workScopes)->for($admin, 'author')
+        ->has(Submission::factory($reject_count)->rejected())
         ->has(Submission::factory()->accepted())
-        // ->has($singleSubmissionWithAccept)
+        ->create();
+
+        WorkLog::factory(3)->for($workScopes)->for($staff, 'author')
+        ->has(Submission::factory($reject_count)->rejected())
+        ->has(Submission::factory()->accepted())
         ->create();
 
         // $singleSubmissionWithoutAccept = Submission::factory()->sequence(fn (Sequence $s) => ['number' => $s->index]);

@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+
 // use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 // use Staudenmeir\EloquentEagerLimit\Relations\HasOne;
 
-class WorkLog extends Model
+class WorkLog extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     // protected $with = ['submissions:number'];
 
@@ -59,9 +61,13 @@ class WorkLog extends Model
     public function setUnarchive(): WorkLog { $this->has_archived = false; return $this; }
 
     public function workScopeTitle (): string {
-        if ($this->is_workscope_custom)
-            return $this->custom_workscope_title;
-        return $this->workScope->title;
+        if ($this->workScope)
+            return $this->workScope->title;
+        return $this->custom_workscope_title ?: 'Skop tidak diset!';
+    }
+
+    public function submitable (): bool {
+        return $this->latestSubmission && $this->latestSubmission->evaluated_at && $this->latestSubmission->is_accept;
     }
 
     public function author(): BelongsTo
@@ -77,7 +83,7 @@ class WorkLog extends Model
     // Submission place starts
 
     public function submissions(): HasMany {
-        return $this->hasMany(Submission::class);
+        return $this->hasMany(Submission::class)->orderByDesc('number');
     }
 
     public function latestSubmission(): HasOne {
@@ -95,24 +101,28 @@ class WorkLog extends Model
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    // protected static function booted(): void
-    // {
-    //     static::creating(function (WorkLog $workLog) {
-    //         // WorkScope from database should be chosen if custom workscope title is not filled
-    //         if (!($workLog->custom_workscope_title == null || !$workLog->workScope))
-    //             return false;
+    protected static function booted(): void
+    {
+        static::creating(function (WorkLog $worklog) {
+            if (
+                // WorkScope from database should be chosen if custom workscope title is not filled
+                (!$worklog->custom_workscope_title && !$worklog->workScope) ||
+                // When using custom title, staff section cannot be null
+                ($worklog->custom_workscope_title && !$worklog->staff_section_id)
+            )
+                return false;
+            if ($worklog->workScope)
+                $worklog->staff_section_id = $worklog->workScope->workUnit->staffSection->id;
+            // if ($worklog->custom_workscope_title) {
+            //     $worklog->staff_section_id = auth()->user()
+            // }
+        });
 
-    //         $workLog->is_workscope_custom = false;
-    //         if ($workLog->custom_workscope_title) {
-    //             $workLog->is_workscope_custom = true;
-    //         }
-    //     });
-
-    //     static::created(function (WorkLog $workLog) {
-    //         $workLog->status = WorkLogHelper::ONGOING;
-    //         $workLog->save();
-    //     });
-    // }
+        // static::created(function (WorkLog $workLog) {
+        //     $workLog->status = WorkLogHelper::ONGOING;
+        //     $workLog->save();
+        // });
+    }
 
     // public function scopeWithWhereHas($query, $relation, $constraint){
     //     return $query->whereHas($relation, $constraint)

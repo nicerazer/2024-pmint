@@ -49,8 +49,9 @@ class WorkLogFactory extends Factory
             'rating' => round(mt_rand(0, 50) / 10 * 2 ) / 2,
 
             'status' => $status,
-            'custom_workscope_title' => fake()->realTextBetween(5, 15),
-            'is_workscope_custom' => true,
+            // 'custom_workscope_title' => fake()->realTextBetween(5, 15),
+            'work_scope_id' => 1,
+            // 'is_workscope_custom' => true,
 
             'description' => fake()->realText($maxNbChars = 100, $indexSize = 2),
 

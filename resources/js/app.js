@@ -8,6 +8,8 @@ import intersect from "@alpinejs/intersect";
 import collapse from "@alpinejs/collapse";
 
 import * as FilePond from "filepond";
+// TODO: Optimize chart.js
+import Chart from "chart.js/auto";
 
 // File pond plugins
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
@@ -21,6 +23,7 @@ import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 
 window.Alpine = Alpine;
 window.FilePond = FilePond;
+window.Chart = Chart;
 
 Alpine.plugin(intersect);
 Alpine.plugin(collapse);

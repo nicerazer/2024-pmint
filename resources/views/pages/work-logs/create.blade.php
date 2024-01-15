@@ -16,7 +16,7 @@
 
         <div class="divider"></div>
 
-        @livewire('work-logs.create-form')
+        @livewire('work-logs.create-worklog')
     </div>
 
 

@@ -33,7 +33,7 @@
         <x-layouts.navbar-main />
     @endif
 
-    <main class="flex w-11/12 py-4 mx-auto">
+    <main class="flex flex-col w-11/12 py-4 mx-auto">
         {{ $slot }}
     </main>
 

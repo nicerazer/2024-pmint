@@ -16,20 +16,54 @@ class WorkScopeSeeder extends Seeder
         WorkScope::upsert([
         [
             'title' => 'Isi Jawatan Baru',
-            'staff_unit_id' => 1,
+            'work_unit_id' => 1,
         ],
         [
             'title' => 'Lantik Jawatan Baru / Penempatan Warga Kerja',
-            'staff_unit_id' => 1,
+            'work_unit_id' => 1,
         ],
         [
             'title' => 'Serah PGT',
-            'staff_unit_id' => 1,
+            'work_unit_id' => 1,
         ],
         [
             'title' => 'Tuntut perbelanjaan kemudahan perubatan / rawatan',
-            'staff_unit_id' => 1,
+            'work_unit_id' => 1,
         ],
-        ], ['title', 'staff_unit_id']);
+        // Second
+        [
+            'title' => 'Urus keperluan latihan dalaman',
+            'work_unit_id' => 2,
+        ],
+        [
+            'title' => 'Urus keperluan latihan luaran',
+            'work_unit_id' => 2,
+        ],
+        [
+            'title' => 'Audit Dalam',
+            'work_unit_id' => 2,
+        ],
+        [
+            'title' => 'Audit Luar',
+            'work_unit_id' => 2,
+        ],
+        [
+            'title' => 'Urus program inovasi kreativiti',
+            'work_unit_id' => 2,
+        ],
+        // Third
+        [
+            'title' => 'Urus penganjuran majlis jabatan',
+            'work_unit_id' => 3,
+        ],
+        [
+            'title' => 'Sedia informasi dan hebahan',
+            'work_unit_id' => 3,
+        ],
+        [
+            'title' => 'Urus aduan biasa, pertanyaan & kompleks pelanggan',
+            'work_unit_id' => 3,
+        ],
+        ], ['title', 'work_unit_id']);
     }
 }

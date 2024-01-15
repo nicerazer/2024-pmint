@@ -17,13 +17,13 @@ class WorkLogCountForAYear {
         // TODO: Limit search to only selected year. Currently this queries lifetime result
         // TODO: Auto select year to current if year searched for is beyond (future)
         $months_and_total_worklogs = WorkLog::join('users', 'work_logs.author_id', '=', 'users.id')
-        ->join('staff_units', 'users.staff_unit_id', '=', 'staff_units.id')
+        ->join('staff_sections', 'users.staff_section_id', '=', 'staff_sections.id')
         ->select(
             DB::raw("DATE_FORMAT(work_logs.started_at, '%M %Y') AS month"),
             DB::raw("COUNT(work_logs.id) as total")
         )
         ->groupBy('month')
-        ->where('staff_units.id', 1)->distinct()->get()->toArray();
+        ->where('staff_sections.id', 1)->distinct()->get()->toArray();
         // Transform into collection and make it into associative array; ['MONTH' => 'TOTAL']
         // Example: ['September 2023' => 5]
         $months_and_total_worklogs = collect($months_and_total_worklogs);

@@ -20,7 +20,6 @@
 
     <x-layouts.navbar-main />
 
-
     @if (request()->route()->getName() == 'home' &&
             auth()->user()->isStaff())
         {{ $header }}

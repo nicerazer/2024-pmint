@@ -50,13 +50,38 @@ class WorkLogController extends Controller
                 'status' => 'error',
             ]);
         }
+        DB::beginTransaction();
 
-        $validated = $request->safe()->all();
+        dd($request);
 
-        DB::transaction(function () use ($validated) {
-            $worklog = WorkLog::create($validated);
-            $worklog->submissionAccept()->create();
-        });
+        $validated = $request->safe()->only([
+            'title', 'image-uploads', 'body'
+        ]);
+
+        $validated->push('author_id', auth()->user()->id);
+
+        $worklog = WorkLog::create($validated);
+
+        $worklog->submission()->create();
+
+        $validated = $request->validate([
+            'image-uploads' => 'array'
+        ]);
+
+        // TODO : is this path or just filename
+        foreach($validated['image-uploads'] as $image) {
+            $worklog->addMedia($image)->toMediaCollection('images');
+        }
+
+        DB::commit();
+
+        // TODO : temporary upload process?
+        // Process temporary uploads
+        // - Check if available
+        // - Iterate process
+        // --- Add to media library object
+        // --- This automatically move file from temporary to actual collection
+
 
         redirect()->route('worklog.index');
     }

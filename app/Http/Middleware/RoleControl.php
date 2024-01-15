@@ -26,7 +26,7 @@ class RoleControl
             if ($availableRoles->contains(UserRoleCodes::STAFF))
                 session(['selected_role_id' => UserRoleCodes::STAFF]);
             else
-                session(['selected_role_id' => $availableRoles->first()]);
+                session(['selected_role_id' => $availableRoles->first()->id]);
         }
 
         return $next($request);

@@ -57,7 +57,7 @@ class User extends Authenticatable implements HasMedia
 
     public function rating(): int
     {
-        return $this->workLogs()->count();
+        return $this->worklogs()->count();
     }
 
     public function worklogs(): HasMany
