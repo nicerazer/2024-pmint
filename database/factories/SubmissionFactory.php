@@ -60,7 +60,7 @@ class SubmissionFactory extends Factory
                 $name = $this->faker->word();
                 $file = new UploadedFile(database_path('seeders/stubs/' . $sampleImage), $name, 'image/jpeg', null, true);
 
-                $submission->addMedia($file)
+                $submission->addMedia(database_path('seeders/stubs/' . $sampleImage))
                     ->preservingOriginal()
                     ->usingName($name)
                     ->usingFileName($name.'.jpg')

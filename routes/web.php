@@ -14,6 +14,7 @@ use App\Http\Controllers\WorkLogImageController;
 use App\Http\Controllers\WorkScopeController;
 use App\Http\Middleware\HRIsPermitted;
 use App\Models\StaffSection;
+use App\Models\Submission;
 use App\Models\User;
 use App\Models\WorkLog;
 use Carbon\Carbon;
@@ -25,11 +26,14 @@ use Illuminate\Support\Facades\Route;
 // auth()->logout();
 // session()->clear = null;
 
-if (! auth()->check())
-    auth()->login(User::where('email', 'evaluator-1@mail.com')->first());
+// if (! auth()->check())
+    auth()->login(User::where('email', 'staff@mail.com')->first());
 
-Route::get('/pic', function () {
-    return WorkLog::first()->getMedia();
+Route::get('/pictest', function () {
+    // return fake()->imageUrl();
+    // return "<img src='" . Submission::first()->getFirstMediaUrl('images') . "' />";
+    // return "<img src='" . database_path('seeders/stubs/photo-1550258987-190a2d41a8ba.jpg') . "' />";
+    // return '<img src="">';
 });
 
 Route::get('/report', function () {

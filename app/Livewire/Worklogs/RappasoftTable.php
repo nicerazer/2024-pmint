@@ -18,10 +18,12 @@ class RappasoftTable extends DataTableComponent
     // protected $model = WorkLog::class;
     public function builder(): Builder
     {
+
+
         return WorkLog::query()
             ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
             ->join('users','users.id', '=', 'work_logs.author_id')
-            // ->where('work_logs.work_scope_id', '1')
+            ->where('work_logs.author_id', auth()->user()->id)
             ->whereYear('work_logs.created_at', '2024')
             ->whereMonth('work_logs.created_at', '1')
             ->select('work_logs.*', 'users.name', 'work_scopes.title');

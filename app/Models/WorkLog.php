@@ -10,14 +10,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\Conversions\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 // use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 // use Staudenmeir\EloquentEagerLimit\Relations\HasOne;
 
-class WorkLog extends Model implements HasMedia
+class WorkLog extends Model
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, SoftDeletes;
 
     // protected $with = ['submissions:number'];
 
@@ -67,7 +70,17 @@ class WorkLog extends Model implements HasMedia
     }
 
     public function submitable (): bool {
-        return $this->latestSubmission && $this->latestSubmission->evaluated_at && $this->latestSubmission->is_accept;
+        return $this->latestSubmission &&
+            (!$this->latestSubmission->evaluated_at ||
+            ($this->latestSubmission->evaluated_at && !$this->latestSubmission->is_accept));
+        // return $this->latestSubmission && $this->latestSubmission->evaluated_at && $this->latestSubmission->is_accept;
+    }
+
+    public function evaluatable (): bool {
+        // TODO: FOR WHAT?? but something is wrong here please take a look dont leave it
+        return $this->latestSubmission &&
+            (!$this->latestSubmission->evaluated_at ||
+            $this->latestSubmission->evaluated_at && $this->latestSubmission->is_accept);
     }
 
     public function author(): BelongsTo

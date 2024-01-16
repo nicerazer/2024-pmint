@@ -18,13 +18,13 @@ return new class extends Migration
             // Related data: documents, worklogs
             $table->foreignIdFor(WorkLog::class, 'work_log_id');
             $table->tinyInteger('number');
-            $table->boolean('is_accept')->default(false);
             $table->text('body')->nullable();
-            $table->timestamp('submitted_at')->nullable();
+            $table->timestamp('submitted_at');
 
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable();
             $table->text('evaluator_comment')->nullable();
             $table->timestamp('evaluated_at')->nullable();
+            $table->boolean('is_accept')->default(false);
 
             $table->unique(['work_log_id', 'number'],'wl_count_index');
 

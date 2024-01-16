@@ -8,13 +8,26 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Log;
+use Spatie\MediaLibrary\Conversions\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
 // use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Submission extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
+
+    protected $guarded = [];
+
+    // public function registerMediaConversions(Media $media = null): void
+    // {
+    //     $this
+    //         ->addMediaConversion('preview')
+    //         ->fit(Manipulations::FIT_CROP, 300, 300)
+    //         ->nonQueued();
+    // }
 
     public function worklog(): BelongsTo {
         return $this->belongsTo(WorkLog::class, 'work_log_id');
@@ -43,9 +56,9 @@ class Submission extends Model implements HasMedia
                 }
                 return false;
             }
-
             $submissionCount = $submission->worklog->submissions()->count();
             $submission->number = $submissionCount + 1;
+            $submission->submitted_at = now();
         });
 
         static::created(function (Submission $submission) {

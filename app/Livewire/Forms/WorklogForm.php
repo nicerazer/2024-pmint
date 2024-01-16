@@ -5,6 +5,7 @@ namespace App\Livewire\Forms;
 use App\Helpers\WorkLogCodes;
 use App\Models\Submission;
 use App\Models\WorkLog;
+use App\Models\WorkScope;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
@@ -49,8 +50,7 @@ class WorklogForm extends Form
             'expected_at' => $this->expected_submitted_at,
             'author_id' => auth()->user()->id,
             'staff_section_id' => $this->activityType == 'main' ?
-                $this->workMain->staff_section_id : auth()->user()->staff_section_id,
-            'is_workscope_custom' => $this->activityType == 'side',
+                WorkScope::find($this->workMain)->id : auth()->user()->staff_section_id,
             'work_scope_id' => $this->activityType == 'main' ? $this->workMain : null,
             'custom_workscope_title' => $this->workAlternative,
         ];
