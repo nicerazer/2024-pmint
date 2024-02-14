@@ -21,6 +21,22 @@ class Submission extends Model implements HasMedia
 
     protected $guarded = [];
 
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->acceptsMimeTypes([
+                'image/jpg', 'image/jpeg', 'image/png', 'image/gif',
+            ]);
+        $this->addMediaCollection('documents')
+            ->acceptsMimeTypes([
+                'text/csv', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'application/rtf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/gzip', 'application/pdf', 'application/vnd.rar', 'application/zip', 'application/x-7z-compressed'
+            ]);
+    }
+
     // public function registerMediaConversions(Media $media = null): void
     // {
     //     $this
@@ -40,33 +56,35 @@ class Submission extends Model implements HasMedia
     protected static function booted(): void
     {
         static::creating(function (Submission $submission) {
-            Log::notice('A new submission is being added');
+            Log::notice('Submission creating: attempt');
             if (
                 // Evaluator 1 must be set when creating submissions
-                !$submission->worklog->author->evaluator1 ||
+                !$submission->worklog->section->evaluator1 ||
                 // 1. When there's one and more submissions (If never made submission can proceed), and
                 // 2. The latest hasn't been evaluated, cancel the submission, throw error
                 $submission->worklog->submissions()->count() > 0 && $submission->worklog->latestSubmission->evaluator == null
             ) {
-                if (!$submission->worklog->author->evaluator1)
-                Log::notice('There is no evaluator assigned');
+                if (!$submission->worklog->section->evaluator1)
+                    Log::error('There is no evaluator assigned');
                 if(!($submission->worklog->submissions()->count() > 0 && $submission->worklog->latestSubmission->evaluator)) {
-                    Log::notice('The latest submission hasn\'t been evaluated yet. Do that first.');
-                    Log::notice($submission->worklog->submissions()->count() > 0 && $submission->worklog->latestSubmission->evaluator == null ? 'yeaaa' : 'noooo');
+                    Log::error('The latest submission hasn\'t been evaluated yet. Do that first.');
                 }
                 return false;
             }
             $submissionCount = $submission->worklog->submissions()->count();
             $submission->number = $submissionCount + 1;
             $submission->submitted_at = now();
+            Log::notice('Submission creating: success');
         });
 
         static::created(function (Submission $submission) {
-            Log::notice('Submission is being created with id of :' . $submission->id );
+            Log::notice('Submission created: attempt - being created with id of :' . $submission->id );
 
             $parentWorkLog = $submission->worklog;
-            $parentWorkLog->status = WorkLogHelper::ONGOING;
+            $parentWorkLog->status = $submission->is_accept ? WorkLogHelper::COMPLETED : WorkLogHelper::TOREVISE;
             $parentWorkLog->save();
+            Log::notice('Submission created: success');
+
         });
     }
 }

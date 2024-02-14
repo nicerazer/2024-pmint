@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Revision;
-use App\Models\Subbb;
 use App\Models\Submission;
 use App\Models\User;
 use App\Models\WorkLog;

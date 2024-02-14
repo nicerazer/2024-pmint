@@ -8,10 +8,14 @@ use App\Models\WorkLog;
 use App\Models\WorkScope;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 use Livewire\Form;
+use Livewire\WithFileUploads;
 
 class WorklogForm extends Form
 {
+    use WithFileUploads;
+
     public $workUnit = "";
     public $activityType = 'main';
     public $workMain;
@@ -21,13 +25,12 @@ class WorklogForm extends Form
     public $started_at;
     public $expected_submitted_at;
     public $submissionNotes = '';
-    public $image_uploads = [];
-    public $document_uploads = [];
+    public $attachments = [];
 
     public function rules()
     {
         return [
-            'workUnit' => 'required|exists:App\Models\WorkUnit,id',
+            'workUnit' => 'required|exists:App\Models\StaffUnit,id',
             'activityType' => 'required|string',
             'workMain' => 'required_if:activityType,|exists:App\Models\WorkScope,id',
             'workAlternative' => 'string',
@@ -36,8 +39,15 @@ class WorklogForm extends Form
             'started_at' => 'required|date',
             'expected_submitted_at' => 'required|date',
             'submissionNotes' => 'string',
-            'image_uploads' => 'array',
-            'document_uploads' => 'array',
+            'attachments' => 'nullable',
+            'attachments.*' => ['nullable', 'max:1000000',
+                File::types([
+                    'image/jpg', 'image/jpeg', 'image/png', 'image/gif',
+                    'text/csv', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/rtf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    'application/gzip', 'application/pdf', 'application/vnd.rar', 'application/zip', 'application/x-7z-compressed'
+                ])],
         ];
     }
 
@@ -66,10 +76,14 @@ class WorklogForm extends Form
                 'submitted_at' => $this->expected_submitted_at,
                 'work_log_id' => $worklog->id
             ]);
-            // Add images and documents into the model's media library
-            foreach($validated['image-uploads'] as $image) {
-                $worklog->addMedia($image)->toMediaCollection('images');
-            }
+
+            collect($this->attachments)->each(function($attachment) use ($worklog) {
+                if (in_array($attachment->getMimeType(), ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'])) {
+                    $worklog->latestSubmission->addMedia($attachment->getRealPath())->toMediaCollection('images');
+                } else {
+                    $worklog->latestSubmission->addMedia($attachment->getRealPath())->toMediaCollection('documents');
+                }
+            });
         }
 
         DB::commit();

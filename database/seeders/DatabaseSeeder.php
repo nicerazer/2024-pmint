@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             StaffSectionSeeder::class,
-            WorkUnitSeeder::class,
+            StaffUnitSeeder::class,
             EvaluatorSeeder::class,
             UserSeeder::class,
             WorkScopeSeeder::class,

@@ -7,8 +7,8 @@ use Livewire\Component;
 class EvaluationForm extends Component
 {
     public $submission;
-    public $evaluator_comment;
-    public $is_accept;
+    public $evaluator_comment = '';
+    public $is_accept = false;
 
     public function save()
     {

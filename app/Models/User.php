@@ -39,6 +39,10 @@ class User extends Authenticatable implements HasMedia
     public function isAnEvaluator():    bool {  return session('selected_role_id') == UserRoleCodes::EVALUATOR_1 || session('selected_role_id') == UserRoleCodes::EVALUATOR_2; }
     public function isStaff():          bool {  return session('selected_role_id') == UserRoleCodes::STAFF; }
 
+    public function currentlyIs($userRoleCode) {
+        return session('selected_role_id') == $userRoleCode;
+    }
+
     /**
      * Get the post's image.
      */
@@ -55,15 +59,38 @@ class User extends Authenticatable implements HasMedia
             ->nonQueued();
     }
 
-    public function rating(): int
-    {
-        return $this->worklogs()->count();
-    }
-
     public function worklogs(): HasMany
     {
         return $this->hasMany(WorkLog::class, 'author_id');
     }
+
+    public function sectionsByRole(): HasMany
+    {
+        if (session('selected_role_id') == UserRoleCodes::EVALUATOR_1)
+            return $this->evaluator1StaffSections();
+        elseif (session('selected_role_id') == UserRoleCodes::EVALUATOR_2)
+            return $this->evaluator2StaffSections();
+    }
+
+    public function evaluator1StaffSections(): HasMany
+    {
+        return $this->hasMany(StaffSection::class, 'evaluator1_id');
+    }
+
+    public function evaluator2StaffSections(): HasMany
+    {
+        return $this->hasMany(StaffSection::class, 'evaluator2_id');
+    }
+
+    // public function evaluator1Staffunits(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(StaffUnit::class, 'evaluator1_staffunit', 'user_id', 'staff_unit_id');
+    // }
+
+    // public function evaluator2Staffunits(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(StaffUnit::class, 'evaluator2_staffunit', 'user_id', 'staff_unit_id');
+    // }
 
     public function unit(): BelongsTo
     {

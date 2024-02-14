@@ -40,49 +40,8 @@
                         <span class="text-xl font-bold">{{ $workLog->workScopeTitle() }}</span>
                         <span class="ml-1 font-light">{{ '# No.' . $workLog->id }}</span>
                     </h5>
-                    <label for="my_modal_7" class="link link-primary" @click="isEditing = true">Kemaskini</label>
-                    <input type="checkbox" id="my_modal_7" class="modal-toggle" />
-                    <!-- Edit Worklog -->
-                    <div class="modal" role="dialog" x-show="isEditing">
-                        <form class="w-11/12 max-w-5xl modal-box" action="/logkerja/{{ $workLog->id }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <h3 class="text-lg font-bold">Kemaskini</h3>
-                            <div class="w-full">
-                                <div class="flex mt-8">
-                                    <div class="w-52">
-                                        <h4 class="w-52">Skop Kerja</h4>
-                                    </div>
-                                    <div class="grow">
-                                        <select class="w-full border-gray-300 select " wire:model="work_scope_id">
-                                            <option disabled selected value="">Pilih kerja</option>
-                                            @foreach (WorkScope::all() as $workScope)
-                                                <option value="{{ $workScope->id }}"
-                                                    @if ($workLog->workscope->id == $workScope->id) selected @endif>
-                                                    {{ $workScope->title }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="flex mt-8">
-                                    <div class="w-52">
-                                        <h4 class="w-52">Nota</h4>
-                                    </div>
-                                    <div class="grow">
-                                        <textarea wire:model="description" placeholder="Keterangan..." class="w-full textarea textarea-bordered" rows="5">{{ $workLog->description }}</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-action">
-                                <label for="my_modal_7" class="btn btn-ghost">Batal</label>
-                                <button class="btn btn-primary">Kemaskini</button>
-                            </div>
-                        </form>
-                        <label class="modal-backdrop" for="my_modal_7">Close</label>
-                    </div> <!-- Edit Worklog -->
                 </div>
-                <x-work-logs.status-badge :$workLog />
+                <x-work-logs.status-badge :row="$workLog" />
                 <p class="mt-3 font-bold text-gray-600">Penjelasan Aktiviti</p>
                 <p class="mt-3">{{ $workLog->description }}</p>
                 <div class="divider divider-vertical"></div>
@@ -90,20 +49,31 @@
                     <span class="text-gray-500">Tarikh mula</span>
                     <span>{{ $workLog->created_at->format('jS M Y') }}</span>
                 </div>
-                <div class="flex justify-between my-5">
-                    <span class="text-gray-500">Jangka Siap</span>
-                    <span>{{ $workLog->expected_at->format('jS M Y') }}</span>
-                </div>
-                <div class="flex justify-between my-5">
-                    <span class="text-gray-500">Tarikh Selesai</span>
-                    <span>{{ $workLog->created_at->format('jS M Y') }}</span>
-                </div>
-                <div class="flex justify-between my-5">
-                    <span class="text-gray-500">Tarikh Terima</span>
-                    <span>{{ $workLog->created_at->format('jS M Y') }}</span>
-                </div>
+                {{-- @if ($workLog->isSubmitted())
+                @endif
+                @if ($workLog->isClosed())
+                @endif --}}
+                @if ($workLog->isOngoing())
+                    <div class="flex justify-between my-5">
+                        <span class="text-gray-500">Jangka Siap</span>
+                        <span>{{ $workLog->expected_at->format('jS M Y') }}</span>
+                    </div>
+                @endif
+                @if ($workLog->isCompleted())
+                    <div class="flex justify-between my-5">
+                        <span class="text-gray-500">Tarikh Selesai</span>
+                        <span>{{ $workLog->created_at->format('jS M Y') }}</span>
+                    </div>
+                @endif
+                @if ($workLog->isToRevise())
+                    <div class="flex justify-between my-5">
+                        <span class="text-gray-500">Tarikh Dikembalikan</span>
+                        <span>{{ $workLog->created_at->format('jS M Y') }}</span>
+                    </div>
+                @endif
                 <div class="divider divider-vertical"></div>
-                @if (auth()->user()->isStaff() && $workLog->submitable())
+                {{-- @if (auth()->user()->isStaff() &&
+    $workLog->submitable())
                     <button class="btn-block btn btn-primary" @click="showSubmissionBox = true">
                         Hantar <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                             class="w-5 h-5">
@@ -112,8 +82,9 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </button>
-                @endif
-                @if (auth()->user()->isEvaluator1() && $workLog->evaluatable())
+                @endif --}}
+                {{-- @if (auth()->user()->isEvaluator1() &&
+    $workLog->evaluatable())
                     <button class="btn-block btn btn-primary" @click="showSubmissionBox = true">
                         Nilai Log Aktiviti <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                             fill="currentColor" class="w-5 h-5">
@@ -122,7 +93,7 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </button>
-                @endif
+                @endif --}}
 
             </div>
         </div>{{-- Left Side : Worklog Summary --}}
@@ -148,17 +119,19 @@
                                 <div class="w-52">
                                     <h4 class="w-52">Skop Kerja</h4>
                                 </div>
-                                <div class="grow">
-                                    <select class="w-full border-gray-300 select " wire:model="work_scope_id">
-                                        <option disabled selected value="">Pilih kerja</option>
-                                        @foreach (WorkScope::all() as $workScope)
-                                            <option value="{{ $workScope->id }}"
-                                                @if ($workLog->workscope->id == $workScope->id) selected @endif>
-                                                {{ $workScope->title }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                @if (false)
+                                    <div class="grow">
+                                        <select class="w-full border-gray-300 select " wire:model="work_scope_id">
+                                            <option disabled selected value="">Pilih kerja</option>
+                                            @foreach (WorkScope::all() as $workScope)
+                                                <option value="{{ $workScope->id }}"
+                                                    @if ($workLog->workscope->id == $workScope->id) selected @endif>
+                                                    {{ $workScope->title }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
                             </div>
                             <div class="flex mt-8">
                                 <div class="w-52">
@@ -183,8 +156,7 @@
                                     <h4 class="w-52">Nota</h4>
                                 </div>
                                 <div class="grow">
-                                    <textarea wire:model="description" placeholder="Keterangan..." class="w-full textarea textarea-bordered"
-                                        rows="5">{{ $workLog->description }}</textarea>
+                                    <textarea wire:model="description" placeholder="Keterangan..." class="w-full textarea textarea-bordered" rows="5">{{ $workLog->description }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -194,37 +166,27 @@
             </div>
 
         </div> <!-- main container -->
-
+        {{--
         @push('scripts')
-            {{-- <script type="module">
-            // Get a reference to the file input element
-            const inputElement = document.querySelector('input[type="file"]');
-
-            // Create a FilePond instance
-            const pond = FilePond.create(inputElement);
-        </script> --}}
-
             <script type="module">
                 // Get a reference to the file input element
-                const imageUploadElement = document.getElementById('file-upload');
-                const documentUploadElement = document.querySelector('#document-upload');
+                const uploadElement = document.getElementById('file-upload');
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
                 const workLogId = {{ $workLog->id }};
 
                 // Create a FilePond instance
-                const pondImages = FilePond.create(imageUploadElement, {
+                const pond = FilePond.create(uploadElement, {
                     allowMultiple: true,
                     server: {
+                        // process:
                         url: `/temporary-uploads`,
                         headers: {
                             'X-CSRF-TOKEN': csrfToken
                         },
                     },
-                    // labelIdle: 'Tarik & Letak <span class="font-bold">gambar</span> atau <span class="filepond--label-action"> Buka Carian </span>',
                     imageValidateSizeMaxWidth: 10000,
                     imageValidateSizeMaxHeight: 10000,
-                    // maxFileSize: 10000000,
                     acceptedFileTypes: [
                         'image/*',
                         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -235,19 +197,15 @@
                     ],
                     imagePreviewMaxHeight: 100
                 });
-
-                // const pondDocuments = FilePond.create(documentUploadElement, {
-                //     server: 'workLogs/1/documents',
-                //     labelIdle: 'Drag & Drop your <span class="font-bold">documents</span> or <span class="filepond--label-action"> Browse </span>',
-                //     maxFileSize: 50000000,
-                //     acceptedFileTypes: [
-                //         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                //         'application/x-7z-compressed', 'application/vnd.rar',
-                //         'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                //         'application/vnd.ms-powerpoint', 'application/pdf', 'application/msword',
-                //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                //     ],
-                // });
+                pond.on('processfile', (error, file) => {
+                    if (error) {
+                        console.log('Processing file issue');
+                        return;
+                    }
+                    $wire.addFile(file.serverId);
+                    console.log('File processed', file);
+                });
             </script>
-        @endpush
+        @endpush --}}
+
 </x-app-layout>

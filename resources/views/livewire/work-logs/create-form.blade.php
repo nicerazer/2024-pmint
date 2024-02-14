@@ -3,7 +3,7 @@
     use App\Models\Workscope;
 @endphp
 
-<form wire:submit="save" class="flex flex-col gap-12" x-data="{ isSubmit: false }">
+<form wire:submit="save" class="flex flex-col gap-4" x-data="{ isSubmit: false }">
 
     <div class="flex gap-8"> <!-- Activity Section -->
         <div class="w-[30rem]">
@@ -19,7 +19,7 @@
         </div>
         <div class="w-full">
             <label class="block mb-3 text-lg font-semibold">Aktiviti</label>
-            @if ($selectedWorkUnit != -1)
+            @if ($selectedUnitId != -1)
 
                 <div class="w-full join" wire:loading.delay.class="hidden" wire:target="switchUnit"
                     x-data="{ activityType: 'main' }">
@@ -59,13 +59,11 @@
     </div> <!-- Activity Section -->
 
     <div> <!-- Description Section -->
-        <label for="" class="block mb-3 text-lg font-semibold">Nota Aktiviti</label>
-        <textarea class="w-full textarea textarea-bordered" placeholder="" rows="5" wire:model="form.workNotes"></textarea>
+        <label for="" class="block mb-1 text-lg font-semibold">Nota Aktiviti</label>
+        <textarea class="w-full textarea textarea-bordered" placeholder="" rows="2" wire:model="form.workNotes"></textarea>
     </div> <!-- Description Section -->
 
-    <div class="divider"></div>
-
-    <div class="flex gap-8"> <!-- Activity and Dates Section -->
+    <div class="flex gap-4"> <!-- Activity and Dates Section -->
         <div class="w-[30rem]">
             <label class="block mb-3 text-lg font-semibold">Status Aktiviti</label>
             <select class="w-full select select-bordered"
@@ -95,8 +93,6 @@
         </div>
     </div> <!-- Activity and Dates Section -->
 
-    <div class="mb-4 divider"></div>
-
     <div x-show="isSubmit">
 
         <div class="mb-3"> <!-- Description Section -->
@@ -106,10 +102,19 @@
         </div> <!-- Description Section -->
         <h2 class="block mb-3 text-lg font-semibold">Sertakan bahan bukti di bawah</h2>
         <div class="flex w-full gap-8" wire:ignore>
-            <div class="w-full grow"><input name="document-uploads[]" type="file" id="document-uploads"
-                    enctype="multipart/form-data" /></div>
-            <div class="w-full grow"><input name="image-uploads[]" type="file" id="image-uploads"
-                    enctype="multipart/form-data" /></div>
+            <x-input.filepond wire:model="form.attachments" multiple allowImagePreview imagePreviewMaxHeight="200"
+                allowFileTypeValidation
+                acceptedFileTypes="[
+                    'image/jpg', 'image/jpeg', 'image/png', 'image/gif',
+                    'text/csv', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/rtf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    'application/gzip', 'application/pdf', 'application/vnd.rar', 'application/zip', 'application/x-7z-compressed'
+                ]"
+                allowFileSizeValidation maxFileSize="100mb" />
+            @error('form.attachments')
+                <p class="text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
     </div>
     @foreach ($errors->all() as $error)

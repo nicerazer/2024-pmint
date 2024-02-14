@@ -17,8 +17,8 @@ class WorkScope extends Model
         return $this->hasMany(WorkLog::class);
     }
 
-    public function workUnit(): BelongsTo
+    public function staffUnit(): BelongsTo
     {
-        return $this->belongsTo(WorkUnit::class);
+        return $this->belongsTo(StaffUnit::class);
     }
 }

@@ -24,6 +24,8 @@ class TemporaryUploadController extends Controller
         /** @var UploadedFile[] $files */
         $files = $request->allFiles();
 
+        Log::info("Temporary Upload: Initiaiting");
+
         if (empty($files)) {
             abort(422, 'No files were uploaded.');
         }
@@ -31,6 +33,8 @@ class TemporaryUploadController extends Controller
         if (count($files) > 1) {
             abort(422, 'Only 1 file can be uploaded at a time.');
         }
+
+        Log::info("Temporary Upload: Files are available...");
 
         // Now that we know there's only one key, we can grab it to get
         // the file from the request.
@@ -45,6 +49,8 @@ class TemporaryUploadController extends Controller
         $file = is_array($request->input($requestKey))
             ? $request->file($requestKey)[0]
             : $request->file($requestKey);
+
+        Log::info("Temporary Upload: Storing...");
 
         // Store the file in a temporary location and return the location
         // for FilePond to use.

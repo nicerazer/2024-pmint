@@ -22,16 +22,16 @@ class UserSeeder extends Seeder
             'name' => 'admin',
             'email' => 'admin@mail.com',
             'email_verified_at' => now(),
-            'staff_section_id' => 1,
+            'staff_unit_id' => 1,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ]);
-        $admin->roles()->attach([UserRoleCodes::ADMIN, UserRoleCodes::STAFF]);
+        $admin->roles()->attach([UserRoleCodes::ADMIN]);
 
         $userStaff = User::create([
             'name' => 'staff',
             'email' => 'staff@mail.com',
-            'staff_section_id' => 1,
+            'staff_unit_id' => 1,
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
@@ -45,13 +45,13 @@ class UserSeeder extends Seeder
         $evaluator1 = Role::find(UserRoleCodes::EVALUATOR_1)->users()->first();
         $evaluator2 = Role::find(UserRoleCodes::EVALUATOR_2)->users()->first();
 
-        $admin->evaluator1_id = $evaluator1->id;
-        $admin->evaluator2_id = $evaluator2->id;
-        $admin->save();
+        // $admin->evaluator1_id = $evaluator1->id;
+        // $admin->evaluator2_id = $evaluator2->id;
+        // $admin->save();
 
-        $userStaff->evaluator1_id = $evaluator1->id;
-        $userStaff->evaluator2_id = $evaluator2->id;
-        $userStaff->save();
+        // $userStaff->evaluator1_id = $evaluator1->id;
+        // $userStaff->evaluator2_id = $evaluator2->id;
+        // $userStaff->save();
 
         // User::factory()->count(50)->create();
     }

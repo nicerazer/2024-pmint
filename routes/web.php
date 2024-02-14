@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\UserRoleCodes;
 use App\Http\Controllers\Home;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffController;
@@ -27,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 // session()->clear = null;
 
 // if (! auth()->check())
-    auth()->login(User::where('email', 'staff@mail.com')->first());
+    // auth()->login(User::where('email', 'evaluator-2@mail.com')->first());
 
 Route::get('/pictest', function () {
     // return fake()->imageUrl();
@@ -50,6 +51,12 @@ Route::get('/report', function () {
     ->get();
 
     return view('pages.reports.index', compact('worklogs'));
+});
+
+Route::get('/organization-treeview', function () {
+    if (auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_1))
+        return view('pages.organization-treeview');
+    return redirect('home');
 });
 
 Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');

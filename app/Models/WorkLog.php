@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Helpers\UserRoleCodes;
+use App\Helpers\WorkLogCodes;
 use App\Helpers\WorkLogHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Spatie\MediaLibrary\Conversions\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -55,13 +60,60 @@ class WorkLog extends Model
     // COMPLETED    3
     // CLOSED       4
 
-    public function setStatusOngoing(): WorkLog { $this->status = WorkLogHelper::ONGOING; return $this; }
-    public function setStatusSubmitted(): WorkLog { $this->status = WorkLogHelper::SUBMITTED; return $this; }
-    public function setStatusToRevise(): WorkLog { $this->status = WorkLogHelper::TOREVISE; return $this; }
-    public function setStatusCompleted(): WorkLog { $this->status = WorkLogHelper::COMPLETED; return $this; }
-    public function setStatusClosed(): WorkLog { $this->status = WorkLogHelper::CLOSED; return $this; }
-    public function setArchive(): WorkLog { $this->has_archived = true; return $this; }
-    public function setUnarchive(): WorkLog { $this->has_archived = false; return $this; }
+    private function setStatusOngoing(): WorkLog { $this->status = WorkLogHelper::ONGOING; return $this; }
+    private function setStatusSubmitted(): WorkLog { $this->status = WorkLogHelper::SUBMITTED; return $this; }
+    private function setStatusToRevise(): WorkLog { $this->status = WorkLogHelper::TOREVISE; return $this; }
+    private function setStatusCompleted(): WorkLog { $this->status = WorkLogHelper::COMPLETED; return $this; }
+    private function setStatusClosed(): WorkLog { $this->status = WorkLogHelper::CLOSED; return $this; }
+    private function setArchive(): WorkLog { $this->has_archived = true; return $this; }
+    private function setUnarchive(): WorkLog { $this->has_archived = false; return $this; }
+
+    public function isOngoing(): bool { return $this->status == WorkLogHelper::ONGOING; }
+    public function isSubmitted(): bool { return $this->status == WorkLogHelper::SUBMITTED; }
+    public function isToRevise(): bool { return $this->status == WorkLogHelper::TOREVISE; }
+    public function isCompleted(): bool { return $this->status == WorkLogHelper::COMPLETED; }
+    public function isClosed(): bool { return $this->status == WorkLogHelper::CLOSED; }
+
+    public static function count($status, $selected_month = NULL): int {
+        // $selected_month = $selected_month ?? now();
+        $selected_month = now()->addMonth();
+        $current_user = auth()->user();
+        return (new static)::when($status != WorkLogCodes::ALL, function (Builder $q) use ($status) {
+            if ($status == WorkLogCodes::NOTYETEVALUATED)  {
+                $q->where('status', WorkLogCodes::ONGOING)
+                ->orWhere('status', WorkLogCodes::SUBMITTED)
+                ->orWhere('status', WorkLogCodes::TOREVISE);
+            } else
+                $q->where('status', $status);
+        })
+        // ->where('started_at', '>', $selected_month->toDateTimeString())
+        ->where(function (Builder $q) use ($selected_month) {
+            $q->where(function (Builder $q) use ($selected_month) {
+                $q->whereNotNull('expected_at')
+                ->whereRaw('YEAR(expected_at) <= ' . $selected_month->format('Y'))
+                ->whereRaw('MONTH(expected_at) <= ' . $selected_month->format('m'));
+                // ->whereYear('expected_at', '2024');
+            })
+            ->orWhere(function (Builder $q) use ($selected_month) {
+                // $q->whereNotNull('latestSubmission_select.evaluated_at')
+                // ->whereRaw('YEAR(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('Y'))
+                // ->whereRaw('MONTH(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('m'));
+
+            //     // $q->whereNotNull('latestSubmission_select')
+            //     // ->where('latestSubmission_select', '>', $selected_month->toDateString());
+            });
+        })
+        ->when($current_user->isStaff(), function (Builder $q) use ($current_user) {
+            return $q->where('author_id', $current_user->id);
+        })
+        ->addSelect([
+            'latestSubmission_select' => Submission::query()
+                ->orderByDesc('number')
+                ->whereColumn('work_logs.id', 'work_log_id')
+                ->take(1)
+        ])
+        ->count();
+    }
 
     public function workScopeTitle (): string {
         if ($this->workScope)
@@ -70,22 +122,44 @@ class WorkLog extends Model
     }
 
     public function submitable (): bool {
-        return $this->latestSubmission &&
-            (!$this->latestSubmission->evaluated_at ||
-            ($this->latestSubmission->evaluated_at && !$this->latestSubmission->is_accept));
+        return
+        !$this->submissions()->count() || (
+            $this->latestSubmission && ($this->latestSubmission->evaluated_at && !$this->latestSubmission->is_accept)
+        );
         // return $this->latestSubmission && $this->latestSubmission->evaluated_at && $this->latestSubmission->is_accept;
     }
 
     public function evaluatable (): bool {
         // TODO: FOR WHAT?? but something is wrong here please take a look dont leave it
-        return $this->latestSubmission &&
-            (!$this->latestSubmission->evaluated_at ||
-            $this->latestSubmission->evaluated_at && $this->latestSubmission->is_accept);
+        return Auth::user()->currentlyIs(UserRoleCodes::EVALUATOR_1) &&
+        $this->latestSubmission && // Makes sure this exists then can check deeper
+        !$this->latestSubmission->evaluated_at
+        ;
+
+        // return $this->latestSubmission &&
+        //     (!$this->latestSubmission->evaluated_at ||
+        //     $this->latestSubmission->evaluated_at && $this->latestSubmission->is_accept);
     }
 
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function moveToReviewed(): bool {
+        // $this->status
+        $this->status = WorkLogCodes::REVIEWED;
+        return true;
+    }
+
+    public function authorName(): string
+    {
+        return $this->author->name;
+    }
+
+    public function section(): BelongsTo
+    {
+        return $this->belongsTo(StaffSection::class, 'staff_section_id');
     }
 
     public function workScope(): BelongsTo
@@ -103,6 +177,12 @@ class WorkLog extends Model
         return $this->hasOne(Submission::class)->orderBy('number', 'desc')->limit(1);
     }
 
+    public function latestSubmissionBody(): string {
+        return $this->latestSubmission ?
+            $this->latestSubmission->body :
+            '⚠️ Tiada penghantaran ⚠️';
+    }
+
     public function isLatestSubmissionEvaluated(): bool {
         return $this->latestSubmission->evaluator != null;
     }
@@ -117,18 +197,22 @@ class WorkLog extends Model
     protected static function booted(): void
     {
         static::creating(function (WorkLog $worklog) {
+            Log::warning('Creating worklog: Attempt');
             if (
                 // WorkScope from database should be chosen if custom workscope title is not filled
                 (!$worklog->custom_workscope_title && !$worklog->workScope) ||
                 // When using custom title, staff section cannot be null
                 ($worklog->custom_workscope_title && !$worklog->staff_section_id)
-            )
+            ) {
+                Log::warning('Either all workscope setting is absoluetly missing, or staff section null when using custom title');
                 return false;
+            }
             if ($worklog->workScope)
-                $worklog->staff_section_id = $worklog->workScope->workUnit->staffSection->id;
+                $worklog->staff_section_id = $worklog->workScope->staffUnit->staffSection->id;
             // if ($worklog->custom_workscope_title) {
             //     $worklog->staff_section_id = auth()->user()
             // }
+            Log::warning('Creating worklog: Success');
         });
 
         // static::created(function (WorkLog $workLog) {

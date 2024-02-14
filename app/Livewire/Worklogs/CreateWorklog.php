@@ -3,20 +3,21 @@
 namespace App\Livewire\WorkLogs;
 
 use App\Livewire\Forms\WorklogForm;
-use App\Models\WorkLog;
+use App\Models\StaffUnit;
 use App\Models\WorkScope;
-use App\Models\WorkUnit;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class CreateWorklog extends Component
 {
+    use WithFileUploads;
     // public $work_scope_id = '';
     // public $description = '';
     // public $expected_at = '';
     // #[Reactive]
-    public $selectedWorkUnit = -1;
+    public $selectedUnitId = -1;
     public WorklogForm $form;
 
     public function save()
@@ -31,14 +32,14 @@ class CreateWorklog extends Component
     {
         Log::info('Selecting unit from dropdown list');
         Log::info($unit_id);
-        $this->selectedWorkUnit = $unit_id;
-        Log::info($this->selectedWorkUnit);
+        $this->selectedUnitId = $unit_id;
+        Log::info($this->selectedUnitId);
     }
 
     public function render()
     {
-        $work_units = WorkUnit::where('staff_section_id', auth()->user()->staff_section_id)->get();
-        $work_scopes = WorkScope::where('work_unit_id', $this->selectedWorkUnit)->get();
+        $work_units = StaffUnit::where('staff_section_id', auth()->user()->unit->staffSection->id)->get();
+        $work_scopes = WorkScope::where('staff_unit_id', $this->selectedUnitId)->get();
         return view('livewire.work-logs.create-form', compact('work_units', 'work_scopes'));
     }
 }

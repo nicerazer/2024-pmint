@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\WorkUnit;
+use App\Models\StaffUnit;
 use Illuminate\Database\Seeder;
 
-class WorkUnitSeeder extends Seeder
+class StaffUnitSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,7 +18,7 @@ class WorkUnitSeeder extends Seeder
             'Perhubungan Korporat',
         ];
 
-        WorkUnit::upsert([
+        StaffUnit::upsert([
             ['name' => 'Perkhidmatan', 'staff_section_id' => 1],
             ['name' => 'Latihan & Kualiti', 'staff_section_id' => 1],
             ['name' => 'Perhubungan Korporat', 'staff_section_id' => 1],

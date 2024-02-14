@@ -1,6 +1,6 @@
 <nav class="px-8 py-5 navbar bg-primary">
     <div class="navbar-start">
-        <a class="text-xl text-white normal-case btn btn-ghost">PEMINT - Log Kerja</a>
+        <a class="text-xl text-white normal-case btn btn-ghost">PMINT - Sistem Log Aktiviti</a>
         <div class="ml-12 text-white">
             <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Halaman Utama</a>
             {{-- @if (auth()->user()->isStaff() ||
@@ -11,11 +11,11 @@
             {{-- @endif --}}
         </div>
     </div>
-    <div class="navbar-center">
+    {{-- <div class="navbar-center">
         <div class="form-control">
             <input type="text" placeholder="Search" class="text-black input input-bordered w-80 input-md" />
         </div>
-    </div>
+    </div> --}}
     <div class="navbar-end">
 
         <div class="mr-4 dropdown dropdown-end">

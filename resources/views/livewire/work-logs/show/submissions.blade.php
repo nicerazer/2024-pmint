@@ -8,8 +8,13 @@
             <div class="py-7 card-body">
                 <!-- Submission number and status -->
                 <div class="flex items-center justify-between w-full">
-                    <h1 class="text-xl font-bold text-gray-800">Penghantaran No {{ $loop->remaining + 1 }}
-                    </h1>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Penghantaran No {{ $loop->remaining + 1 }}
+                        </h1>
+                        @if (env('APP_DEBUG'))
+                            <h3 class="text-sm text-gray-800">ID #{{ $submission->id }}</h3>
+                        @endif
+                    </div>
                     @if ($submission->evaluated_at)
                         @if ($submission->is_accept)
                             <span class="flex items-center gap-2 font-bold text-green-600">
@@ -23,7 +28,7 @@
                             </span>
                         @else
                             <span class="flex items-center gap-2 font-bold">
-                                DITOLAK
+                                DIKEMBALIKAN
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                     class="w-5 h-5">
                                     <path fill-rule="evenodd"
@@ -57,14 +62,15 @@
                         </h2>
                         <p>{{ $submission->evaluator_comment }}</p>
                     </div> <!-- Submission evaluation notes -->
-                    <h3 class="font-bold @if ($submission->evaluated_at && $submission->is_accept) text-green-900 @endif">
-                        Nota Penghantaran
-                    </h3>
-                    <p class="@if ($submission->evaluated_at && $submission->is_accept) text-green-800 @endif">
-                        {{ $submission->body ?: 'Tiada Nota' }}
-                    </p>
-                    <div class="mb-1 divider"></div>
                 @endif
+
+                <h3 class="font-bold @if ($submission->evaluated_at && $submission->is_accept) text-green-900 @endif">
+                    Nota Penghantaran
+                </h3>
+                <p class="@if ($submission->evaluated_at && $submission->is_accept) text-green-800 @endif">
+                    {{ $submission->body ?: 'Tiada Nota' }}
+                </p>
+                <div class="mb-1 divider"></div>
                 <livewire:work-logs.show.images :$submission />
                 <div x-data="{ expanded: false }"> <!-- Dokumen -->
                     <div class="flex items-center justify-between gap-4 mb-3" @click="expanded = ! expanded">

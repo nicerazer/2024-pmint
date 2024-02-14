@@ -21,6 +21,7 @@ import FilePondPluginFileRename from "filepond-plugin-file-rename";
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 
+// window.Livewire = Livewire;
 window.Alpine = Alpine;
 window.FilePond = FilePond;
 window.Chart = Chart;

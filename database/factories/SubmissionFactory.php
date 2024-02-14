@@ -28,9 +28,10 @@ class SubmissionFactory extends Factory
             return [
                 'evaluator_comment' => 'Kerja ada problem sikit. Kena baiki ya',
                 'evaluated_at' => now(),
+                'is_accept' => false,
             ];
        })->afterMaking(function (Submission $submission) {
-            $submission->evaluator_id = $submission->worklog->author->evaluator1_id;
+            $submission->evaluator_id = $submission->worklog->section->evaluator1_id;
        });
     }
 
@@ -39,9 +40,10 @@ class SubmissionFactory extends Factory
             return [
                 'evaluator_comment' => fake()->realTextBetween(10, 30),
                 'evaluated_at' => now(),
+                'is_accept' => true,
             ];
        })->afterMaking(function (Submission $submission) {
-            $submission->evaluator_id = $submission->worklog->author->evaluator1_id;
+            $submission->evaluator_id = $submission->worklog->section->evaluator1_id;
        });
     }
 

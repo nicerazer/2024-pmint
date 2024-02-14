@@ -18,11 +18,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->foreignIdFor(StaffSection::class);
+            $table->foreignIdFor(StaffUnit::class);
             // $table->foreignIdFor(StaffUnit::class)->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->foreignIdFor(User::class, 'evaluator1_id')->nullable();
-            $table->foreignIdFor(User::class, 'evaluator2_id')->nullable();
+            // $table->foreignIdFor(User::class, 'evaluator1_id')->nullable();
+            // $table->foreignIdFor(User::class, 'evaluator2_id')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->softDeletes();

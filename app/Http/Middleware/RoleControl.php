@@ -17,12 +17,20 @@ class RoleControl
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ( Auth::user()->roles()->count() == 0) {
+        if (Auth::user()->roles()->count() == 0) {
             return redirect()->route('your-role-is-empty');
         }
 
+        $availableRoles = Auth::user()->roles;
+        // Checks if selected role is invalid / doesnt exist from the user
+        if (!$availableRoles->contains(
+            session('selected_role_id')
+        ))  {
+            session(['selected_role_id' => $availableRoles->first()->id]);
+        }
+
+
         if (!session()->has('selected_role_id')) {
-            $availableRoles = Auth::user()->roles;
             if ($availableRoles->contains(UserRoleCodes::STAFF))
                 session(['selected_role_id' => UserRoleCodes::STAFF]);
             else
