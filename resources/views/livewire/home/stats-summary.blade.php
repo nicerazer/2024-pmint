@@ -15,8 +15,7 @@
                 </svg>
             </div>
             <div class="stat-title">Belum Disahkan (Penilai 1)</div>
-            <div class="stat-value">{{ WorkLog::indexQuery(now())->count(WorkLogCodes::NOTYETEVALUATED) }}</div>
-            {{-- <div class="stat-desc">Jan 1st - Feb 1st</div> --}}
+            <div class="stat-value">??</div>
         </div>
 
         <div class="stat">
@@ -28,8 +27,8 @@
                 </svg>
             </div>
             <div class="stat-title">Boleh Sah</div>
-            <div class="stat-value">{{ WorkLog::indexQuery(now())->count(WorkLogCodes::COMPLETED) }}</div>
-            {{-- <div class="stat-desc">Jan 1st - Feb 1st</div> --}}
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::NOTYETEVALUATED] }}
+            </div>
         </div>
 
         <div class="stat">
@@ -41,8 +40,7 @@
                 </svg>
             </div>
             <div class="stat-title">Telah Disahkan (Penilai 2)</div>
-            <div class="stat-value">{{ WorkLog::indexQuery(now())->count(WorkLogCodes::REVIEWED) }}</div>
-            {{-- <div class="stat-desc">Jan 1st - Feb 1st</div> --}}
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::REVIEWED] }}</div>
         </div>
     @else
         <div class="stat">
@@ -54,8 +52,7 @@
                 </svg>
             </div>
             <div class="stat-title">Berjalan</div>
-            <div class="stat-value">{{ WorkLog::indexQuery(now())->count(WorkLogCodes::ONGOING) }}</div>
-            {{-- <div class="stat-desc">Jan 1st - Feb 1st</div> --}}
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::ONGOING] }}</div>
         </div>
 
         <div class="stat">
@@ -68,8 +65,7 @@
                 </svg>
             </div>
             <div class="stat-title">Untuk Penilaian</div>
-            <div class="stat-value">{{ WorkLog::indexQuery(now())->count(WorkLogCodes::SUBMITTED) }}</div>
-            {{-- <div class="stat-desc">↗︎ 400 (22%)</div> --}}
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::TOREVISE] }}</div>
         </div>
 
         <div class="stat">
@@ -82,8 +78,7 @@
                 </svg>
             </div>
             <div class="stat-title">Dikembalikan</div>
-            <div class="stat-value">{{ WorkLog::indexQuery(now())->count(WorkLogCodes::TOREVISE) }}</div>
-            {{-- <div class="stat-desc">↘︎ 90 (14%)</div> --}}
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::TOREVISE] }}</div>
         </div>
 
         <div class="stat">
@@ -96,7 +91,7 @@
                 </svg>
             </div>
             <div class="stat-title">Selesai</div>
-            <div class="stat-value">{{ WorkLog::indexQuery(now())->count(WorkLogCodes::COMPLETED) }}</div>
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::COMPLETED] }}</div>
         </div>
     @endif
 </div>

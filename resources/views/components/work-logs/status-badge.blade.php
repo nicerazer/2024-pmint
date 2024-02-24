@@ -37,9 +37,12 @@
         {{-- Case where to revise --}}
     @elseif ($row->status == WorkLogCodes::COMPLETED)
         <span
-            class="text-white badge badge-success badge-sm">{{ WorkLogCodes::TRANSLATION[WorkLogCodes::COMPLETED] }}</span>
+            class="text-white badge badge-primary badge-sm">{{ WorkLogCodes::TRANSLATION[WorkLogCodes::COMPLETED] }}</span>
     @elseif ($row->status == WorkLogCodes::CLOSED)
         <span class="badge badge-neutral badge-sm">{{ WorkLogCodes::TRANSLATION[WorkLogCodes::CLOSED] }}</span>
+    @elseif ($row->status == WorkLogCodes::REVIEWED)
+        <span
+            class="text-white badge badge-success badge-sm">{{ WorkLogCodes::TRANSLATION[WorkLogCodes::REVIEWED] }}</span>
     @else
         <span class="badge badge-ghost badge-sm">error!</span>
     @endif

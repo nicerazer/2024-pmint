@@ -3,7 +3,7 @@
 @endphp
 
 <div class="flex items-center justify-end gap-2 mb-2">
-    <livewire:work-logs.filters.month :$selected_month :$worklog_count_by_month />
+    <livewire:work-logs.filters.month :$selected_month />
     @if (auth()->user()->currentlyIs(UserRoleCodes::STAFF))
         <x-work-logs.create-button />
     @endif

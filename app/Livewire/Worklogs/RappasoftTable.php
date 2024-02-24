@@ -31,7 +31,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class RappasoftTable extends DataTableComponent
 {
     public Carbon $selected_month;
-    public $worklog_count_by_month;
+    // public $worklog_count_by_month;
 
     #[Renderless]
     #[On('update_month')]
@@ -63,7 +63,7 @@ class RappasoftTable extends DataTableComponent
             'before-toolbar' => [
                 'components.work-logs.toolbar-right-start', [
                     'selected_month' => $this->selected_month,
-                    'worklog_count_by_month' => $this->worklog_count_by_month,
+                    // 'worklog_count_by_month' => $this->worklog_count_by_month,
                 ]
             ],
         ]);
