@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\WorkLog;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -179,54 +180,69 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
 });
 
 Route::get('/that-query', function () {
-    // OUTDATEDDDDD CHECK APP\HELPERS\WORKLOGCOUNTFORAYEAR
-    $months_and_total_worklogs = WorkLog::join('users', 'work_logs.author_id', '=', 'users.id')
-    ->join('staff_units', 'users.staff_unit_id', '=', 'staff_units.id')
-    ->select(
-        DB::raw("DATE_FORMAT(work_logs.started_at, '%M %Y') AS month"),
-        DB::raw("COUNT(work_logs.id) as total")
-    )
-    ->groupBy('month')
-    ->where('staff_units.id', 1)->distinct()->get()->toArray();
-    // Transform into collection and make it into associative array; ['MONTH' => 'TOTAL']
-    // Example: ['September 2023' => 5]
-    $months_and_total_worklogs = collect($months_and_total_worklogs);
-    $months_and_total_worklogs = $months_and_total_worklogs->mapWithKeys(function (array $item, int $key) {
-        return [$item['month'] => $item['total']];
-    });
 
-    // Year to be prepared to generate months
-    $searchYear = now()->subMonths(11)->format('Y');
-    // Check if search year same as the current year
-    $isCurrentYear = now()->format('Y') == $searchYear;
+    // return '';
 
-    // Track month to be iterated to prepare for the generated month
-    $trackMonth = now()->setTime(0,0,0,0)->setDay(1);
-    // If the current year is NOT the same as the search year (past years), generate for the whole year
-    // If it's the same year, generate only up until current month (if right now is april, generate the list until april)
-    if (! $isCurrentYear) $trackMonth->setMonth(12);
+    $datehere = new Carbon('2024-02-18');
+    $latestSubmissions = Submission::select(DB::raw('work_log_id AS wl_id_fk'))
+        ->orderBy('number', 'desc')
+        ->limit(1);
 
-    $infiniteMonths = collect();
-    Log::info('Starting year: '.$trackMonth->year);
+    $something = WorkLog::leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
+    // ->leftJoin('submissions','work_logs.id', '=', 'submissions.work_log_id')
+    ->join('users','users.id', '=', 'work_logs.author_id')
+    ->with(['latestSubmission'])
+    ->whereNotNull('wl_id_fk')
+    // ->select(DB::raw('work_logs.id AS work_log_id'))
+    ->joinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
+        $join->on('work_logs.id', '=', 'wl_id_fk');
+    })
+    ->get();
 
-    while ($trackMonth->year == $searchYear) {
-        // Get total worklog from database for the created array
-        $total_worklog_cursor =
-            isset($months_and_total_worklogs[$trackMonth->format('F Y')])
-                ? $months_and_total_worklogs[$trackMonth->format('F Y')] : 0;
+    return $something;
 
-        $infiniteMonths->push([
-            'month' => $trackMonth->format('F Y'),
-            'total' => $total_worklog_cursor,
-        ]);
+    $var = WorkLog::query()
+        ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
+        ->leftJoin('submissions','work_logs.id', '=', 'submissions.work_log_id')
+        ->join('users','users.id', '=', 'work_logs.author_id')
+        ->where('work_logs.author_id', [
+            UserRoleCodes::EVALUATOR_1 => '!=',
+            UserRoleCodes::EVALUATOR_2 => '!=',
+            UserRoleCodes::STAFF => '=',
+        ][session('selected_role_id')],
+            auth()->user()->id)
+        // ->when(auth()->user()->isEvaluator2(), function(Builder $q) {
+        //     // $q->where('')
+        // })
+        // ->where()
+        //         return $this->hasOne(Submission::class)->orderBy('number', 'desc')->limit(1);
+        // ->whereYear('work_logs.created_at', $datehere->copy()->addMonth()->format('Y'))
+        ->where(function (Builder $q) use ($datehere) {
+            $q->where(function (Builder $q) use ($datehere) {
+                $q->whereNotNull('work_logs.created_at')
+                ->whereRaw('YEAR(work_logs.created_at) <= ' . $datehere->format('Y'))
+                ->whereRaw('MONTH(work_logs.created_at) <= ' . $datehere->format('m'));
+                // ->whereYear('expected_at', '2024');
+            })->where(function (Builder $q) use ($datehere) {
+                $q->where(function (Builder $q) use ($datehere) {
+                    $q->whereNotNull('work_logs.expected_at')
+                    ->whereRaw('YEAR(work_logs.expected_at) >= ' . $datehere->format('Y'))
+                    ->whereRaw('MONTH(work_logs.expected_at) >= ' . $datehere->format('m'));
+                })
+                ->orWhere(function (Builder $q) use ($datehere) {
+                    $q->whereNotNull('submissions.submitted_at')
+                    ->whereRaw('YEAR(submissions.submitted_at) >= ' . $datehere->format('Y'))
+                    ->whereRaw('MONTH(submissions.submitted_at) >= ' . $datehere->format('m'));
+                });
+            });
+        })
+        ->orderBy('submissions.number')
+        ->select('work_logs.id', 'users.name', 'work_scopes.title', DB::raw('submissions.id AS submissions_id'), 'submissions.number', 'submissions.submitted_at')
+        // ->select('work_logs.*', 'users.name', 'work_scopes.title')
+        // ->groupBy('work_logs.id')
+        ->get();
 
-        Log::info('Before sub: '.$trackMonth);
-        $trackMonth->subMonth();
-        Log::info('After sub: '.$trackMonth);
-    }
-
-    // dd($trackMonth->year);
-    dd($infiniteMonths);
+    dd($var);
 
     return '';
 });

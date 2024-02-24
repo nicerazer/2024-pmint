@@ -1,6 +1,6 @@
 <div>
-    <button class="btn btn-ghost btn-sm" type="button" onclick="select_month_modal.showModal()">
-        {{ $this->selected_month->format('Y F') }}
+    <button class="btn btn-ghost btn-sm" type="button" @click="$refs.select_month_modal.showModal()">
+        {{ $this->selected_date->format('Y F') }}
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
             class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -8,13 +8,13 @@
         </svg>
 
     </button>
-    <dialog id="select_month_modal" class="modal">
+    <dialog class="modal" x-ref="select_month_modal">
         <div class="modal-box">
             <div class="flex justify-between w-full">
                 <div class="mb-3">
                     <h3 class="flex items-end gap-3 mb-2 text-2xl font-bold">Tahun
                         <span class="inline-flex items-center self-end gap-1">
-                            <button type="button" @click="$wire.subYear(); select_month_modal.close();"
+                            <button type="button" @click="$wire.subYear(); $refs.select_month_modal.close();"
                                 class="btn btn-xs btn-ghost">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                     class="w-5 h-5">
@@ -23,8 +23,8 @@
                                         clip-rule="evenodd" />
                                 </svg>
                             </button>
-                            {{ $this->selected_month->format('Y') }}
-                            <button type="button" @click="$wire.addYear(); select_month_modal.close();"
+                            {{ $this->selected_date->format('Y') }}
+                            <button type="button" @click="$wire.addYear(); $refs.select_month_modal.close();"
                                 class="btn btn-xs btn-ghost">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                     class="w-5 h-5">
@@ -59,15 +59,15 @@
                         <tr class="cursor-pointer hover" x-id="['monthPicker']">
                             <th class="p-0">
                                 <button :id="$id('monthPicker')" type="button" class="w-full px-2 py-1 text-start"
-                                    @click="$wire.setMonth('{{ $item['month'] }}'); select_month_modal.close();">{{ $item['month'] }}</button>
+                                    @click="$wire.setMonth('{{ $item['month'] }}'); $refs.select_month_modal.close();">{{ $item['month'] }}</button>
                             </th>
                             <td class="p-0">
                                 <button :id="$id('monthPicker')" type="button" class="w-full px-2 py-1 text-start"
-                                    @click="$wire.setMonth('{{ $item['month'] }}'); select_month_modal.close();">{{ $item['total'] }}</button>
+                                    @click="$wire.setMonth('{{ $item['month'] }}'); $refs.select_month_modal.close();">{{ $item['total'] }}</button>
                             </td>
                             <td class="p-0">
                                 <button :id="$id('monthPicker')" type="button" class="w-full px-2 py-1 text-start"
-                                    @click="$wire.setMonth('{{ $item['month'] }}'); select_month_modal.close();">
+                                    @click="$wire.setMonth('{{ $item['month'] }}'); $refs.select_month_modal.close();">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                         class="w-5 h-5">
                                         <path fill-rule="evenodd"

@@ -10,34 +10,42 @@ use App\Models\Submission;
 use App\Models\WorkLog;
 use App\Models\WorkScope;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Renderless;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Columns\DateColumn;
+use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
+use Rappasoft\LaravelLivewireTables\Views\Filters\LivewireComponentFilter;
 use Rappasoft\LaravelLivewireTables\Views\Filters\MultiSelectDropdownFilter;
 use Rappasoft\LaravelLivewireTables\Views\Filters\MultiSelectFilter;
 use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RappasoftTable extends DataTableComponent
 {
     public Carbon $selected_month;
     public $worklog_count_by_month;
 
+    #[Renderless]
     #[On('update_month')]
     public function updateMonth($month) {
-        Log::info('Intercepted from parent');
-        Log::info($month);
+        Log::debug('Intercepted from parent');
+        Log::debug($month);
         $this->selected_month = new Carbon($month);
+        $this->dispatch('refreshDatatable');
+        Log::debug($this->selected_month);
     }
 
     function __construct()
     {
         $this->selected_month = now();
-        $_month = $this->selected_month->copy();
-        // $this->worklog_count_by_month = WorkLogCountForAYear::make($_month);
     }
 
     #[On('evaluator2Evaluate')]
@@ -50,7 +58,7 @@ class RappasoftTable extends DataTableComponent
 
     public function configure(): void
     {
-        // $this->setDebugEnabled();
+        $this->setDebugEnabled();
         $this->setConfigurableAreas([
             'before-toolbar' => [
                 'components.work-logs.toolbar-right-start', [
@@ -78,44 +86,57 @@ class RappasoftTable extends DataTableComponent
     // protected $model = WorkLog::class;
     public function builder(): Builder
     {
+        // $this->selected_month = new Carbon('2024-03-18');
+
+        // $latestSubmissions = Submission::select(
+        //     DB::raw('submissions.work_log_id AS wl_id_fk'),
+        //     DB::raw('submissions.is_accept AS submissions_is_accept'),
+        //     DB::raw('submissions.evaluated_at AS submissions_evaluated_at'),
+        //     DB::raw('submissions.submitted_at AS submissions_submitted_at'))
+        //     ->orderBy('number', 'desc')
+        //     ->limit(1);
         // AUTHOR
-        return WorkLog::query()
-            ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
-            ->join('users','users.id', '=', 'work_logs.author_id')
-            // ->with(['latestSubmission'])
-            // ->join('staff_sections', 'staff_sections.id', '=', 'work_logs.staff_section_id')
-            ->where('work_logs.author_id',
-            [
-                UserRoleCodes::EVALUATOR_1 => '!=',
-                UserRoleCodes::EVALUATOR_2 => '!=',
-                UserRoleCodes::STAFF => '=',
-            ][session('selected_role_id')],
-             auth()->user()->id)
-            // ->when(auth()->user()->isEvaluator2(), function(Builder $q) {
-            //     // $q->where('')
-            // })
-            // ->where()
-            //         return $this->hasOne(Submission::class)->orderBy('number', 'desc')->limit(1);
-            // ->whereYear('work_logs.created_at', $this->selected_month->copy()->addMonth()->format('Y'))
-            ->where(function (Builder $q) {
-                $q->where(function (Builder $q) {
-                    $q->whereNotNull('work_logs.created_at')
-                    ->whereRaw('YEAR(work_logs.created_at) >= ' . $this->selected_month->format('Y'))
-                    ->whereRaw('MONTH(work_logs.created_at) >= ' . $this->selected_month->format('m'));
-                    // ->whereYear('expected_at', '2024');
-                });
-            })
-            // ->whereMonth('work_logs.created_at', $this->selected_month->copy()->addMonth()->format('m'))
-            ->addSelect([
-                'latestSubmission_select' => Submission::query()
-                    ->orderByDesc('number')
-                    ->where('work_logs.id', 'work_log_id')
-                    ->take(1)
-            ])
-            ->select('work_logs.*', 'users.name', 'work_scopes.title');
-            // ->with() // Eager load anything
-            // ->join() // Join some tables
-            // ->select(); // Select some things
+        return WorkLog::indexQuery($this->selected_month);
+        // return WorkLog::query()
+        //     ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
+        //     // ->leftJoin('submissions','work_logs.id', '=', 'submissions.wor_log_id')
+        //     ->join('users','users.id', '=', 'work_logs.author_id')
+        //     ->where('work_logs.author_id', [
+        //             UserRoleCodes::EVALUATOR_1 => '!=',
+        //             UserRoleCodes::EVALUATOR_2 => '!=',
+        //             UserRoleCodes::STAFF => '=',
+        //         ][session('selected_role_id')],
+        //         auth()->user()->id)
+        //     ->where(function (Builder $q) {
+        //         $q->whereNotNull('work_logs.started_at')
+        //         ->whereRaw('YEAR(work_logs.started_at) <= ' . $this->selected_month->format('Y'))
+        //         ->whereRaw('MONTH(work_logs.started_at) <= ' . $this->selected_month->format('m'));
+        //     })
+        //     ->where(function (Builder $q) {
+        //         $q->where(function (Builder $q) {
+        //             $q->whereNotNull('work_logs.expected_at')
+        //             ->whereRaw('YEAR(work_logs.expected_at) >= ' . $this->selected_month->format('Y'))
+        //             ->whereRaw('MONTH(work_logs.expected_at) >= ' . $this->selected_month->format('m'));
+        //         })
+        //         ->orWhere(function (Builder $q) {
+        //             $q->whereNotNull('submissions_submitted_at')
+        //             ->whereRaw('YEAR(submissions_submitted_at) >= ' . $this->selected_month->format('Y'))
+        //             ->whereRaw('MONTH(submissions_submitted_at) >= ' . $this->selected_month->format('m'));
+        //         })
+        //         ;
+        //     })
+        //     ->when()
+        //     // Only show submitted submissions
+        //     ->when(session('selected_role_id') == UserRoleCodes::EVALUATOR_2, function (Builder $query) {
+        //             $query->whereNotNull('wl_id_fk')
+        //             ->where('submissions_is_accept', TRUE);
+        //     })
+        //     ->select('work_logs.id', 'users.name', 'work_scopes.title')
+        //     ->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
+        //         $join->on('work_logs.id', '=', 'wl_id_fk');
+        //     })
+        //     ->select('work_logs.*', 'users.name', 'work_scopes.title')
+        //     ;
     }
 
     // public function mount(WorkLog $model, Carbon $selected_month)
@@ -154,12 +175,12 @@ class RappasoftTable extends DataTableComponent
             Column::make('Nota', 'description')
                 ->searchable()
                 ->sortable(),
-            Column::make('Penghantaran Terkini')
-                ->label(
-                    fn($row, Column $column) => $row->latestSubmissionBody()
-                )
-                ->searchable()
-                ->sortable(),
+            // Column::make('Penghantaran Terkini')
+            //     ->label(
+            //         fn($row, Column $column) => $row->latestSubmissionBody()
+            //     )
+            //     ->searchable()
+            //     ->sortable(),
             Column::make('Bahagian', 'section.name'),
             Column::make('Unit', 'workscope.staffUnit.name'),
             DateColumn::make('Tarikh Mula', 'started_at')
@@ -197,7 +218,33 @@ class RappasoftTable extends DataTableComponent
                     ->filter(function(Builder $query, string $value) {
                         $query->where('work_logs.staff_section_id', $value);
                     }):NULL,
-
+            // LivewireComponentFilter::make('My External Filter')
+            //     ->setLivewireComponent('work-logs.filters.month')
+            //     ->filter(function (Builder $builder, string $value) {
+            //         $date = new Carbon($value);
+            //         $builder->where(function (Builder $q) use ($date) {
+            //             $q->whereNotNull('work_logs.created_at')
+            //             ->whereRaw('YEAR(work_logs.created_at) <= ' . $date->format('Y'))
+            //             ->whereRaw('MONTH(work_logs.created_at) <= ' . $date->format('m'));
+            //         })->where(function (Builder $q) use ($date) {
+            //             $q->where(function (Builder $q) use ($date) {
+            //                 $q->whereNotNull('work_logs.expected_at')
+            //                 ->whereRaw('YEAR(work_logs.expected_at) >= ' . $date->format('Y'))
+            //                 ->whereRaw('MONTH(work_logs.expected_at) >= ' . $date->format('m'));
+            //             })
+            //             ->orWhere(function (Builder $q) use ($date) {
+            //                 $q->whereNotNull('submissions.submitted_at')
+            //                 ->whereRaw('YEAR(submissions.submitted_at) >= ' . $date->format('Y'))
+            //                 ->whereRaw('MONTH(submissions.submitted_at) >= ' . $date->format('m'));
+            //             });
+            //         });
+            //     }),
+            // DateFilter::make('Created At')
+            //     ->config([
+            //         'min' => '2020-01-01',
+            //         'max' => '2023-12-31',
+            //         'pillFormat' => 'd M Y',
+            //     ])->setFilterDefaultValue('2023-08-01'),
             SelectFilter::make('Skop Kerja', 'workScopeTitle')
                 ->options(
                     ['-1' => '💼 Aktiviti Sampingan'] +

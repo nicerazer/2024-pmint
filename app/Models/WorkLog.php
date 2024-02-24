@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\MediaLibrary\Conversions\Manipulations;
 use Spatie\MediaLibrary\HasMedia;
@@ -192,6 +194,57 @@ class WorkLog extends Model
     public function documents(): MorphMany
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    public static function indexQuery($queried_date): \Illuminate\Database\Eloquent\Builder
+    {
+        $latestSubmissions = Submission::select(
+            DB::raw('submissions.work_log_id AS wl_id_fk'),
+            DB::raw('submissions.is_accept AS submissions_is_accept'),
+            DB::raw('submissions.evaluated_at AS submissions_evaluated_at'),
+            DB::raw('submissions.submitted_at AS submissions_submitted_at'))
+            ->orderBy('number', 'desc')
+            ->limit(1);
+
+        return WorkLog::query()
+            ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
+            // ->leftJoin('submissions','work_logs.id', '=', 'submissions.wor_log_id')
+            ->join('users','users.id', '=', 'work_logs.author_id')
+            ->where('work_logs.author_id', [
+                    UserRoleCodes::EVALUATOR_1 => '!=',
+                    UserRoleCodes::EVALUATOR_2 => '!=',
+                    UserRoleCodes::STAFF => '=',
+                ][session('selected_role_id')],
+                auth()->user()->id)
+            ->where(function (Builder $q) use ($queried_date) {
+                $q->whereNotNull('work_logs.started_at')
+                ->whereRaw('YEAR(work_logs.started_at) <= ' . $queried_date->format('Y'))
+                ->whereRaw('MONTH(work_logs.started_at) <= ' . $queried_date->format('m'));
+            })
+            ->where(function (Builder $q) use ($queried_date) {
+                $q->where(function (Builder $q) use ($queried_date) {
+                    $q->whereNotNull('work_logs.expected_at')
+                    ->whereRaw('YEAR(work_logs.expected_at) >= ' . $queried_date->format('Y'))
+                    ->whereRaw('MONTH(work_logs.expected_at) >= ' . $queried_date->format('m'));
+                })
+                ->orWhere(function (Builder $q) use ($queried_date) {
+                    $q->whereNotNull('submissions_submitted_at')
+                    ->whereRaw('YEAR(submissions_submitted_at) >= ' . $queried_date->format('Y'))
+                    ->whereRaw('MONTH(submissions_submitted_at) >= ' . $queried_date->format('m'));
+                })
+                ;
+            })
+            ->when()
+            // Only show submitted submissions
+            ->when(session('selected_role_id') == UserRoleCodes::EVALUATOR_2, function (Builder $query) {
+                    $query->whereNotNull('wl_id_fk')
+                    ->where('submissions_is_accept', TRUE);
+            })
+            ->select('work_logs.id', 'users.name', 'work_scopes.title')
+            ->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
+                $join->on('work_logs.id', '=', 'wl_id_fk');
+            })
+            ->select('work_logs.*', 'users.name', 'work_scopes.title');
     }
 
     protected static function booted(): void
