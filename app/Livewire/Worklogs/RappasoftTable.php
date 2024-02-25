@@ -58,7 +58,7 @@ class RappasoftTable extends DataTableComponent
 
     public function configure(): void
     {
-        $this->setDebugEnabled();
+        // $this->setDebugEnabled();
         $this->setConfigurableAreas([
             'before-toolbar' => [
                 'components.work-logs.toolbar-right-start', [
