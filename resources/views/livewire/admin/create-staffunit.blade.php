@@ -5,7 +5,7 @@
             <div class="label">
                 <span class="label-text">Nama Unit</span>
             </div>
-            <input type="text" placeholder="Isi nama unit" class="w-full input input-bordered" />
+            <input type="text" placeholder="Isi nama unit" class="w-full input input-bordered" wire:model="name" />
             @if (false)
                 <div class="label">
                     <span class="label-text-alt">{{ $errorMessage }}</span>
@@ -16,7 +16,7 @@
             <div class="label">
                 <span class="label-text">Pilih Bahagian</span>
             </div>
-            <select class="w-full select select-bordered">
+            <select class="w-full select select-bordered" wire:model="staff_section_id">
                 <option disabled selected>Pilih Bahagian</option>
                 @foreach (App\Models\StaffSection::all() as $staff_section)
                     <option value="{{ $staff_section->id }}">{{ $staff_section->name }}</option>

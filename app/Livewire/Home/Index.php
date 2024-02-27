@@ -57,7 +57,7 @@ class Index extends Component
             return view('livewire.home.index');
         }
 
-        return view('livewire.home.index');
+        return view('livewire.admin.home');
     }
 
     public function generateStats()

@@ -1,3 +1,8 @@
+@php
+    // $staff_sections = App\Models\StaffSection::where('id', auth()->user()->unit->staffsection->id)->get();
+    $staff_sections = App\Models\StaffSection::all();
+@endphp
+
 <div x-data="{
     staff_section_id: -1,
     staff_unit_id: -1,

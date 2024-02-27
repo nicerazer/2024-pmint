@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StaffUnit extends Model
 {
+    protected $guarded = [];
+
     public function staffSection() : BelongsTo
     {
         return $this->belongsTo(StaffSection::class);

@@ -216,13 +216,14 @@ class WorkLog extends Model
             ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
             // ->leftJoin('submissions','work_logs.id', '=', 'submissions.wor_log_id')
             ->join('users','users.id', '=', 'work_logs.author_id')
-            ->where('work_logs.author_id', [
-                    UserRoleCodes::EVALUATOR_1 => '!=',
-                    UserRoleCodes::EVALUATOR_2 => '!=',
-                    UserRoleCodes::STAFF => '=',
-                ][session('selected_role_id')],
-                auth()->user()->id)
-
+            ->when(!auth()->user()->isAdmin(), function (Builder $q) {
+                $q->where('work_logs.author_id', [
+                        UserRoleCodes::EVALUATOR_1 => '!=',
+                        UserRoleCodes::EVALUATOR_2 => '!=',
+                        UserRoleCodes::STAFF => '=',
+                    ][session('selected_role_id')],
+                    auth()->user()->id);
+            })
             // Date rules START
             ->where(function (Builder $q) use ($queried_date) {
                 $q->whereNotNull('work_logs.started_at')
