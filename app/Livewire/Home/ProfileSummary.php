@@ -2,14 +2,11 @@
 
 namespace App\Livewire\Home;
 
+use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
-class ProfileSummary extends Component {
-
-    public function mount() {}
-
-    public function render()
-    {
-        return view('livewire.home.profile-summary');
-    }
+class ProfileSummary extends Component
+{
+    #[Reactive]
+    public $worklog_count_in_a_month_by_statuses;
 }

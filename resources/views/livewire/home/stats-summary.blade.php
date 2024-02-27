@@ -15,7 +15,7 @@
                 </svg>
             </div>
             <div class="stat-title">Belum Disahkan (Penilai 1)</div>
-            <div class="stat-value">??</div>
+            <div class="stat-value">{{ $worklog_count_in_a_month_by_statuses[WorkLogCodes::SUBMITTED] }}</div>
         </div>
 
         <div class="stat">
@@ -27,7 +27,7 @@
                 </svg>
             </div>
             <div class="stat-title">Boleh Sah</div>
-            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::NOTYETEVALUATED] }}
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::COMPLETED] }}
             </div>
         </div>
 
@@ -64,7 +64,7 @@
                     </path>
                 </svg>
             </div>
-            <div class="stat-title">Untuk Penilaian</div>
+            <div class="stat-title">Sedang Dinilai</div>
             <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::TOREVISE] }}</div>
         </div>
 
@@ -90,8 +90,10 @@
                     </path>
                 </svg>
             </div>
-            <div class="stat-title">Selesai</div>
-            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::COMPLETED] }}</div>
+            <div class="stat-title">Disahkan</div>
+            <div class="stat-value">
+                {{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::COMPLETED] + $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::REVIEWED] }}
+            </div>
         </div>
     @endif
 </div>

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Reactive;
 use Livewire\Attributes\Renderless;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -30,23 +31,26 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RappasoftTable extends DataTableComponent
 {
+    #[Reactive]
     public Carbon $selected_month;
     // public $worklog_count_by_month;
 
     #[Renderless]
     #[On('update_month')]
     public function updateMonth($month) {
-        Log::debug('Intercepted from parent');
-        Log::debug($month);
-        $this->selected_month = new Carbon($month);
+        // Log::debug('Rappasoft : '. $month);
+
+        // Log::debug('Intercepted from parent');
+        // Log::debug($month);
+        // $this->selected_month = new Carbon($month);
         $this->dispatch('refreshDatatable');
-        Log::debug($this->selected_month);
+        // Log::debug($this->selected_month);
     }
 
-    function __construct()
-    {
-        $this->selected_month = now();
-    }
+    // function __construct()
+    // {
+    //     $this->selected_month = now();
+    // }
 
     #[On('evaluator2Evaluate')]
     public function evaluator2Evaluate(): bool {

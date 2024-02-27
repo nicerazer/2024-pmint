@@ -1,9 +1,7 @@
 <?php
 
 use App\Helpers\UserRoleCodes;
-use App\Http\Controllers\Home;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffSectionController;
 use App\Http\Controllers\StaffUnitController;
 use App\Http\Controllers\SwitchRoleController;
@@ -16,14 +14,13 @@ use App\Http\Controllers\WorkScopeController;
 use App\Http\Middleware\HRIsPermitted;
 use App\Models\StaffSection;
 use App\Models\Submission;
-use App\Models\User;
 use App\Models\WorkLog;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Home\Index as HomeIndex;
 
 // auth()->logout();
 // session()->clear = null;
@@ -63,7 +60,7 @@ Route::get('/organization-treeview', function () {
 Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
 
 Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
-    Route::get('/', Home::class)->name('home');
+    Route::get('/', HomeIndex::class)->name('home');
     Route::put('/switch-role/{role}', SwitchRoleController::class)->name('switch-role');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

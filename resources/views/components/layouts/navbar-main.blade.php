@@ -1,10 +1,9 @@
-<nav class="px-8 py-5 navbar bg-primary">
+<nav class="px-16 py-5 navbar bg-primary">
     <div class="navbar-start">
         <a class="text-xl text-white normal-case btn btn-ghost">PMINT - Sistem Log Aktiviti</a>
         <div class="ml-12 text-white">
-            <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Halaman Utama</a>
-            {{-- @if (auth()->user()->isStaff() ||
-    auth()->user()->isAnEvaluator())
+            <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Senarai Log Kerja</a>
+            {{-- @if (auth()->user()->isStaff() || auth()->user()->isAnEvaluator())
                 <a href="/logkerja" wire:navigate class="text-white capitalize btn btn-ghost">Kerja</a>
             @else --}}
             {{-- <a href="/staff-units" wire:navigate class="text-white capitalize btn btn-ghost">Unit</a> --}}
@@ -18,8 +17,8 @@
     </div> --}}
     <div class="navbar-end">
 
-        <div class="mr-4 dropdown dropdown-end">
-            <div tabindex="0" role="button" class="text-white capitalize btn btn-ghost rounded-btn">
+        <div class="mr-8 dropdown dropdown-end">
+            <div tabindex="0" role="button" class="text-white capitalize btn btn-ghost rounded-btn">Mod :
                 {{ App\Models\Role::find(session('selected_role_id'))->title }}</div>
             <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
                 @foreach (auth()->user()->roles as $role)
@@ -33,7 +32,7 @@
             </ul>
         </div>
 
-        <button class="text-white btn btn-ghost btn-circle">
+        <button class="mr-4 text-white btn btn-ghost btn-circle">
             {{-- Notifications --}}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">

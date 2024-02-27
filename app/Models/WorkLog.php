@@ -76,46 +76,52 @@ class WorkLog extends Model
     public function isCompleted(): bool { return $this->status == WorkLogHelper::COMPLETED; }
     public function isClosed(): bool { return $this->status == WorkLogHelper::CLOSED; }
 
-    public static function count($status, $selected_month = NULL): int {
-        // $selected_month = $selected_month ?? now();
-        $selected_month = now()->addMonth();
-        $current_user = auth()->user();
-        return (new static)::when($status != WorkLogCodes::ALL, function (Builder $q) use ($status) {
-            if ($status == WorkLogCodes::NOTYETEVALUATED)  {
-                $q->where('status', WorkLogCodes::ONGOING)
-                ->orWhere('status', WorkLogCodes::SUBMITTED)
-                ->orWhere('status', WorkLogCodes::TOREVISE);
-            } else
-                $q->where('status', $status);
-        })
-        // ->where('started_at', '>', $selected_month->toDateTimeString())
-        ->where(function (Builder $q) use ($selected_month) {
-            $q->where(function (Builder $q) use ($selected_month) {
-                $q->whereNotNull('expected_at')
-                ->whereRaw('YEAR(expected_at) <= ' . $selected_month->format('Y'))
-                ->whereRaw('MONTH(expected_at) <= ' . $selected_month->format('m'));
-                // ->whereYear('expected_at', '2024');
-            })
-            ->orWhere(function (Builder $q) use ($selected_month) {
-                // $q->whereNotNull('latestSubmission_select.evaluated_at')
-                // ->whereRaw('YEAR(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('Y'))
-                // ->whereRaw('MONTH(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('m'));
+    // public static function count($status, $selected_month): int {
+    //     // $selected_month = $selected_month ?? now();
+    //     // $selected_month = now()->addMonth();
+    //     return (new static)::when($status != WorkLogCodes::ALL, function (Builder $q) use ($status) {
+    //         if ($status == WorkLogCodes::NOTYETEVALUATED)  {
+    //             $q->where('status', WorkLogCodes::ONGOING)
+    //             ->orWhere('status', WorkLogCodes::SUBMITTED)
+    //             ->orWhere('status', WorkLogCodes::TOREVISE);
+    //         } else
+    //             $q->where('status', $status);
+    //     })
+    //     // ->where('started_at', '>', $selected_month->toDateTimeString())
+    //     ->where(function (Builder $q) use ($selected_month) {
+    //         $q->where(function (Builder $q) use ($selected_month) {
+    //             $q->whereNotNull('expected_at')
+    //             ->whereRaw('YEAR(expected_at) <= ' . $selected_month->format('Y'))
+    //             ->whereRaw('MONTH(expected_at) <= ' . $selected_month->format('m'));
+    //             // ->whereYear('expected_at', '2024');
+    //         })
+    //         ->orWhere(function (Builder $q) use ($selected_month) {
+    //             // $q->whereNotNull('latestSubmission_select.evaluated_at')
+    //             // ->whereRaw('YEAR(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('Y'))
+    //             // ->whereRaw('MONTH(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('m'));
 
-            //     // $q->whereNotNull('latestSubmission_select')
-            //     // ->where('latestSubmission_select', '>', $selected_month->toDateString());
-            });
-        })
-        ->when($current_user->isStaff(), function (Builder $q) use ($current_user) {
-            return $q->where('author_id', $current_user->id);
-        })
-        ->addSelect([
-            'latestSubmission_select' => Submission::query()
-                ->orderByDesc('number')
-                ->whereColumn('work_logs.id', 'work_log_id')
-                ->take(1)
-        ])
-        ->count();
-    }
+    //         //     // $q->whereNotNull('latestSubmission_select')
+    //         //     // ->where('latestSubmission_select', '>', $selected_month->toDateString());
+    //         });
+    //     })
+    //     ->when(auth()->user()->isStaff(), function (Builder $q) {
+    //         $q->where('author_id', auth()->user()->id);
+    //     })
+    //     ->when(! auth()->user()->isStaff(), function (Builder $q) {
+    //         $q->whereNot('author_id', auth()->user()->id);
+    //     })
+    //     ->when(! auth()->user()->isEvaluator2(), function (Builder $q) {
+    //         $q->whereNotNull('latestSubmission_select')
+    //         ->where('latestSubmission_select', );
+    //     })
+    //     // ->addSelect([
+    //     //     'latestSubmission_select' => Submission::query()
+    //     //         ->orderByDesc('number')
+    //     //         ->whereColumn('work_logs.id', 'work_log_id')
+    //     //         ->take(1)
+    //     // ])
+    //     ->count();
+    // }
 
     public function workScopeTitle (): string {
         if ($this->workScope)
@@ -216,6 +222,8 @@ class WorkLog extends Model
                     UserRoleCodes::STAFF => '=',
                 ][session('selected_role_id')],
                 auth()->user()->id)
+
+            // Date rules START
             ->where(function (Builder $q) use ($queried_date) {
                 $q->whereNotNull('work_logs.started_at')
                 ->whereRaw('YEAR(work_logs.started_at) <= ' . $queried_date->format('Y'))
@@ -231,16 +239,22 @@ class WorkLog extends Model
                     $q->whereNotNull('submissions_submitted_at')
                     ->whereRaw('YEAR(submissions_submitted_at) >= ' . $queried_date->format('Y'))
                     ->whereRaw('MONTH(submissions_submitted_at) >= ' . $queried_date->format('m'));
-                })
-                ;
+                });
             })
-            ->when()
+            // Date rules END
+
+            // Rules Start
+            ->when(auth()->user()->currentlyIs(UserRoleCodes::STAFF), function (Builder $q) {
+                $q->where('author_id', auth()->user()->id);
+            })
+            ->when(! auth()->user()->currentlyIs(UserRoleCodes::STAFF), function (Builder $q) {
+                $q->whereNot('author_id', auth()->user()->id);
+            })
             // Only show submitted submissions
-            ->when(session('selected_role_id') == UserRoleCodes::EVALUATOR_2, function (Builder $query) {
+            ->when(auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_2), function (Builder $query) {
                     $query->whereNotNull('wl_id_fk')
                     ->where('submissions_is_accept', TRUE);
             })
-            ->select('work_logs.id', 'users.name', 'work_scopes.title')
             ->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
                 $join->on('work_logs.id', '=', 'wl_id_fk');
             })

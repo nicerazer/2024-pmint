@@ -2,8 +2,11 @@
 
 namespace App\Helpers;
 
+use App\Models\Submission;
 use App\Models\WorkLog;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -14,6 +17,14 @@ use Illuminate\Support\Facades\Log;
  */
 class WorkLogCountForAYear {
     static public function make(Carbon $year) {
+        $latestSubmissions = Submission::select(
+            DB::raw('submissions.work_log_id AS wl_id_fk'),
+            DB::raw('submissions.is_accept AS submissions_is_accept'),
+            DB::raw('submissions.evaluated_at AS submissions_evaluated_at'),
+            DB::raw('submissions.submitted_at AS submissions_submitted_at'))
+            ->orderBy('number', 'desc')
+            ->limit(1);
+
         // TODO: Limit search to only selected year. Currently this queries lifetime result
         // TODO: Auto select year to current if year searched for is beyond (future)
         $months_and_total_worklogs = WorkLog::join('users', 'work_logs.author_id', '=', 'users.id')
@@ -22,8 +33,25 @@ class WorkLogCountForAYear {
             DB::raw("DATE_FORMAT(work_logs.started_at, '%M %Y') AS month"),
             DB::raw("COUNT(work_logs.id) as total")
         )
+        ->where('staff_units.id', auth()->user()->staff_unit_id)
+        ->when(auth()->user()->currentlyIs(UserRoleCodes::STAFF), function (Builder $q) {
+            $q->where('work_logs.author_id', auth()->user()->id);
+        })
+        ->when(auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_2), function (Builder $q) use ($latestSubmissions) {
+            $q->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
+                $join->on('work_logs.id', '=', 'wl_id_fk');
+            });
+            // $q->join('submissions')
+            // $q->addSelect([
+            //     'latestSubmission_select' => Submission::query()
+            //         ->orderByDesc('number')
+            //         ->whereColumn('work_logs.id', 'work_log_id')
+            //         ->take(1)
+            // ])
+            // ->whereNotNull('latestSubmission_select');
+        })
         ->groupBy('month')
-        ->where('staff_units.id', 1)->distinct()->get()->toArray();
+        ->distinct()->get()->toArray();
         // Transform into collection and make it into associative array; ['MONTH' => 'TOTAL']
         // Example: ['September 2023' => 5]
         $months_and_total_worklogs = collect($months_and_total_worklogs);
@@ -38,7 +66,7 @@ class WorkLogCountForAYear {
         // Year to be prepared to generate months
         $searchYear = $year->copy()->format('Y');
         Log::debug('');
-        Log::debug('==== GENERATING LINKS ==== ');
+        Log::debug('==== WORKLOG COUNTS: GENERATING LINKS ==== ');
         Log::debug('Search year: '. $searchYear);
         // $searchYear = $year->format('Y');
         // Check if search year same as the current year

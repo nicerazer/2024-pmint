@@ -3,7 +3,7 @@
     use App\Helpers\WorkLogCodes;
 @endphp
 
-<section class="w-[20rem]"><!-- Profile Section -->
+<div class="w-[20rem]"><!-- Profile Section -->
     <img src="{{ asset('storage/placeholder-avatars/funEmoji-1702910749853.jpg') }}" alt="Avatar"
         class="w-full mb-8 border rounded-full">
     <div class="mb-4">
@@ -23,7 +23,7 @@
                 </svg>
             </div>
             <div class="stat-title">Semua Log Aktiviti</div>
-            <div class="stat-value">{{ WorkLog::count(WorkLogCodes::ALL) }}</div>
+            <div class="stat-value">{{ $worklog_count_in_a_month_by_statuses[WorkLogCodes::ALL] }}</div>
             {{-- <div class="stat-desc">Jan 1st - Feb 1st</div> --}}
         </div>
         <div class="stat">
@@ -36,9 +36,9 @@
                 </svg>
             </div>
             <div class="stat-title">Log Aktivti Dibatalkan</div>
-            <div class="stat-value">{{ WorkLog::count(WorkLogCodes::CLOSED) }}</div>
+            <div class="stat-value">{{ $worklog_count_in_a_month_by_statuses[WorkLogCodes::CLOSED] }}</div>
         </div>
 
 
     </div>
-</section><!-- Profile Section -->
+</div><!-- Profile Section -->
