@@ -1,6 +1,7 @@
 <nav class="px-16 py-5 navbar bg-primary">
     <div class="navbar-start">
-        <a class="text-xl text-white normal-case btn btn-ghost">PMINT - Sistem Log Aktiviti</a>
+        <a href="/" wire:navigate class="text-lg text-white normal-case btn btn-ghost">PMINT - Sistem Log
+            Aktiviti</a>
         <div class="ml-12 text-white">
             <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Senarai Log Kerja</a>
             {{-- @if (auth()->user()->isStaff() || auth()->user()->isAnEvaluator())
@@ -18,8 +19,11 @@
     <div class="navbar-end">
 
         <div class="mr-8 dropdown dropdown-end">
-            <div tabindex="0" role="button" class="text-white capitalize btn btn-ghost rounded-btn">Mod :
-                {{ App\Models\Role::find(session('selected_role_id'))->title }}</div>
+            <div tabindex="0" role="button" class="text-white capitalize btn btn-ghost rounded-btn">Mod
+                <span class="badge-secondary badge">
+                    {{ App\Models\Role::find(session('selected_role_id'))->title }}
+            </div>
+            </span>
             <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
                 @foreach (auth()->user()->roles as $role)
                     <li>

@@ -1,6 +1,7 @@
 @php
     use App\Helpers\WorkLogCodes;
     use App\Models\Workscope;
+
 @endphp
 
 <form wire:submit="save" class="flex flex-col gap-4" x-data="{ isSubmit: false }">
@@ -8,39 +9,54 @@
     <div class="flex gap-8"> <!-- Activity Section -->
         <div class="w-[30rem]">
             <label class="block mb-3 text-lg font-semibold">Unit</label>
-            <select class="w-full select select-bordered" wire:change="switchUnit($event.target.value)"
-                wire:model="form.workUnit">
-                <option disabled selected value="">Pilih Unit</option>
-                @foreach ($work_units as $work_unit)
-                    <option wire:key="{{ $work_unit->id }}" value="{{ $work_unit->id }}">{{ $work_unit->name }}
-                    </option>
-                @endforeach
-            </select>
+            <div class="form-control">
+                <select class="w-full select select-bordered @error('form.staffUnit') select-error @enderror"
+                    wire:change="switchUnit($event.target.value)" wire:model="form.staffUnit">
+                    <option disabled selected value="">Pilih Unit</option>
+                    @foreach ($staffUnits as $staff_unit)
+                        <option wire:key="{{ $staff_unit->id }}" value="{{ $staff_unit->id }}">{{ $staff_unit->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="label">
+                    @error('form.staffUnit')
+                        <span class="text-error label-text-alt">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
         </div>
         <div class="w-full">
             <label class="block mb-3 text-lg font-semibold">Aktiviti</label>
             @if ($selectedUnitId != -1)
 
-                <div class="w-full join" wire:loading.delay.class="hidden" wire:target="switchUnit"
-                    x-data="{ activityType: 'main' }">
-                    <select class="w-60 select select-bordered join-item" wire:model="form.activityType"
-                        x-on:change="activityType = $event.target.value">
-                        <option disabled>Jenis Aktiviti</option>
-                        <option value="main" selected>Aktiviti Utama</option>
-                        <option value="side">Aktiviti Sampingan</option>
-                    </select>
-                    <select class="w-full rounded-r-full select select-bordered" wire:model="form.workMain"
-                        x-show="activityType == 'main'" required>
-                        <option disabled selected value="">Pilih Aktiviti</option>
-                        @foreach ($work_scopes as $work_scope)
-                            <option wire:key="{{ $work_scope->id }}" value="{{ $work_scope->id }}">
-                                {{ $work_scope->title }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <input type="text" class="w-full rounded-r-full input input-bordered"
-                        x-show="activityType == 'side'" placeholder="Isi aktiviti sampingan"
-                        wire:model="form.workAlternative">
+                <div class="form-control">
+                    <div class="w-full join" wire:loading.delay.class="hidden" wire:target="switchUnit"
+                        x-data="{ activityType: 'main' }">
+                        <select class="w-60 select select-bordered join-item" wire:model="form.activityType"
+                            x-on:change="activityType = $event.target.value">
+                            <option disabled>Jenis Aktiviti</option>
+                            <option value="main" selected>Aktiviti Utama</option>
+                            <option value="side">Aktiviti Sampingan</option>
+                        </select>
+                        <select
+                            class="w-full rounded-r-full select select-bordered @error('form.workMain') select-error @enderror"
+                            wire:model="form.workMain" x-show="activityType == 'main'" required>
+                            <option disabled selected value="">Pilih Aktiviti</option>
+                            @foreach ($work_scopes as $work_scope)
+                                <option wire:key="{{ $work_scope->id }}" value="{{ $work_scope->id }}">
+                                    {{ $work_scope->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <input type="text" class="w-full rounded-r-full input input-bordered"
+                            x-show="activityType == 'side'" placeholder="Isi aktiviti sampingan"
+                            wire:model="form.workAlternative">
+                    </div>
+                    <div class="label">
+                        @error('form.workMain')
+                            <span class="text-error label-text-alt ml-52">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
                 <div class="hidden w-full border border-gray-300 join" wire:loading.remove.delay.class="hidden"
                     wire:target="switchUnit">
@@ -51,7 +67,7 @@
             @else
                 <div class="w-full border border-gray-300 join">
                     <div class="flex items-center justify-center w-full h-12 gap-2 pl-4 bg-gray-200 join-item">
-                        Sila pilih unit
+                        👈 Sila pilih unit
                     </div>
                 </div>
             @endif
@@ -125,7 +141,7 @@
 
 </form>
 
-@push('scripts')
+{{-- @push('scripts')
     <script type="module">
         // Get a reference to the file input element
         const imageUploadElement = document.getElementById('image-uploads');
@@ -179,4 +195,4 @@
         //     ],
         // });
     </script>
-@endpush
+@endpush --}}

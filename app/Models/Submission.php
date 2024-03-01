@@ -79,10 +79,15 @@ class Submission extends Model implements HasMedia
 
         static::created(function (Submission $submission) {
             Log::notice('Submission created: attempt - being created with id of :' . $submission->id );
-
-            $parentWorkLog = $submission->worklog;
-            $parentWorkLog->status = $submission->is_accept ? WorkLogHelper::COMPLETED : WorkLogHelper::TOREVISE;
-            $parentWorkLog->save();
+            if ($submission->number == 1) {
+                $parentWorkLog = $submission->worklog;
+                $parentWorkLog->status = $submission->is_accept ? WorkLogHelper::COMPLETED : WorkLogHelper::SUBMITTED;
+                $parentWorkLog->save();
+            } else {
+                $parentWorkLog = $submission->worklog;
+                $parentWorkLog->status = $submission->is_accept ? WorkLogHelper::COMPLETED : WorkLogHelper::TOREVISE;
+                $parentWorkLog->save();
+            }
             Log::notice('Submission created: success');
 
         });

@@ -25,11 +25,7 @@
         {{-- Case where to submitted --}}
     @elseif ($row->status == WorkLogCodes::SUBMITTED)
         <span class="badge badge-accent badge-sm">
-            @if (auth()->user()->currentlyIs(UserRoleCodes::STAFF))
-                {{ WorkLogCodes::TRANSLATION[WorkLogCodes::SUBMITTED] }}
-            @elseif (auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_1))
-                Dihantar pada {{ (new Carbon($row->expected_at))->diffForHumans() }}
-            @endif
+            {{ WorkLogCodes::GETTRANSLATION(WorkLogCodes::SUBMITTED) }}
         </span>
         {{-- Case where to revise --}}
     @elseif ($row->status == WorkLogCodes::TOREVISE)

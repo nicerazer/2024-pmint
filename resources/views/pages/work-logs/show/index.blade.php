@@ -39,11 +39,16 @@
                     <h5>
                         <span class="text-xl font-bold">{{ $workLog->workScopeTitle() }}</span>
                         <span class="ml-1 font-light">{{ '# No.' . $workLog->id }}</span>
+                        <x-work-logs.status-badge :row="$workLog" />
                     </h5>
+                    <div>
+                        <p class="mb-1 font-bold text-right text-gray-600">Bahagian</p>
+                        <p class="mb-3 text-sm text-right">{{ $workLog->workScope->staffUnit->staffSection->name }}</p>
+                    </div>
                 </div>
-                <x-work-logs.status-badge :row="$workLog" />
-                <p class="mt-3 font-bold text-gray-600">Penjelasan Aktiviti</p>
-                <p class="mt-3">{{ $workLog->description }}</p>
+
+                <p class="mt-3 mb-1 font-bold text-gray-600">📝 Nota Aktiviti</p>
+                <p class="mb-3 text-sm">{{ $workLog->description ? $workLog->description : 'Tiada nota' }}</p>
                 <div class="divider divider-vertical"></div>
                 <div class="flex justify-between my-5">
                     <span class="text-gray-500">Tarikh mula</span>
@@ -72,8 +77,7 @@
                     </div>
                 @endif
                 <div class="divider divider-vertical"></div>
-                {{-- @if (auth()->user()->isStaff() &&
-    $workLog->submitable())
+                {{-- @if (auth()->user()->isStaff() && $workLog->submitable())
                     <button class="btn-block btn btn-primary" @click="showSubmissionBox = true">
                         Hantar <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                             class="w-5 h-5">
@@ -83,8 +87,7 @@
                         </svg>
                     </button>
                 @endif --}}
-                {{-- @if (auth()->user()->isEvaluator1() &&
-    $workLog->evaluatable())
+                {{-- @if (auth()->user()->isEvaluator1() && $workLog->evaluatable())
                     <button class="btn-block btn btn-primary" @click="showSubmissionBox = true">
                         Nilai Log Aktiviti <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                             fill="currentColor" class="w-5 h-5">

@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class CreateStaffunit extends Component
 {
-    #[Validate('required')]
+    // #[Validate('required')]
     public $name = '';
     public $staff_section_id = -1;
 

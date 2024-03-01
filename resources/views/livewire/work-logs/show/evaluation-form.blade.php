@@ -13,6 +13,6 @@
                 <input type="checkbox" checked="checked" class="checkbox checkbox-info" wire:model='is_accept' />
             </label>
         </div>
-        <button class="w-full max-w-xs btn btn-primary">Nilai</button>
+        <button class="w-full max-w-xs btn btn-primary">Disahkan</button>
     </form>
 </div>

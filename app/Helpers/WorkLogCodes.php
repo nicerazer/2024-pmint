@@ -23,6 +23,19 @@ class WorkLogCodes {
         // 5 => 'Disahkan (Penilai 2)',
     ];
 
+    public static function GETTRANSLATION($status): string {
+        return [
+            -1 => 'Semua',
+            0 => 'Dalam Tindakan',
+            1 => auth()->user()->isStaff() ? 'Sedang Dinilai' : 'Untuk Penilaian',
+            2 => 'Kembali',
+            3 => 'Disahkan (Penilai 1)',
+            4 => 'Batal',
+            5 => 'Disahkan (Penilai 2)',
+            // 5 => 'Disahkan (Penilai 2)',
+        ][$status];
+    }
+
     public static function GETOPTIONS(): array {
         return [
             self::ALL => self::TRANSLATION[-1],

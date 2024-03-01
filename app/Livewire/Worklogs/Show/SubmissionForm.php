@@ -4,6 +4,7 @@ namespace App\Livewire\WorkLogs\Show;
 
 use App\Models\Submission;
 use Closure;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\File;
 use Livewire\Attributes\Renderless;
@@ -37,31 +38,33 @@ class SubmissionForm extends Component
             'body' => 'nullable|string',
         ]);
         Log::debug('Submission Form: Validated inputs');
-        // TODO: Check past submissions for evaluation timestamp. Can continue if filled
-        $submission = Submission::create(
-            $this->only(['body']) + ['work_log_id' => $this->worklog->id]
-        );
-        Log::debug('Submission Form: Created submission');
+        DB::transaction(function () {
+            // TODO: Check past submissions for evaluation timestamp. Can continue if filled
+            $submission = Submission::create(
+                $this->only(['body']) + ['work_log_id' => $this->worklog->id]
+            );
+            Log::debug('Submission Form: Created submission');
 
-        $this->imageCount = 0;
-        collect($this->attachments)->each(function($attachment) use ($submission) {
-            if (in_array($attachment->getMimeType(), ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'])) {
-                $submission->addMedia($attachment->getRealPath())->toMediaCollection('images');
-                $this->imageCount++;
-            } else {
-                $submission->addMedia($attachment->getRealPath())->toMediaCollection('documents');
-                $this->docCount++;
-            }
+            $this->imageCount = 0;
+            collect($this->attachments)->each(function($attachment) use ($submission) {
+                if (in_array($attachment->getMimeType(), ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'])) {
+                    $submission->addMedia($attachment->getRealPath())->toMediaCollection('images');
+                    $this->imageCount++;
+                } else {
+                    $submission->addMedia($attachment->getRealPath())->toMediaCollection('documents');
+                    $this->docCount++;
+                }
 
+            });
+
+            Log::debug('Image count: ' . $this->imageCount);
+            Log::debug('Document count: ' . $this->docCount);
+            Log::debug('Submission Form: Uploaded images');
+
+            $this->imageCount = 0;
+            $this->docCount = 0;
+            $submission->refresh();
         });
-
-        Log::debug('Image count: ' . $this->imageCount);
-        Log::debug('Document count: ' . $this->docCount);
-        Log::debug('Submission Form: Uploaded images');
-
-        $this->imageCount = 0;
-        $this->docCount = 0;
-        $submission->refresh();
 
         return redirect(request()->header('Referer'));
     }

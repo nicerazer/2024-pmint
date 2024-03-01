@@ -79,7 +79,7 @@ class RappasoftTable extends DataTableComponent
                 return 'navigate';
             });
         $this->setBulkActions([
-            'doingSomething' => 'Export',
+            'doingSomething' => 'Sahkan Semua',
         ]);
             // ->setComponentWrapperAttributes([
             //     'id' => 'rappasofttable-id',

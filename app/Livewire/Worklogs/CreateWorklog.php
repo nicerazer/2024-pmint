@@ -19,6 +19,8 @@ class CreateWorklog extends Component
     // #[Reactive]
     public $selectedUnitId = -1;
     public WorklogForm $form;
+    public $work_scopes;
+    public $staffUnits = [];
 
     public function save()
     {
@@ -30,16 +32,29 @@ class CreateWorklog extends Component
 
     public function switchUnit($unit_id)
     {
-        Log::info('Selecting unit from dropdown list');
-        Log::info($unit_id);
+        // Log::info('Selecting unit from dropdown list');
+        // Log::info($unit_id);
+        $this->resetValidation(['form.staffUnit']);
         $this->selectedUnitId = $unit_id;
-        Log::info($this->selectedUnitId);
+        $this->work_scopes = WorkScope::where('staff_unit_id', $this->selectedUnitId)->get();
+        Log::debug($this->work_scopes);
+        $this->form->initWorkScope($this->work_scopes);
+        // Log::info($this->selectedUnitId);
     }
+
+    // public function mount(Post $post)
+    // {
+    //     $this->form->initForm($post);
+    // }
 
     public function render()
     {
-        $work_units = StaffUnit::where('staff_section_id', auth()->user()->unit->staffSection->id)->get();
-        $work_scopes = WorkScope::where('staff_unit_id', $this->selectedUnitId)->get();
-        return view('livewire.work-logs.create-form', compact('work_units', 'work_scopes'));
+        $workScopes = WorkScope::query()
+            ->whereColumn('work_scopes.staff_unit_id', 'staff_units.id');
+
+        $this->staffUnits = StaffUnit::where('staff_section_id', auth()->user()->unit->staffSection->id)
+        ->whereExists($workScopes)
+        ->get();
+        return view('livewire.work-logs.create-form');
     }
 }

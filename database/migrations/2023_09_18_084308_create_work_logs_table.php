@@ -38,7 +38,7 @@ return new class extends Migration
             // Images
 
             $table->foreignIdFor(User::class, 'author_id');
-            $table->foreignIdFor(StaffSection::class)->nullable(); // Fallback field
+            $table->foreignIdFor(StaffSection::class); // Fallback field
             $table->foreignIdFor(WorkScope::class)->nullable(); // Main field
             $table->string('custom_workscope_title')->nullable(); // Alternative field
 

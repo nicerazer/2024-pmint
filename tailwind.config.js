@@ -22,7 +22,7 @@ export default {
     },
 
     daisyui: {
-        themes: ["cupcake"],
+        themes: ["emerald"],
     },
 
     plugins: [forms, require("daisyui")],

@@ -10,7 +10,7 @@
         <h2 class="text-lg font-bold capitalize">{{ auth()->user()->name }}</h2>
         <p class="text-lg text-gray-600 capitalize">{{ 'Pengurus Besar Khidmat Sokongan' }}</p>
     </div>
-    <a href="" class="w-full btn btn-ghost">Kemaskini Profil</a>
+    <a href="{{ route('profile.edit') }}" wire:navigate class="w-full btn btn-ghost">Kemaskini Profil</a>
     <div class="divider"></div>
     <div class="w-full bg-white border stats stats-vertical">
 

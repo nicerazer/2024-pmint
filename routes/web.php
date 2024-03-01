@@ -3,7 +3,6 @@
 use App\Helpers\UserRoleCodes;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffSectionController;
-use App\Http\Controllers\StaffUnitController;
 use App\Http\Controllers\SwitchRoleController;
 use App\Http\Controllers\TemporaryUploadController;
 use App\Http\Controllers\UserWithoutRoleController;
@@ -89,14 +88,14 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     });
 
     // HR uses
-    Route::controller(StaffUnitController::class)->middleware([HRIsPermitted::class])->group(function() {
-        Route::get('/bahagian/{staffSection}/unit/cipta', 'create')->name('staff-units.create');
-        Route::get('/bahagian/{staffSection}/unit', 'index')->name('staff-units.index');
-        Route::get('/bahagian/{staffSection}/unit/{staffUnit}', 'show')->name('staff-units.show');
-        Route::post('/bahagian/{staffSection}/unit', 'store')->name('staff-units.store');
-        Route::put('/bahagian/{staffSection}/unit/{staffUnit}', 'update')->name('staff-sections.update');
-       // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
-    });
+    // Route::controller(StaffUnitController::class)->middleware([HRIsPermitted::class])->group(function() {
+    //     Route::get('/bahagian/{staffSection}/unit/cipta', 'create')->name('staff-units.create');
+    //     Route::get('/bahagian/{staffSection}/unit', 'index')->name('staff-units.index');
+    //     Route::get('/bahagian/{staffSection}/unit/{staffUnit}', 'show')->name('staff-units.show');
+    //     Route::post('/bahagian/{staffSection}/unit', 'store')->name('staff-units.store');
+    //     Route::put('/bahagian/{staffSection}/unit/{staffUnit}', 'update')->name('staff-sections.update');
+    //    // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
+    // });
 
     Route::controller(WorkScopeController::class)->middleware([HRIsPermitted::class])->group(function() {
         Route::get('/work-scopes/create', 'create')->name('work-scopes.create');
