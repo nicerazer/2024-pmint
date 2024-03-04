@@ -65,7 +65,7 @@
                 </svg>
             </div>
             <div class="stat-title">Sedang Dinilai</div>
-            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::TOREVISE] }}</div>
+            <div class="stat-value">{{ $this->worklog_count_in_a_month_by_statuses[WorkLogCodes::SUBMITTED] }}</div>
         </div>
 
         <div class="stat">

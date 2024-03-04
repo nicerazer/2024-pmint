@@ -7,6 +7,7 @@ export default {
 
     content: [
         // "./vendor/ramonrietdijk/livewire-tables/resources/**/*.blade.php",
+        "./resources/specialclasses.html",
         "./vendor/rappasoft/laravel-livewire-tables/resources/views/**/*.blade.php",
         "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
         "./storage/framework/views/*.php",
@@ -25,5 +26,6 @@ export default {
         themes: ["emerald"],
     },
 
-    plugins: [forms, require("daisyui")],
+    plugins: [require("daisyui")],
+    // plugins: [forms, require("daisyui")],
 };

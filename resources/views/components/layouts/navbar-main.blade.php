@@ -76,10 +76,12 @@
                         <li><a href="/profile">Profil</a></li>
                         <li><a href="/messages">Mesej</a></li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST">
+                            <a href="{{ route('logout') }}" class="btn-error btn btn-sm !text-start mt-2">Logout</a>
+                            {{-- <button>asdasd</button> --}}
+                            {{-- <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <button class="text-error hover:bg-error hover:text-red-900">Log Keluar</button>
-                            </form>
+                            </form> --}}
                         </li>
                     </ul>
                 </div>

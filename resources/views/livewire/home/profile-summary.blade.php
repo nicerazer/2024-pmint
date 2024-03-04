@@ -4,8 +4,13 @@
 @endphp
 
 <div class="w-[20rem]"><!-- Profile Section -->
-    <img src="{{ asset('storage/placeholder-avatars/funEmoji-1702910749853.jpg') }}" alt="Avatar"
-        class="w-full mb-8 border rounded-full">
+    @if (auth()->user()->getMedia('avatar')->count())
+        <img src="{{ auth()->user()->getFirstMediaUrl('avatar') }}" alt="Avatar"
+            class="w-[16rem] mb-8 border rounded-full bg-white mx-auto">
+    @else
+        <div class="flex items-center justify-center text-center border rounded-full bg-slate-300 w-[16rem] h-[16rem]">
+            Tiada Gambar</div>
+    @endif
     <div class="mb-4">
         <h2 class="text-lg font-bold capitalize">{{ auth()->user()->name }}</h2>
         <p class="text-lg text-gray-600 capitalize">{{ 'Pengurus Besar Khidmat Sokongan' }}</p>

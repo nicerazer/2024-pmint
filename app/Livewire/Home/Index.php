@@ -120,6 +120,8 @@ class Index extends Component
             $res->get(WorkLogCodes::REVIEWED) +
             $res->get(WorkLogCodes::NOTYETEVALUATED);
 
+            // dd($res);
+
         $this->worklog_count_in_a_month_by_statuses = [
             WorkLogCodes::ALL => $all_count,
             WorkLogCodes::ONGOING => $res->get(WorkLogCodes::ONGOING) ?: 0,

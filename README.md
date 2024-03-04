@@ -10,3 +10,16 @@ MariaDB 10.2+
 PostgreSQL 9.3+
 SQLite 3.25+: The limit is ignored on older versions of SQLite. This way, your application tests still work.
 SQL Server 2008+
+
+PHP Extensions
+
+openssl
+php8.2-bcmath
+php8.2-curl
+php8.2-json
+php8.2-mbstring
+php8.2-mysql
+php8.2-tokenizer
+php8.2-xml
+php8.2-zip
+php8.2-gd

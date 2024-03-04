@@ -1,5 +1,5 @@
 <div class="card-body">
-    <h2 class="card-title">Cipta unit</h2>
+    <h2 class="card-title">Tambah Staff</h2>
     <form wire:submit="save">
         <label class="w-full mb-2 form-control">
             <div class="label">

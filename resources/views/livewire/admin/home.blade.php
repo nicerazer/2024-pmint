@@ -1,16 +1,17 @@
 @php
     // $staff_sections = App\Models\StaffSection::where('id', auth()->user()->unit->staffsection->id)->get();
-    $staff_sections = App\Models\StaffSection::all();
+    $staff_sections = App\Models\StaffSection::query()->select('id', 'name')->get();
 @endphp
 
 <div x-data="{
-    staff_section_id: -1,
+    staff_section_id: 1,
     staff_unit_id: -1,
     staff_id: -1,
     activity_id: -1,
     model_context: 'staff_section',
     model_id: 1,
     is_creating: true,
+    staff_sections: {{ Illuminate\Support\Js::from($staff_sections) }}
 }">
     <span x-text="model_context"></span>
     <span x-text="model_id"></span>
@@ -39,7 +40,7 @@
                     model_id = -1;
                     is_creating = true;
                 ">
-                Cipta Staff
+                Tambah Staff
             </button>
             <button class="btn btn-xs btn-primary"
                 @click="
@@ -47,13 +48,13 @@
                     model_id = -1;
                     is_creating = true;
                 ">
-                Cipta Aktiviti
+                Tambah Aktiviti
             </button>
         </div>
         <div class="w-full">
             <div class="text-sm breadcrumbs">
                 <ul>
-                    <li><a>Bahagian ????</a></li>
+                    <li><a>Bahagian&nbsp;<span x-text="staffSections[staff_section_id].name"></span></a></li>
                     <li>Cipta Unit</li>
                 </ul>
             </div>
@@ -230,3 +231,9 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        // let staffSections = {{ Illuminate\Support\Js::from($staff_sections) }};
+    </script>
+@endpush

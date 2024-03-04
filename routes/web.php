@@ -63,8 +63,8 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     Route::put('/switch-role/{role}', SwitchRoleController::class)->name('switch-role');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Route::controller(AvatarImageController::class)->group(function () {
     //     Route::post('/profile/{workLog}/images', 'store')->name('workLogs.images.store');

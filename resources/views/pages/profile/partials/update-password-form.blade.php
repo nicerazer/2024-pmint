@@ -9,21 +9,21 @@
         @csrf
         @method('put')
 
-        <div>
+        <div class="form-control">
             <x-input-label for="current_password" :value="'Password Semasa'" />
             <x-text-input id="current_password" name="current_password" type="password" class="block w-full mt-1"
                 autocomplete="current-password" />
             <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
         </div>
 
-        <div>
+        <div class="form-control">
             <x-input-label for="password" :value="'Kata Laluan Baharu'" />
             <x-text-input id="password" name="password" type="password" class="block w-full mt-1"
                 autocomplete="new-password" />
             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
         </div>
 
-        <div>
+        <div class="form-control">
             <x-input-label for="password_confirmation" :value="'Sahkan Kata Laluan Baharu'" />
             <x-text-input id="password_confirmation" name="password_confirmation" type="password"
                 class="block w-full mt-1" autocomplete="new-password" />

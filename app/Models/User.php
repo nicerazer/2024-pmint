@@ -46,17 +46,25 @@ class User extends Authenticatable implements HasMedia
     /**
      * Get the post's image.
      */
-    public function avatar(): MorphOne
-    {
-        return $this->morphOne(Image::class, 'imageable');
-    }
+    // public function avatar(): MorphOne
+    // {
+    //     return $this->morphOne(Image::class, 'imageable');
+    // }
 
-    public function registerMediaConversions(Media $media = null): void
+    // public function registerMediaConversions(?Media $media = null): void
+    // {
+    //     $this
+    //     ->addMediaConversion('avatar')
+    //         ->width(360)
+    //         ->height(360)
+    //         ->nonQueued();
+    // }
+
+    public function registerMediaCollections(): void
     {
         $this
-            ->addMediaConversion('preview')
-            ->fit(Manipulations::FIT_CROP, 300, 300)
-            ->nonQueued();
+            ->addMediaCollection('avatar')
+            ->singleFile();
     }
 
     public function worklogs(): HasMany

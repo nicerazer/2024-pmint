@@ -23,7 +23,7 @@
                 $wire.removeUpload('{{ $attributes->whereStartsWith('wire:model')->first() }}', filename, load)
             },
         },
-        allowImagePreview: {{ $attributes->has('allowFileTypeValidation') ? 'true' : 'false' }},
+        allowImagePreview: {{ $attributes->has('allowImagePreview') ? 'true' : 'false' }},
         imagePreviewMaxHeight: {{ $attributes->has('imagePreviewMaxHeight') ? $attributes->get('imagePreviewMaxHeight') : '256' }},
         allowFileTypeValidation: {{ $attributes->has('allowFileTypeValidation') ? 'true' : 'false' }},
         acceptedFileTypes: {!! $attributes->get('acceptedFileTypes') ?? 'null' !!},

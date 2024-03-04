@@ -14,7 +14,7 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,900&display=swap" rel="stylesheet" />
     @livewireStyles
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -34,6 +34,14 @@
     @endif
 
     <main class="flex flex-col w-11/12 py-4 mx-auto">
+        @if (session()->has('message'))
+            <div class="mt-24 toast toast-top toast-end" x-data="{ showAlert: true }" x-show="showAlert"
+                x-init="setTimeout(() => showAlert = false, 3000)" x-transition.duration.5000ms>
+                <div class="alert alert-{{ session('status-class') }}">
+                    <span>{{ session('message') }}</span>
+                </div>
+            </div>
+        @endif
         {{ $slot }}
     </main>
 
