@@ -26,7 +26,7 @@ class CreateWorklog extends Component
     {
         $this->form->store();
 
-        return redirect()->route('worklogs.index')
+        return redirect()->route('home')
             ->with('success', 'Log Kerja dicipta.');
     }
 

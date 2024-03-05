@@ -117,7 +117,7 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
 
     // Staff | Evaluators share uses
     Route::controller(WorkLogController::class)->group(function () {
-        Route::get('/logkerja', 'index')->name('worklogs.index');
+        // Route::get('/logkerja', 'index')->name('worklogs.index');
         Route::get('/logkerja/rekod-baharu', 'create')->name('worklogs.create');
         Route::get('/logkerja/{workLog}', 'show')->name('worklogs.show'); // + Edit
         // Creates revisions for every rejects, attaches comments if have any
