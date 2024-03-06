@@ -111,7 +111,7 @@
                     <livewire:work-logs.show.evaluation-form :submission="$workLog->latestSubmission" />
                 @endif
             </div>
-            <livewire:work-logs.show.submissions :$workLog />
+            <livewire:work-logs.show.submissions :$workLog @evaluatedSubmission="$refresh" />
 
             <div class="relative">
                 @unless ($workLog->submitted_at && ($workLog->level_1_accepted_at || $workLog->level_2_accepted_at))

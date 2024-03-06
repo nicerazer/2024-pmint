@@ -27,7 +27,8 @@ class CreateWorklog extends Component
         $this->form->store();
 
         return redirect()->route('home')
-            ->with('success', 'Log Kerja dicipta.');
+            ->with('status-class', 'success')
+            ->with('message', 'Log Kerja dicipta.');
     }
 
     public function switchUnit($unit_id)

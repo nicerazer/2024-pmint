@@ -54,7 +54,7 @@
         <div class="w-full">
             <div class="text-sm breadcrumbs">
                 <ul>
-                    <li><a>Bahagian&nbsp;<span x-text="staffSections[staff_section_id].name"></span></a></li>
+                    <li><a>Bahagian&nbsp;<span x-text="staff_sections[staff_section_id].name"></span></a></li>
                     <li>Cipta Unit</li>
                 </ul>
             </div>

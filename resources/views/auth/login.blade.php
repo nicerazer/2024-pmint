@@ -52,7 +52,6 @@
         {{-- Left Side: Logo and info --}}
         <section class="relative flex items-center justify-center w-full max-h-screen overflow-hidden">
 
-
             {{-- Background overlay top --}}
             <img src="{{ asset('assets/images/bg-toppart.png') }}" alt=""
                 class="absolute top-0 self-center w-full">
@@ -65,48 +64,50 @@
             <div class="z-10 flex items-center w-full gap-4 bg-[#B8E3DB] bg-opacity-75 h-fit py-12 px-20">
                 <img src="{{ asset('assets/images/logo.png') }}" alt="" class="w-36 h-fit">
                 <div>
-                    <h1 class="text-3xl font-black">SISTEM LOG AKTIVITI KERJA</h1>
+                    <h1 class="text-3xl font-black">SISTEM LOG KERJA</h1>
                     <div class="h-2 bg-[#50C0C7] my-3 w-16 rounded"></div>
-                    <h2 class="text-lg font-bold">Perbadanan Memajukan Iktisad</h2>
-                    <h2 class="text-lg">Negeri Terengganu</h2>
+                    <h2 class="text-lg font-bold">PERBADANAN MEMAJUKAN IKTISAD<br>NEGERI TERENGGANU</h2>
                 </div>
             </div>
         </section>
 
         {{-- Right Side: Login form --}}
-        <form method="POST" action="{{ route('login') }}"
-            class="flex flex-col justify-center w-8/12 px-24 bg-gray-100">
-            <h1 class="text-5xl font-black mb-14">Log Masuk</h1>
-            {{-- Login Form --}}
-            <div class="w-full mb-12">
-                @csrf
-                <label class="form-control">
-                    <div class="label">
-                        <span class="label-text">No IC</span>
-                    </div>
-                    <input type="text" placeholder="Isi no ic" class="w-full input input-bordered" name="email"
-                        :value="old('email')" required autofocus autocomplete="email" />
+        <div class="flex flex-col justify-center w-8/12 px-24 bg-gray-100">
+            <form method="POST" action="{{ route('login') }}">
+                <h1 class="text-5xl font-black mb-14">Log Masuk</h1>
+                {{-- Login Form --}}
+                <div class="w-full mb-12">
+                    @csrf
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text">No IC</span>
+                        </div>
+                        <input type="text" placeholder="Isi no ic" class="w-full input input-bordered" name="email"
+                            :value="old('email')" required autofocus autocomplete="email" />
 
-                    <div class="label">
-                        <span class="label-text-alt text-error">IC tidak wujud!</span>
-                    </div>
+                        <div class="label">
+                            <span class="label-text-alt text-error">IC tidak wujud!</span>
+                        </div>
 
-                </label>
-                <label class="form-control">
-                    <div class="label">
-                        <span class="label-text">Kata Laluan</span>
-                    </div>
-                    <input type="password" name="password" placeholder="Isi kata laluan"
-                        class="w-full input input-bordered" required autocomplete="current-password" />
-                    <div class="label">
-                        <span class="label-text-alt text-error">Kata laluan tidak betul</span>
-                    </div>
-                </label>
-            </div>
-            {{-- Forget password --}}
-            {{-- <a href="#" class="mb-12 link-hover link-neutral link">Lupa kata laluan?</a> --}}
-            <button type="submit" class="btn btn-primary btn-block">Log Masuk</button>
-        </form>
+                    </label>
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text">Kata Laluan</span>
+                        </div>
+                        <input type="password" name="password" placeholder="Isi kata laluan"
+                            class="w-full input input-bordered" required autocomplete="current-password" />
+                        <div class="label">
+                            <span class="label-text-alt text-error">Kata laluan tidak betul</span>
+                        </div>
+                    </label>
+                </div>
+                {{-- Forget password --}}
+                {{-- <a href="#" class="mb-12 link-hover link-neutral link">Lupa kata laluan?</a> --}}
+                <button type="submit" class="btn btn-primary btn-block">Log Masuk</button>
+            </form>
+            <div class="mx-auto mt-16">@ UiTM Cawangan Terengganu</div>
+        </div>
+
     </div>
 
 
