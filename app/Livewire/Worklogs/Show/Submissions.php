@@ -2,16 +2,33 @@
 
 namespace App\Livewire\WorkLogs\Show;
 
+use App\Models\Submission;
+use App\Models\WorkLog;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Submissions extends Component
 {
     public $workLog;
+    public $submissions;
 
     public function render()
     {
-        return view('livewire.work-logs.show.submissions', [
-            'worklog' => $this->workLog
-        ]);
+        $this->submissions = Submission::where('work_log_id', $this->workLog->id)->get();
+        return view('livewire.work-logs.show.submissions');
     }
+
+    #[On('refresh-submissions')]
+    public function refreshComponent()
+    {
+        $this->dispatch('$refresh');
+
+        // $this->submissions = Submission::where('work_log_id', $this->workLog->id)->get();
+    }
+
+    // #[On('refresh-submissions')]
+    // public function refreshComponent()
+    // {
+    //     $this->dispatch('$refresh');
+    // }
 }

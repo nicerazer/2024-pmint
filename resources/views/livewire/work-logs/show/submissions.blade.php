@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-8">
-    @foreach ($workLog->submissions as $submission)
+    @foreach ($submissions as $submission)
         <div
             class="shadow-lg card
             @if ($submission->evaluated_at && $submission->is_accept) bg-[#e4ffe5]

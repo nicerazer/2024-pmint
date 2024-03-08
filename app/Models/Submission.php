@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\WorkLogCodes;
 use App\Helpers\WorkLogHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -91,5 +92,13 @@ class Submission extends Model implements HasMedia
             Log::notice('Submission created: success');
 
         });
+
+        static::updating(function (Submission $submission) {
+            if ($submission->evaluated_at) {
+                $submission->workLog->status = $submission->is_accept ? WorkLogCodes::COMPLETED : WorkLogCodes::TOREVISE;
+                $submission->workLog->save();
+            }
+        });
+
     }
 }
