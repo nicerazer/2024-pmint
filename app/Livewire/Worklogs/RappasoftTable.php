@@ -83,7 +83,7 @@ class RappasoftTable extends DataTableComponent
                 return 'navigate';
             });
         $this->setBulkActions([
-            'doingSomething' => 'Sahkan Semua',
+            'acceptSubmissions' => 'Sahkan',
         ]);
             // ->setComponentWrapperAttributes([
             //     'id' => 'rappasofttable-id',
@@ -147,16 +147,57 @@ class RappasoftTable extends DataTableComponent
         //     ;
     }
 
-    // public function mount(WorkLog $model, Carbon $selected_month)
-    // {
-    //     $this->selected_month = $selected_month;
-    //     $this->model = $model;
-    // }
+    public function acceptSubmissions() {
+        // $latestSubmissions = Submission::select(
+        //     DB::raw('submissions.work_log_id AS wl_id_fk'),
+        //     DB::raw('submissions.is_accept AS submissions_is_accept'),
+        //     DB::raw('submissions.evaluated_at AS submissions_evaluated_at'),
+        //     DB::raw('submissions.submitted_at AS submissions_submitted_at'))
+        // ->orderBy('number', 'desc')
+        // ->limit(1);
 
-    public function doingSomething() {
-        Log::info('Doing something...');
-        foreach($this->getSelected() as $item) {
-        }
+        // $updateCount = WorkLog::query()
+        // ->whereIn('id', $this->getSelected())
+        // ->where('status', WorkLogCodes::ONGOING)
+        // ->whereNull('submissions_evaluated_at')
+        // ->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
+        //     $join->on('work_logs.id', '=', 'wl_id_fk');
+        // })
+        $updateCount = 0;
+        DB::transaction(function () use ($updateCount) {
+            // Filtering for only without evaluations yet
+            $submissionQuery = Submission::query()
+            ->whereIn('work_log_id', $this->getSelected())
+            ->whereNull('evaluated_at');
+
+            // Get the worklog ids associated first THE ORDER IS IMPORTANT
+            $worklogIds = $submissionQuery->clone()->get()->pluck('work_log_id')->toArray();
+            Log::info('acceptSubmissions: $worklogIds');
+            Log::info($worklogIds);
+
+            Log::info('acceptSubmissions: Updating submissions');
+            $submissionUpdateCount = $submissionQuery->clone()
+            ->update([
+                'evaluator_id' => auth()->user()->id,
+                'evaluated_at' => now(),
+                'is_accept' => true,
+                'evaluator_comment' => 'Log aktiviti disahkan secara pukal.',
+            ]);
+
+            Log::info("acceptSubmissions: Updated {$submissionUpdateCount}");
+
+            Log::info('acceptSubmissions: Updating worklogs');
+
+            $worklogUpdateCount = WorkLog::whereIn('id', $worklogIds)
+            ->update([
+                'status' => WorkLogCodes::COMPLETED
+            ]);
+            Log::info("acceptSubmissions: Updated {$worklogUpdateCount}");
+        });
+
+        session()->flash('alert-type', 'success');
+        session()->flash('message', $updateCount . ' log aktiviti disahkan secara pukal');
+
         $this->clearSelected();
     }
 

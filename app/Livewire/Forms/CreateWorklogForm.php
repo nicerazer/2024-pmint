@@ -15,7 +15,7 @@ use Illuminate\Validation\Rules\File;
 use Livewire\Form;
 use Livewire\WithFileUploads;
 
-class WorklogForm extends Form
+class CreateWorklogForm extends Form
 {
     use WithFileUploads;
 
@@ -36,7 +36,6 @@ class WorklogForm extends Form
         return [
             'staffUnit.required' => 'Unit perlu dipilih',
             'staffUnit.exists' => 'Unit tidak wujud dalam sistem',
-            'content.min' => 'The :attribute is too short.',
         ];
     }
 

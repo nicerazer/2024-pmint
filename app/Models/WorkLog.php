@@ -283,10 +283,16 @@ class WorkLog extends Model
             Log::warning('Creating worklog: Success');
         });
 
-        // static::created(function (WorkLog $workLog) {
-        //     $workLog->status = WorkLogHelper::ONGOING;
-        //     $workLog->save();
-        // });
+        static::updating(function (WorkLog $workLog) {
+            // $workLog->latestSubmission()->evaluator_id = auth()->user()->id;
+
+            // if ($workLog->latestSubmission()->evaluated_at) {
+            //     if ($workLog->latestSubmission()->is_accept)
+            //         $workLog->status = false;
+            //     else
+            //         $workLog->status = false;
+            // }
+        });
     }
 
     // public function scopeWithWhereHas($query, $relation, $constraint){

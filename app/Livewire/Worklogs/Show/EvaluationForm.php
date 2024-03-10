@@ -21,7 +21,7 @@ class EvaluationForm extends Component
         $this->submission->update(
             $this->only(['evaluator_comment']) +
             ['evaluated_at' => now(),
-            'evaluator_id' => auth()->user()->id,
+            // 'evaluator_id' => auth()->user()->id,
             'is_accept' => $this->is_accept == 'yes']
         );
         $this->dispatch('refresh-submissions');

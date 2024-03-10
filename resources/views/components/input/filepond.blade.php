@@ -4,6 +4,7 @@
         {{-- $refs.submitButton.disabled = true; --}}
         if (error) {
             console.log('Oh no');
+            console.log(file);
             return;
         }
     });

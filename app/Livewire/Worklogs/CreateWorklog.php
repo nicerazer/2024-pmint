@@ -2,7 +2,7 @@
 
 namespace App\Livewire\WorkLogs;
 
-use App\Livewire\Forms\WorklogForm;
+use App\Livewire\Forms\CreateWorklogForm;
 use App\Models\StaffUnit;
 use App\Models\WorkScope;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +18,7 @@ class CreateWorklog extends Component
     // public $expected_at = '';
     // #[Reactive]
     public $selectedUnitId = -1;
-    public WorklogForm $form;
+    public CreateWorklogForm $form;
     public $work_scopes;
     public $staffUnits = [];
 

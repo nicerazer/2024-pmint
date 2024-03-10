@@ -94,7 +94,11 @@ class Submission extends Model implements HasMedia
         });
 
         static::updating(function (Submission $submission) {
+            Log::info('Model: submission');
+            Log::info('Listener: updating');
             if ($submission->evaluated_at) {
+                $submission->evaluator_id = auth()->user()->id;
+                Log::info('Position: there is evaluated_at');
                 $submission->workLog->status = $submission->is_accept ? WorkLogCodes::COMPLETED : WorkLogCodes::TOREVISE;
                 $submission->workLog->save();
             }

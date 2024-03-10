@@ -27,7 +27,7 @@ class SubmissionForm extends Component
         Log::debug('Submission Form: Saving initiated');
         $this->validate([
             'attachments' => 'nullable',
-            'attachments.*' => ['nullable', 'max:10',
+            'attachments.*' => ['nullable', 'max:1000000',
                 File::types([
                     'image/jpg', 'image/jpeg', 'image/png', 'image/gif',
                     'text/csv', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -61,12 +61,13 @@ class SubmissionForm extends Component
             Log::debug('Document count: ' . $this->docCount);
             Log::debug('Submission Form: Uploaded images');
 
-            $this->imageCount = 0;
-            $this->docCount = 0;
-            $submission->refresh();
+            // $this->imageCount = 0;
+            // $this->docCount = 0;
+            // $submission->refresh();
         });
+        $this->dispatch('refresh-submissions');
 
-        return redirect(request()->header('Referer'));
+        // return redirect(request()->header('Referer'));
     }
 
     public function render()
