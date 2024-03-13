@@ -13,7 +13,7 @@
                     <span class="label-text">Tukar kepada</span>
                 </div>
                 <input type="text" placeholder="Isi tajuk aktiviti" class="w-full input input-bordered"
-                    wire:model="workscope_title" :value="{{ $workscope_title }}" />
+                    wire:model="title" value="{{ $workscope->title }}" />
                 @error('title')
                     <div class="label">
                         <span class="label-text-alt text-error">{{ $message }}</span>

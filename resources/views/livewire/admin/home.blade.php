@@ -137,9 +137,10 @@
                                                         @foreach ($staff_unit->staffs as $staff)
                                                             <li
                                                                 @click="
-                                                                model_context = 'staff'
-                                                                model_id = {{ $staff->id }}
-                                                                is_creating = false
+                                                                model_context = 'staff';
+                                                                model_id = {{ $staff->id }};
+                                                                is_creating = false;
+                                                                $wire.set('model_id', {{ $staff->id }});
                                                             ">
                                                                 <span>
 
@@ -232,6 +233,12 @@
         " x-cloak
             class="w-full bg-white border card h-fit">
             <livewire:admin.edit-workscope :$model_id />
+        </div>
+        <div x-show="
+            model_context == 'staff' && !is_creating
+        " x-cloak
+            class="w-full bg-white border card h-fit">
+            <livewire:admin.edit-staff :$model_id />
         </div>
     </div>
 
