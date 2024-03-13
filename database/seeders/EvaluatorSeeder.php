@@ -17,6 +17,7 @@ class EvaluatorSeeder extends Seeder
     {
         $evaluator1 = User::create([
             'name' => 'evaluator-1',
+            'ic' => 'evaluator-1-ic',
             'email' => 'evaluator-1@mail.com',
             'email_verified_at' => now(),
             'staff_unit_id' => 1,
@@ -28,6 +29,7 @@ class EvaluatorSeeder extends Seeder
 
         $evaluator2 = User::create([
             'name' => 'evaluator-2',
+            'ic' => 'evaluator-2-ic',
             'email' => 'evaluator-2@mail.com',
             'email_verified_at' => now(),
             'staff_unit_id' => 1,

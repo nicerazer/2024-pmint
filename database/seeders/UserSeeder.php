@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
 
         $admin = User::create([
             'name' => 'admin',
+            'ic' => 'admin-ic',
             'email' => 'admin@mail.com',
             'email_verified_at' => now(),
             'staff_unit_id' => 1,
@@ -30,6 +31,7 @@ class UserSeeder extends Seeder
 
         $userStaff = User::create([
             'name' => 'staff',
+            'ic' => 'staff-ic',
             'email' => 'staff@mail.com',
             'staff_unit_id' => 1,
             'email_verified_at' => now(),
