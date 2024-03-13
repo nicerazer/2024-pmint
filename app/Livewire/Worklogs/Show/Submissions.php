@@ -14,7 +14,7 @@ class Submissions extends Component
 
     public function render()
     {
-        $this->submissions = Submission::where('work_log_id', $this->workLog->id)->get();
+        $this->submissions = Submission::where('work_log_id', $this->workLog->id)->orderByDesc('number')->get();
         return view('livewire.work-logs.show.submissions');
     }
 

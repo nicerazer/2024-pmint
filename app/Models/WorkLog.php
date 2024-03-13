@@ -204,13 +204,26 @@ class WorkLog extends Model
 
     public static function indexQuery($queried_date): \Illuminate\Database\Eloquent\Builder
     {
-        $latestSubmissions = Submission::select(
-            DB::raw('submissions.work_log_id AS wl_id_fk'),
-            DB::raw('submissions.is_accept AS submissions_is_accept'),
-            DB::raw('submissions.evaluated_at AS submissions_evaluated_at'),
-            DB::raw('submissions.submitted_at AS submissions_submitted_at'))
-            ->orderBy('number', 'desc')
-            ->limit(1);
+        // $latestSubmissions = Submission::select(
+        //     DB::raw('DISTINCT submissions.work_log_id AS sub_fk_id'),
+        //     DB::raw('submissions.id AS sub_id'),
+        //     DB::raw('MAX(submissions.number) AS sub_number'),
+        //     DB::raw('MAX(submissions.is_accept) AS sub_is_accept'),
+        //     DB::raw('MAX(submissions.evaluated_at) AS sub_evaluated_at'),
+        //     DB::raw('MAX(submissions.submitted_at) AS sub_submitted_at')
+        // );
+        $latestSubmissions = DB::table('submissions as t1')
+            ->select(
+                DB::raw('DISTINCT t1.work_log_id AS sub_fk_id'),
+                DB::raw('MAX(t1.number) AS sub_number'),
+                DB::raw('MAX(t1.id) AS sub_id'),
+                DB::raw('MAX(t1.is_accept) AS sub_is_accept'),
+                // DB::raw('MAX(t1.evaluated_at) AS sub_evaluated_at'),
+                DB::raw('MAX(t1.submitted_at) AS sub_submitted_at')
+            )->join(DB::raw('submissions AS t2'), function (JoinClause $join) {
+                $join->on('t2.id', '=', 't1.id');
+                $join->on('t2.number', '=', DB::raw('(SELECT MAX(number) FROM submissions AS t3 WHERE t3.id = t1.id)'));
+            })->groupBy('sub_fk_id');
 
         return WorkLog::query()
             ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
@@ -235,12 +248,12 @@ class WorkLog extends Model
                     $q->whereNotNull('work_logs.expected_at')
                     ->whereRaw('YEAR(work_logs.expected_at) >= ' . $queried_date->format('Y'))
                     ->whereRaw('MONTH(work_logs.expected_at) >= ' . $queried_date->format('m'));
-                })
-                ->orWhere(function (Builder $q) use ($queried_date) {
-                    $q->whereNotNull('submissions_submitted_at')
-                    ->whereRaw('YEAR(submissions_submitted_at) >= ' . $queried_date->format('Y'))
-                    ->whereRaw('MONTH(submissions_submitted_at) >= ' . $queried_date->format('m'));
                 });
+                // ->orWhere(function (Builder $q) use ($queried_date) {
+                //     $q->whereNotNull('submissions_submitted_at')
+                //     ->whereRaw('YEAR(submissions_submitted_at) >= ' . $queried_date->format('Y'))
+                //     ->whereRaw('MONTH(submissions_submitted_at) >= ' . $queried_date->format('m'));
+                // });
             })
             // Date rules END
 
@@ -253,13 +266,15 @@ class WorkLog extends Model
             })
             // Only show submitted submissions
             ->when(auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_2), function (Builder $query) {
-                    $query->whereNotNull('wl_id_fk')
-                    ->where('submissions_is_accept', TRUE);
+                $query->whereNotNull('sub_fk_id')
+                ->where('sub_is_accept', true);
             })
-            ->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
-                $join->on('work_logs.id', '=', 'wl_id_fk');
+            ->leftJoinSub($latestSubmissions, 'latest_submission', function (JoinClause $join) {
+                $join->on('sub_fk_id', '=', 'work_logs.id');
             })
-            ->select('work_logs.*', 'users.name', 'work_scopes.title');
+            ->select('work_logs.*', 'users.name', 'work_scopes.title',
+                'latest_submission.*',
+            );
     }
 
     protected static function booted(): void

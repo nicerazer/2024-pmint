@@ -4,7 +4,7 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 
-class CreateStaff extends Component
+class EditStaff extends Component
 {
     public function render()
     {

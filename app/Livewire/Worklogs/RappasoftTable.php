@@ -55,9 +55,19 @@ class RappasoftTable extends DataTableComponent
     #[On('evaluator2Evaluate')]
     public function evaluator2Evaluate(): bool {
         Log::debug('clicked');
-        $affectedRows = $this->builder->update(['status' => WorkLogCodes::REVIEWED]);
+        $affectedRows = $this->builder->where('status', WorkLogCodes::COMPLETED)->update(['status' => WorkLogCodes::REVIEWED]);
         Log::debug('Updated count: '.$affectedRows);
-        return false;
+
+        session()->flash('status-class',
+            $affectedRows ? 'success' : 'warning'
+        );
+        session()->flash('message',
+            $affectedRows ?
+            $affectedRows . ' log kerja telah disahkan' :
+            'Tiada log kerja untuk disahkan'
+        );
+        $this->redirect('/');
+        return true;
     }
 
     public function configure(): void
@@ -91,60 +101,10 @@ class RappasoftTable extends DataTableComponent
             // ]);
     }
 
-    // protected $model = WorkLog::class;
     public function builder(): Builder
     {
-        // $this->selected_month = new Carbon('2024-03-18');
-
-        // $latestSubmissions = Submission::select(
-        //     DB::raw('submissions.work_log_id AS wl_id_fk'),
-        //     DB::raw('submissions.is_accept AS submissions_is_accept'),
-        //     DB::raw('submissions.evaluated_at AS submissions_evaluated_at'),
-        //     DB::raw('submissions.submitted_at AS submissions_submitted_at'))
-        //     ->orderBy('number', 'desc')
-        //     ->limit(1);
         // AUTHOR
         return WorkLog::indexQuery($this->selected_month);
-        // return WorkLog::query()
-        //     ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
-        //     // ->leftJoin('submissions','work_logs.id', '=', 'submissions.wor_log_id')
-        //     ->join('users','users.id', '=', 'work_logs.author_id')
-        //     ->where('work_logs.author_id', [
-        //             UserRoleCodes::EVALUATOR_1 => '!=',
-        //             UserRoleCodes::EVALUATOR_2 => '!=',
-        //             UserRoleCodes::STAFF => '=',
-        //         ][session('selected_role_id')],
-        //         auth()->user()->id)
-        //     ->where(function (Builder $q) {
-        //         $q->whereNotNull('work_logs.started_at')
-        //         ->whereRaw('YEAR(work_logs.started_at) <= ' . $this->selected_month->format('Y'))
-        //         ->whereRaw('MONTH(work_logs.started_at) <= ' . $this->selected_month->format('m'));
-        //     })
-        //     ->where(function (Builder $q) {
-        //         $q->where(function (Builder $q) {
-        //             $q->whereNotNull('work_logs.expected_at')
-        //             ->whereRaw('YEAR(work_logs.expected_at) >= ' . $this->selected_month->format('Y'))
-        //             ->whereRaw('MONTH(work_logs.expected_at) >= ' . $this->selected_month->format('m'));
-        //         })
-        //         ->orWhere(function (Builder $q) {
-        //             $q->whereNotNull('submissions_submitted_at')
-        //             ->whereRaw('YEAR(submissions_submitted_at) >= ' . $this->selected_month->format('Y'))
-        //             ->whereRaw('MONTH(submissions_submitted_at) >= ' . $this->selected_month->format('m'));
-        //         })
-        //         ;
-        //     })
-        //     ->when()
-        //     // Only show submitted submissions
-        //     ->when(session('selected_role_id') == UserRoleCodes::EVALUATOR_2, function (Builder $query) {
-        //             $query->whereNotNull('wl_id_fk')
-        //             ->where('submissions_is_accept', TRUE);
-        //     })
-        //     ->select('work_logs.id', 'users.name', 'work_scopes.title')
-        //     ->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {
-        //         $join->on('work_logs.id', '=', 'wl_id_fk');
-        //     })
-        //     ->select('work_logs.*', 'users.name', 'work_scopes.title')
-        //     ;
     }
 
     public function acceptSubmissions() {
@@ -244,6 +204,7 @@ class RappasoftTable extends DataTableComponent
 
     public function filters(): array
     {
+        return [];
         return array_values(array_filter([
             SelectFilter::make('Status')
                 ->options(WorkLogCodes::GETOPTIONS())

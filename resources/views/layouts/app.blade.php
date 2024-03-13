@@ -35,7 +35,7 @@
 
     <main class="flex flex-col w-11/12 py-4 mx-auto">
         @if (session()->has('message'))
-            <div class="mt-24 toast toast-top toast-end" x-data="{ showAlert: true }" x-show="showAlert"
+            <div class="z-20 mt-24 toast toast-top toast-end" x-data="{ showAlert: true }" x-show="showAlert"
                 x-init="setTimeout(() => showAlert = false, 3000)" x-transition.duration.5000ms>
                 <div class="alert alert-{{ session('status-class') }}">
                     <span>{{ session('message') }}</span>

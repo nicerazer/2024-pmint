@@ -18,11 +18,11 @@ class Home extends Component
     public $model_context = 'staff_section';
     public $model_id = -1;
     public $is_creating = false;
+    public $staff_sections;
 
     public function render()
     {
-        return view('livewire.admin.home', [
-            'staff_sections' => StaffSection::all()
-        ]);
+        $this->staff_sections = StaffSection::query()->select('id', 'name')->get();
+        return view('livewire.admin.home');
     }
 }

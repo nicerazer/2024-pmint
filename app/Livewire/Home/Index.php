@@ -4,6 +4,7 @@ namespace App\Livewire\Home;
 
 use App\Helpers\UserRoleCodes;
 use App\Helpers\WorkLogCodes;
+use App\Models\StaffSection;
 use App\Models\Submission;
 use App\Models\WorkLog;
 use Carbon\Carbon;
@@ -22,6 +23,12 @@ class Index extends Component
     public Carbon $selected_month;
     public $worklog_count_in_a_month_by_statuses;
 
+    // ADMIN AREA
+    public $model_context = 'staff_section';
+    public $model_id = -1;
+    public $model_is_creating = false;
+    public $staff_sections;
+
     // #[Renderless]
     #[On('update_month')]
     public function updateTheMonth(string $date) {
@@ -34,29 +41,34 @@ class Index extends Component
     }
 
     public function mount() {
-        $this->selected_month = now();
-        $this->worklog_count_in_a_month_by_statuses = [];
-        $this->generateStats();
-    }
-
-    #[Layout('layouts.app')]
-    public function render()
-    {
-        Log::debug($this->worklog_count_in_a_month_by_statuses);
-        $this->generateStats();
-
-        // if (session('selected_role_id') == UserRoleCodes::ADMIN) {
-        //     return view('pages.home.admin');
-        // }
-
         if (
             session('selected_role_id') == UserRoleCodes::EVALUATOR_1 ||
             session('selected_role_id') == UserRoleCodes::EVALUATOR_2 ||
             session('selected_role_id') == UserRoleCodes::STAFF
         ) {
+            $this->selected_month = now();
+            $this->worklog_count_in_a_month_by_statuses = [];
+            $this->generateStats();
+        } else {
+            $this->model_context = session('admin_model_context') ? session('admin_model_context') : 'staff_section';
+            $this->model_id = session('admin_model_id') ? session('admin_model_id') : -1;
+            $this->model_is_creating = session('admin_is_creating') ? session('admin_is_creating') : false;
+        }
+    }
+
+    #[Layout('layouts.app')]
+    public function render()
+    {
+        if (
+            session('selected_role_id') == UserRoleCodes::EVALUATOR_1 ||
+            session('selected_role_id') == UserRoleCodes::EVALUATOR_2 ||
+            session('selected_role_id') == UserRoleCodes::STAFF
+        ) {
+            $this->generateStats();
             return view('livewire.home.index');
         }
 
+        $this->staff_sections = StaffSection::query()->select('id', 'name')->get();
         return view('livewire.admin.home');
     }
 

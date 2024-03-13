@@ -19,7 +19,7 @@
                 @if ($submission->evaluated_at && !$submission->is_accept) btn-neutral
                 @elseif ($submission->evaluated_at && $submission->is_accept) btn-outline
                 @else btn-ghost @endif"
-            wire:click="downloadImages({{ $submission->id }})">
+            wire:click="downloadImages()">
             Muat Turun Semua
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                 <path fill-rule="evenodd"

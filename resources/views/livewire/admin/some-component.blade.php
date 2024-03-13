@@ -1,0 +1,3 @@
+<div>
+    {{ $coolvar }}
+</div>

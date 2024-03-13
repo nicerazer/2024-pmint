@@ -12,6 +12,8 @@ class WorkScope extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $guarded = [];
+
     public function workLogs(): HasMany
     {
         return $this->hasMany(WorkLog::class);

@@ -26,8 +26,6 @@ class CreateStaff extends Component
     public function save()
     {
         $this->form->store();
-
-        // Refresh page
     }
 
     public function switchSection($section_id)

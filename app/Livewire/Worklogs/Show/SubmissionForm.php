@@ -2,6 +2,7 @@
 
 namespace App\Livewire\WorkLogs\Show;
 
+use App\Helpers\WorkLogCodes;
 use App\Models\Submission;
 use Closure;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,9 @@ class SubmissionForm extends Component
             $submission = Submission::create(
                 $this->only(['body']) + ['work_log_id' => $this->worklog->id]
             );
+            $this->worklog->status = WorkLogCodes::SUBMITTED;
+            $this->worklog->save();
+
             Log::debug('Submission Form: Created submission');
 
             $this->imageCount = 0;

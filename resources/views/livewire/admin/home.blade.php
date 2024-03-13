@@ -1,18 +1,14 @@
-@php
-    // $staff_sections = App\Models\StaffSection::where('id', auth()->user()->unit->staffsection->id)->get();
-    $staff_sections = App\Models\StaffSection::query()->select('id', 'name')->get();
-@endphp
-
 <div x-data="{
     staff_section_id: 1,
     staff_unit_id: -1,
     staff_id: -1,
     activity_id: -1,
-    model_context: 'staff_section',
-    model_id: 1,
-    is_creating: true,
+    model_context: '{{ $model_context }}',
+    model_id: {{ $model_id }},
+    is_creating: {{ $model_is_creating ? 1 : 0 }} == 1 ? true : false,
     staff_sections: {{ Illuminate\Support\Js::from($staff_sections) }}
 }">
+    <span>{{ $model_id }}</span>
     <span x-text="model_context"></span>
     <span x-text="model_id"></span>
     <span x-text="is_creating == 1 ? 'creating' : 'editing'"></span>
@@ -54,7 +50,7 @@
         <div class="w-full">
             <div class="text-sm breadcrumbs">
                 <ul>
-                    <li><a>Bahagian&nbsp;<span x-text="staff_sections[staff_section_id].name"></span></a></li>
+                    {{-- <li><a>Bahagian&nbsp;<span x-text="staff_sections[staff_section_id].name"></span></a></li> --}}
                     <li>Cipta Unit</li>
                 </ul>
             </div>
@@ -174,12 +170,13 @@
                                                         Aktiviti
                                                     </summary>
                                                     <ul>
-                                                        @foreach ($staff_unit->workScopes as $work_scope)
+                                                        @foreach ($staff_unit->workScopes as $workscope)
                                                             <li
                                                                 @click="
-                                                                model_context = 'work_scope'
-                                                                model_id = {{ $work_scope->id }}
-                                                                is_creating = false
+                                                                model_context = 'workscope';
+                                                                model_id = {{ $workscope->id }};
+                                                                is_creating = false;
+                                                                $wire.set('model_id', {{ $workscope->id }});
                                                             ">
                                                                 <span>
                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -188,7 +185,7 @@
                                                                         <path
                                                                             d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                                                                     </svg>
-                                                                    {{ $work_scope->title }}
+                                                                    {{ $workscope->title }}
                                                                 </span>
                                                             </li>
                                                         @endforeach
@@ -229,11 +226,18 @@
             class="w-full bg-white border card h-fit">
             <livewire:admin.create-workscope />
         </div>
+        {{-- Edit windows --}}
+        <div x-show="
+            model_context == 'workscope' && !is_creating
+        " x-cloak
+            class="w-full bg-white border card h-fit">
+            <livewire:admin.edit-workscope :$model_id />
+        </div>
     </div>
-</div>
 
-@push('scripts')
-    <script>
-        // let staffSections = {{ Illuminate\Support\Js::from($staff_sections) }};
-    </script>
-@endpush
+    @push('scripts')
+        <script>
+            // let staffSections = {{ Illuminate\Support\Js::from($staff_sections) }};
+        </script>
+    @endpush
+</div>
