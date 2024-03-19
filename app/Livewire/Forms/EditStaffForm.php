@@ -2,40 +2,70 @@
 
 namespace App\Livewire\Forms;
 
+use App\Helpers\UserRoleCodes;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Reactive;
-use Livewire\Attributes\Rule;
+use Illuminate\Validation\Rule;
 use Livewire\Form;
 use Livewire\Attributes\Validate;
 
 class EditStaffForm extends Form
 {
-    #[Validate('required', message: 'Sila isi nama')]
-    #[Validate('string', message: 'Sila isi nama')]
+    public ?User $staff;
+    // #[Validate('required', message: 'Sila isi nama')]
+    // #[Validate('string', message: 'Sila isi nama')]
     public $name;
 
-    #[Validate('unique:App\Models\User,email', message: 'Akaun dengan emel tersebut telah wujud dlm sistem')]
+    // #[Validate('unique:App\Models\User,email', message: 'Akaun dengan emel tersebut telah wujud dlm sistem')]
     public $email;
 
-    #[Validate('unique:App\Models\User,ic', message: 'Akaun dengan ic tersebut telah wujud dlm sistem')]
-    #[Validate('required', message: 'Sila isi nama')]
-    #[Validate('string', message: 'Sila isi nama')]
+    // #[Validate('unique:App\Models\User,ic', message: 'Akaun dengan ic tersebut telah wujud dlm sistem')]
+    // #[Validate('required', message: 'Sila isi nama')]
+    // #[Validate('string', message: 'Sila isi nama')]
     public $ic;
 
-    #[Validate('array')]
+    // #[Validate('array')]
     public $roles;
 
     // #[Reactive]
-    #[Validate('required|exists:App\Models\StaffSection,id')]
+    // #[Validate('required|exists:App\Models\StaffSection,id')]
     public $selected_section_id = -1;
-    #[Validate('required|exists:App\Models\StaffUnit,id')]
-    public $selected_unit_id = 0;
+    // #[Validate('required|exists:App\Models\StaffUnit,id')]
+    public $selected_unit_id = -1;
 
+    // #[Validate('required|exists:App\Models\StaffUnit,id')]
+    public $password;
     public $has_role_admin;
     public $has_role_evaluator_1;
     public $has_role_evaluator_2;
     public $has_role_staff;
+
+    public function rules()
+    {
+        return [
+            'name' => [ 'required', 'string' ],
+            'email' => [
+                'required', 'string', Rule::unique('users')->ignore($this->staff)
+            ],
+            'ic' => [
+                'required', 'string', Rule::unique('users')->ignore($this->staff)
+            ], 'roles' => [ 'array' ],
+            'selected_section_id' => [
+                'required', 'exists:App\Models\StaffSection,id'
+            ],
+            'selected_unit_id' => [
+                'required', 'exists:App\Models\StaffUnit,id'
+            ],
+            'password' => ['nullable', 'string', 'min:8'],
+        ];
+    }
+
+    public function setStaff(User $staff)
+    {
+        $this->staff = $staff;
+    }
 
     public function update($staff)
     {
@@ -44,15 +74,30 @@ class EditStaffForm extends Form
         $staff->name = $validated['name'];
         $staff->ic = $validated['ic'];
         $staff->email = $validated['email'];
+        $staff->staff_unit_id = $validated['selected_unit_id'];
         if ($validated['password'])
             $staff->password = Hash::make($validated['password']);
-        $staff->roles()->sync($validated['roles']);
+        $staff->roles()->sync($this->buildRoles());
         $staff->save();
+    }
 
-        session()->flash('status-class', 'success');
-        session()->flash('message', 'Staff id' . $staff->id . 'telah dikemaskini');
-        session()->flash('admin_is_creating', 0);
-        session()->flash('admin_model_context', 'staff');
-        session()->flash('admin_model_id', $staff->id);
+    public function buildRoles(): array {
+
+        $roles = [];
+
+        if ($this->has_role_admin == "yes") {
+        array_push($roles, UserRoleCodes::ADMIN);
+        }
+        if ($this->has_role_evaluator_1 == "yes") {
+        array_push($roles, UserRoleCodes::EVALUATOR_1);
+        }
+        if ($this->has_role_evaluator_2 == "yes") {
+        array_push($roles, UserRoleCodes::EVALUATOR_2);
+        }
+        if ($this->has_role_staff == "yes") {
+        array_push($roles, UserRoleCodes::STAFF);
+        };
+
+        return $roles;
     }
 }

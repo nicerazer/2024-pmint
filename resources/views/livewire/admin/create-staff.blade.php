@@ -6,7 +6,7 @@
                 <span class="label-text">Pilih Bahagian ({{ $form->selected_section_id }})</span>
             </div>
             <select class="w-full select select-bordered" wire:change="switchSection($event.target.value)">
-                <option disabled selected>Pilih Bahagian</option>
+                <option disabled selected value="-1">Pilih Bahagian</option>
                 @foreach (App\Models\StaffSection::all() as $staff_section)
                     <option value="{{ $staff_section->id }}">
                         {{ $staff_section->name }}</option>
@@ -22,17 +22,17 @@
             <div class="label">
                 <span class="label-text">Pilih Unit {{ $form->selected_unit_id }}</span>
             </div>
-            @if ($form->selected_section_id == -1)
+            {{-- @if ($form->selected_section_id == -1)
                 <div class="flex items-center w-full h-12 px-3 border-2 rounded-md bg-slate-200">Sila pilih bahagian
                 </div>
-            @else
-                <select class="w-full select select-bordered" wire:model.live="form.selected_unit_id">
-                    <option disabled selected>Pilih Unit</option>
-                    @foreach ($this->staff_units as $staff_unit)
-                        <option value="{{ $staff_unit->id }}">{{ $staff_unit->name }}</option>
-                    @endforeach
-                </select>
-            @endif
+            @else --}}
+            <select class="w-full select select-bordered" wire:model.live="form.selected_unit_id">
+                <option disabled selected value="-1">Pilih Unit</option>
+                @foreach ($this->staff_units as $staff_unit)
+                    <option value="{{ $staff_unit->id }}">{{ $staff_unit->name }}</option>
+                @endforeach
+            </select>
+            {{-- @endif --}}
 
             @if (false)
                 <div class="label">
@@ -86,10 +86,44 @@
                 </div>
             @endif
         </label>
+        <h3 class="mt-4 mb-1 ml-1 font-bold">Role User</h3>
+        <div class="w-fit">
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="mr-8 label-text">Admin</span>
+                    <input wire:model="form.has_role_admin" value="yes" type="checkbox"
+                        @if ($form->has_role_admin) checked="checked" @endif class="checkbox checkbox-primary" />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="mr-8 label-text">Penilai 1</span>
+                    <input wire:model="form.has_role_evaluator_1" value="yes" type="checkbox"
+                        @if ($form->has_role_evaluator_1) checked="checked" @endif class="checkbox checkbox-primary" />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="mr-8 label-text">Penilai 2</span>
+                    <input wire:model="form.has_role_evaluator_2" value="yes" type="checkbox"
+                        @if ($form->has_role_evaluator_2) checked="checked" @endif class="checkbox checkbox-primary" />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="mr-8 label-text">Staff</span>
+                    <input wire:model="form.has_role_staff" value="yes" type="checkbox"
+                        @if ($form->has_role_staff) checked="checked" @endif class="checkbox checkbox-primary" />
+                </label>
+            </div>
+        </div>
 
         <div class="justify-end mt-4 card-actions">
             <button class="btn btn-primary">Cipta</button>
         </div>
+        @foreach ($errors->all() as $message)
+            {{ $message }}
+        @endforeach
     </form>
 
 </div>

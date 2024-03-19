@@ -55,6 +55,17 @@ class UserSeeder extends Seeder
         // $userStaff->evaluator2_id = $evaluator2->id;
         // $userStaff->save();
 
-        // User::factory()->count(50)->create();
+        User::factory()->count(3)->create([
+            'staff_unit_id' => 1
+        ]);
+        User::factory()->count(3)->create([
+            'staff_unit_id' => 2
+        ]);
+        User::factory()->count(3)->create([
+            'staff_unit_id' => 4
+        ]);
+        User::factory()->count(3)->create([
+            'staff_unit_id' => 5
+        ]);
     }
 }

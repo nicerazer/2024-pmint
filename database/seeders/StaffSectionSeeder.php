@@ -14,5 +14,6 @@ class StaffSectionSeeder extends Seeder
     public function run(): void
     {
         StaffSection::create(['name' => 'Pentadbiran & Sumber Manusia']);
+        StaffSection::create(['name' => 'Section Example 2']);
     }
 }

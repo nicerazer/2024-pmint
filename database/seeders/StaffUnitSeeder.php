@@ -22,6 +22,8 @@ class StaffUnitSeeder extends Seeder
             ['name' => 'Perkhidmatan', 'staff_section_id' => 1],
             ['name' => 'Latihan & Kualiti', 'staff_section_id' => 1],
             ['name' => 'Perhubungan Korporat', 'staff_section_id' => 1],
+            ['name' => 'Example Unit 1', 'staff_section_id' => 2],
+            ['name' => 'Example Unit 2', 'staff_section_id' => 2],
         ], ['name', 'staff_section_id']);
     }
 }

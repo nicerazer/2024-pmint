@@ -4,6 +4,8 @@
     @endphp
 
     <h2 class="card-title">Kemaskini Staff</h2>
+    {{ $form->selected_section_id }}
+    {{ $form->selected_unit_id }}
     @if ($staff)
         <form wire:submit="save">
             <label class="w-full mb-2 form-control">
@@ -12,11 +14,11 @@
                 </div>
                 <input wire:model="form.name" value="{{ $staff->name }}" type="text" placeholder="Isi nama unit"
                     class="w-full input input-bordered" wire:model="name" />
-                @if (false)
+                @error('form.name')
                     <div class="label">
-                        <span class="label-text-alt">{{ $message }}</span>
+                        <span class="label-text-alt text-error">{{ $message }}</span>
                     </div>
-                @endif
+                @enderror
             </label>
             <label class="w-full mb-2 form-control">
                 <div class="label">
@@ -24,17 +26,29 @@
                 </div>
                 <input wire:model="form.ic" type="text" placeholder="Isi nama unit"
                     class="w-full input input-bordered" />
-                @if (false)
+                @error('form.ic')
                     <div class="label">
-                        <span class="label-text-alt">{{ $errorMessage }}</span>
+                        <span class="label-text-alt text-error">{{ $message }}</span>
                     </div>
-                @endif
+                @enderror
+            </label>
+            <label class="w-full mb-2 form-control">
+                <div class="label">
+                    <span class="label-text">Kata Laluan</span>
+                </div>
+                <input wire:model="form.password" type="password" placeholder="Tinggalkan jika tidak mahu ubah"
+                    class="w-full input input-bordered" wire:model="password" />
+                @error('form.password')
+                    <div class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                    </div>
+                @enderror
             </label>
             <label class="w-full mb-2 form-control">
                 <div class="label">
                     <span class="label-text">Pilih Bahagian</span>
                 </div>
-                <select wire:change="switchSection($event.target.value)" wire:model="selected_section_id"
+                <select wire:change="switchSection($event.target.value)" wire:model="form.selected_section_id"
                     class="w-full select select-bordered">
                     <option disabled selected value="-1">Pilih Bahagian</option>
                     @foreach (App\Models\StaffSection::all() as $staff_section)
@@ -42,38 +56,33 @@
                             {{ $staff_section->name }}</option>
                     @endforeach
                 </select>
-                @if (false)
+                @error('form.selected_section_id')
                     <div class="label">
-                        <span class="label-text-alt">{{ $errorMessage }}</span>
+                        <span class="label-text-alt text-error">{{ $message }}</span>
                     </div>
-                @endif
+                @enderror
             </label>
             <label class="w-full mb-2 form-control">
                 <div class="label">
                     <span class="label-text">Pilih Unit</span>
                 </div>
-                @if ($this->selected_section_id != 0 && $this->staff_units->count() != 0)
-                    <select wire:change="switchUnit($event.target.value)" wire:model="selected_unit_id"
+                {{-- @if ($this->form->selected_section_id != 0 && $this->staffUnits->count() != 0) --}}
+                @if ($this->form->selected_section_id != 0)
+                    <select wire:change="switchUnit($event.target.value)" wire:model="form.selected_unit_id"
                         class="w-full select select-bordered">
                         <option disabled selected value="-1">Pilih Unit</option>
-                        @foreach ($this->staff_units as $staff_unit)
+                        @foreach ($this->staffUnits as $staff_unit)
                             <option wire:key="{{ $staff_unit->id }}" value="{{ $staff_unit->id }}">
                                 {{ $staff_unit->name }}</option>
                         @endforeach
                     </select>
-                    {{-- Error Message --}}
-                    @if (false)
-                        <div class="label">
-                            <span class="label-text-alt">{{ $errorMessage }}</span>
-                        </div>
-                    @endif
-                @elseif ($this->staff_units->count() == 0)
+                @elseif ($this->staffUnits->count() == 0)
                     <div class="w-full border border-gray-300 join">
                         <div class="flex items-center justify-center w-full h-12 gap-2 pl-4 bg-gray-200 join-item">
                             Tiada unit yang wujud
                         </div>
                     </div>
-                @elseif ($this->selected_section_id == 0)
+                @elseif ($this->form->selected_section_id == -1)
                     <div class="w-full border border-gray-300 join">
                         <div class="flex items-center justify-center w-full h-12 gap-2 pl-4 bg-gray-200 join-item">
                             👈 Sila pilih bahagian
@@ -82,6 +91,12 @@
                 @else
                     NOINOISDNFSDF
                 @endif
+                {{-- Error Message --}}
+                @error('form.selected_unit_id')
+                    <div class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                    </div>
+                @enderror
             </label>
             <h3 class="mt-4 mb-1 ml-1 font-bold">Role User</h3>
             <div class="w-fit">
@@ -120,10 +135,13 @@
             </div>
 
             <div class="justify-end mt-4 card-actions">
-                <button class="btn btn-primary">Cipta</button>
+                <button class="btn btn-primary w-72">Kemaskini</button>
             </div>
         </form>
     @else
         Sedang ambil data dari sistem...
     @endif
+    @foreach ($errors->all() as $message)
+        {{ $message }}
+    @endforeach
 </div>
