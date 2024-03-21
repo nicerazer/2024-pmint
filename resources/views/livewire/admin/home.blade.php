@@ -62,15 +62,16 @@
             @foreach ($staff_sections as $staff_section)
                 <li>
                     <details open>
-                        <summary
+                        <summary wire:ignore
                             @click="
                                 model_context = 'staff_section'
                                 model_id = {{ $staff_section->id }}
                                 is_creating = false
+                                $wire.set('model_id', {{ $staff_section->id }})
                             ">
                             🏛️ Bahagian {{ $staff_section->name }}
                         </summary>
-                        <ul>
+                        <ul wire:ignore>
                             <li> <!-- Penilai 1 -->
                                 <details open>
                                     <summary>
@@ -118,6 +119,7 @@
                                                 model_context = 'staff_unit'
                                                 model_id = {{ $staff_unit->id }}
                                                 is_creating = false
+                                                $wire.set('model_id', {{ $staff_unit->id }})
                                             ">
                                             🎫 Unit {{ $staff_unit->name }}
                                         </summary>
@@ -239,6 +241,18 @@
         " x-cloak
             class="w-full bg-white border card h-fit">
             <livewire:admin.edit-staff :$model_id />
+        </div>
+        <div x-show="
+            model_context == 'staff_section' && !is_creating
+        " x-cloak
+            class="w-full bg-white border card h-fit">
+            <livewire:admin.edit-staffsection :$model_id />
+        </div>
+        <div x-show="
+            model_context == 'staff_unit' && !is_creating
+        " x-cloak
+            class="w-full bg-white border card h-fit">
+            <livewire:admin.edit-staffunit :$model_id />
         </div>
     </div>
 

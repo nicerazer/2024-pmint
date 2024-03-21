@@ -13,10 +13,7 @@ use Livewire\WithFileUploads;
 class CreateWorklog extends Component
 {
     use WithFileUploads;
-    // public $work_scope_id = '';
-    // public $description = '';
-    // public $expected_at = '';
-    // #[Reactive]
+
     public $selectedUnitId = -1;
     public CreateWorklogForm $form;
     public $work_scopes;
@@ -54,8 +51,9 @@ class CreateWorklog extends Component
             ->whereColumn('work_scopes.staff_unit_id', 'staff_units.id');
 
         $this->staffUnits = StaffUnit::where('staff_section_id', auth()->user()->unit->staffSection->id)
-        ->whereExists($workScopes)
+        // ->whereExists($workScopes)
         ->get();
+
         return view('livewire.work-logs.create-form');
     }
 }

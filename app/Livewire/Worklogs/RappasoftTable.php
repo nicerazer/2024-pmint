@@ -171,8 +171,14 @@ class RappasoftTable extends DataTableComponent
                 )
                 ->searchable(
                     fn(Builder $query, $searchTerm) => $query
-                        ->orWhere('work_scopes.title', 'like', "%$searchTerm%")
-                        ->orWhere('work_logs.custom_workscope_title', 'like', "%$searchTerm%")
+                        ->orWhere(function (Builder $q) use ($searchTerm) {
+                            $q->where('wrkscp_is_main', 1)
+                            ->where('work_scopes.title', 'like', "%$searchTerm%");
+                        })
+                        ->orWhere(function (Builder $q) use ($searchTerm) {
+                            $q->where('wrkscp_is_main', 0)
+                            ->where('wrkscp_alt_title', 'like', "%$searchTerm%");
+                        })
                 )
                 ->sortable(),
             session('selected_role_id') == UserRoleCodes::EVALUATOR_1 ?
@@ -190,8 +196,8 @@ class RappasoftTable extends DataTableComponent
             //     )
             //     ->searchable()
             //     ->sortable(),
-            Column::make('Bahagian', 'section.name'),
-            Column::make('Unit', 'workscope.staffUnit.name'),
+            Column::make('Bahagian', 'unit.staffSection.name'),
+            // Column::make('Unit', 'workscope.staffUnit.name'),
             DateColumn::make('Tarikh Mula', 'started_at')
                 ->searchable()
                 ->sortable(),
@@ -213,21 +219,21 @@ class RappasoftTable extends DataTableComponent
                         $query->where('work_logs.status', $value);
                 }),
 
-            session('selected_role_id') == UserRoleCodes::EVALUATOR_1 || session('selected_role_id') == UserRoleCodes::EVALUATOR_2 ?
-                SelectFilter::make('Bahagian')
-                    ->options(
-                        ['' => 'Semua Bahagian'] +
-                        Auth::user()
-                            ->sectionsByRole()
-                            ->orderBy('name')
-                            ->get()
-                            ->keyBy('id')
-                            ->map(fn($section) => "📝 $section->name")
-                            ->toArray()
-                    )
-                    ->filter(function(Builder $query, string $value) {
-                        $query->where('work_logs.staff_section_id', $value);
-                    }):NULL,
+            // session('selected_role_id') == UserRoleCodes::EVALUATOR_1 || session('selected_role_id') == UserRoleCodes::EVALUATOR_2 ?
+            //     SelectFilter::make('Bahagian')
+            //         ->options(
+            //             ['' => 'Semua Bahagian'] +
+            //             Auth::user()
+            //                 ->sectionsByRole()
+            //                 ->orderBy('name')
+            //                 ->get()
+            //                 ->keyBy('id')
+            //                 ->map(fn($section) => "📝 $section->name")
+            //                 ->toArray()
+            //         )
+            //         ->filter(function(Builder $query, string $value) {
+            //             $query->where('work_logs.staff_section_id', $value);
+            //         }):NULL,
             // LivewireComponentFilter::make('My External Filter')
             //     ->setLivewireComponent('work-logs.filters.month')
             //     ->filter(function (Builder $builder, string $value) {
@@ -255,7 +261,7 @@ class RappasoftTable extends DataTableComponent
             //         'max' => '2023-12-31',
             //         'pillFormat' => 'd M Y',
             //     ])->setFilterDefaultValue('2023-08-01'),
-            SelectFilter::make('Skop Kerja', 'workScopeTitle')
+            SelectFilter::make('Skop Kerja', 'workScopeAltTitle')
                 ->options(
                     ['-1' => '💼 Aktiviti Sampingan'] +
                     WorkScope::query()
@@ -266,11 +272,11 @@ class RappasoftTable extends DataTableComponent
                         ->toArray()
                 )
                 ->filter(function (Builder $query, string $search) {
-                    if ($search == -1) {
-                        $query->where('custom_workscope_title', '!=', "''");
-                    } else {
-                        $query->where('work_scope_id', $search);
-                    }
+                    // if ($search == -1) {
+                    //     $query->where('custom_workscope_title', '!=', "''");
+                    // } else {
+                    //     $query->where('_id', $search);
+                    // }
                 })
                 // ->hiddenFromAll()
                 // ->filter(function(Builder $query, string $value) {

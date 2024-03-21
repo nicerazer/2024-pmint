@@ -19,9 +19,9 @@ class CreateWorklogForm extends Form
 {
     use WithFileUploads;
 
-    public $staffUnit = '';
+    public $staffUnit = -1;
     public $activityType = 'main';
-    public $workMain;
+    public $workScopeMainId = -1;
     public $workAlternative = '';
     public $workNotes = '';
     public $workStatus = ''.WorkLogCodes::ONGOING;
@@ -41,24 +41,25 @@ class CreateWorklogForm extends Form
 
     public function rules()
     {
-        return ['staffUnit' => ['required', 'exists:App\Models\StaffUnit,id']];
+        // return ['staffUnit' => ['required', 'exists:App\Models\StaffUnit,id']];
         return [
             'staffUnit' => ['required', 'exists:App\Models\StaffUnit,id'],
-            'activityType' => 'required|string',
-            // 'workMain' => [function (string $attribute, mixed $value, Closure $fail) {
-            //     if ($this->activityType == 'main' && !$value) {
-            //         $fail("Aktiviti perlu dipilih");
-            //     } else if (!WorkScope::find($value)) {
-            //         $fail("Aktiviti tidak wujud dalam sistem");
-            //     }
-            // }],
-            'workAlternative' => [function (string $attribute, mixed $value, Closure $fail) {
+            'activityType' => 'required|string|in:main,alternative',
+            // 'workScopeMainId' => 'required|',
+            'workScopeMainId' => [function (string $attribute, mixed $value, Closure $fail) {
+                if ($this->activityType == 'main' && !$value || $value == -1) {
+                    $fail("Aktiviti perlu dipilih");
+                } else if (!WorkScope::find($value)) {
+                    $fail("Aktiviti tidak wujud dalam sistem");
+                }
+            }],
+            'workAlternative' => ['nullable','string',function (string $attribute, mixed $value, Closure $fail) {
                 if ($this->activityType == 'alternative' && !$value) {
                     $fail("Aktiviti perlu diisi");
                 }
             },],
             'workNotes' => 'nullable|string',
-            'workStatus' => 'required', Rule::in([WorkLogCodes::ONGOING, WorkLogCodes::SUBMITTED]),
+            'workStatus' => ['required', Rule::in([WorkLogCodes::ONGOING, WorkLogCodes::SUBMITTED])],
             'started_at' => 'required|date',
             // 'expected_submitted_at' => ['required','date', function (string $attribute, mixed $value, Closure $fail) {
             //     if ($this->workStatus == WorkLogCodes::ONGOING && !$value) {
@@ -90,27 +91,36 @@ class CreateWorklogForm extends Form
 
     public function initWorkScope($workScopes) {
         if ($workScopes->isEmpty()) {
-            $this->workMain = -1;
+            $this->workScopeMainId = -1;
         } else {
-            $this->workMain = 1;
+            $this->workScopeMainId = -1;
         }
     }
 
     public function store() {
 
         $this->validate();
-        // dd ('VALU : ' . $this->workStatus);
-        // dd();
+
         $attributes = [
             'description' => $this->workNotes,
             'status' => $this->workStatus,
             'started_at' => $this->started_at,
             'expected_at' => $this->expected_submitted_at,
             'author_id' => auth()->user()->id,
-            'staff_section_id' => $this->activityType == 'main' ?
-                WorkScope::find($this->workMain)->id : auth()->user()->staff_section_id,
-            'work_scope_id' => $this->activityType == 'main' ? $this->workMain : null,
-            'custom_workscope_title' => $this->workAlternative,
+            'wrkscp_is_main' => $this->activityType == 'main',
+            'wrkscp_main_id' => $this->workScopeMainId,
+            'wrkscp_alt_unit_id' => auth()->user()->unit->id,
+            'wrkscp_alt_title' => $this->workAlternative,
+
+            // 'is_work_alternative' => $this->activityType == 'alternative',
+            // 'main_staff_section_id' => $this->workScopeMainId,
+            // 'alt_staff_section_id' => auth()->user()->staff_section_id,
+
+            // 'is_work_alt' => $this->activityType == 'alternative',
+            // // 'staff_section_id' => $this->activityType == 'main' ?
+            // //     $this->workScopeMainId : auth()->user()->staff_section_id,
+            // 'work_scope_id' => $this->activityType == 'main' ? $this->workScopeMainId : null,
+            // 'custom_workscope_title' => $this->workAlternative,
         ];
 
         DB::transaction(function () use ($attributes) {

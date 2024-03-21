@@ -3,6 +3,7 @@
 use App\Helpers\WorkLogHelper;
 use App\Models\Reject;
 use App\Models\StaffSection;
+use App\Models\StaffUnit;
 use App\Models\SubmissionReject;
 use App\Models\User;
 use App\Models\WorkScope;
@@ -24,12 +25,12 @@ return new class extends Migration
 
             // status
             $table->integer('status')->default(WorkLogHelper::ONGOING);
-            $table->decimal('rating', 2, 1)->nullable();
+            // $table->decimal('rating', 2, 1)->nullable();
 
             $table->boolean('has_archived')->default(false);
 
-            $table->date('started_at')->nullable();
-            $table->date('expected_at')->nullable();
+            $table->date('started_at');
+            $table->date('expected_at');
             // Submission date comes from the latest submission
             // isLatestSubmissionEvaluated
 
@@ -38,9 +39,20 @@ return new class extends Migration
             // Images
 
             $table->foreignIdFor(User::class, 'author_id');
-            $table->foreignIdFor(StaffSection::class); // Fallback field
-            $table->foreignIdFor(WorkScope::class)->nullable(); // Main field
-            $table->string('custom_workscope_title')->nullable(); // Alternative field
+            // $table->boolean('is_main')->default(false);
+
+            // wrkscp_is_main : form
+            // wrkscp_main_id : form
+            // wrkscp_alt_section_id : auth()->user()->section->id
+            // wrkscp_alt_title : ? form
+            $table->boolean('wrkscp_is_main')->default(true);
+            $table->foreignIdFor(WorkScope::class, 'wrkscp_main_id');
+            $table->foreignIdFor(StaffUnit::class, 'wrkscp_alt_unit_id');
+            $table->string('wrkscp_alt_title')->nullable();
+
+            // $table->foreignIdFor(StaffSection::class)->nullable(); // Fallback field
+            // $table->foreignIdFor(WorkScope::class)->nullable(); // Main field
+            // $table->string('custom_workscope_title')->nullable(); // Alternative field
 
             $table->timestamps();
             $table->softDeletes();

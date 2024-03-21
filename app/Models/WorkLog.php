@@ -76,59 +76,6 @@ class WorkLog extends Model
     public function isCompleted(): bool { return $this->status == WorkLogHelper::COMPLETED; }
     public function isClosed(): bool { return $this->status == WorkLogHelper::CLOSED; }
 
-    // public static function count($status, $selected_month): int {
-    //     // $selected_month = $selected_month ?? now();
-    //     // $selected_month = now()->addMonth();
-    //     return (new static)::when($status != WorkLogCodes::ALL, function (Builder $q) use ($status) {
-    //         if ($status == WorkLogCodes::NOTYETEVALUATED)  {
-    //             $q->where('status', WorkLogCodes::ONGOING)
-    //             ->orWhere('status', WorkLogCodes::SUBMITTED)
-    //             ->orWhere('status', WorkLogCodes::TOREVISE);
-    //         } else
-    //             $q->where('status', $status);
-    //     })
-    //     // ->where('started_at', '>', $selected_month->toDateTimeString())
-    //     ->where(function (Builder $q) use ($selected_month) {
-    //         $q->where(function (Builder $q) use ($selected_month) {
-    //             $q->whereNotNull('expected_at')
-    //             ->whereRaw('YEAR(expected_at) <= ' . $selected_month->format('Y'))
-    //             ->whereRaw('MONTH(expected_at) <= ' . $selected_month->format('m'));
-    //             // ->whereYear('expected_at', '2024');
-    //         })
-    //         ->orWhere(function (Builder $q) use ($selected_month) {
-    //             // $q->whereNotNull('latestSubmission_select.evaluated_at')
-    //             // ->whereRaw('YEAR(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('Y'))
-    //             // ->whereRaw('MONTH(latestSubmission_select.evaluated_at) <= ' . $selected_month->format('m'));
-
-    //         //     // $q->whereNotNull('latestSubmission_select')
-    //         //     // ->where('latestSubmission_select', '>', $selected_month->toDateString());
-    //         });
-    //     })
-    //     ->when(auth()->user()->isStaff(), function (Builder $q) {
-    //         $q->where('author_id', auth()->user()->id);
-    //     })
-    //     ->when(! auth()->user()->isStaff(), function (Builder $q) {
-    //         $q->whereNot('author_id', auth()->user()->id);
-    //     })
-    //     ->when(! auth()->user()->isEvaluator2(), function (Builder $q) {
-    //         $q->whereNotNull('latestSubmission_select')
-    //         ->where('latestSubmission_select', );
-    //     })
-    //     // ->addSelect([
-    //     //     'latestSubmission_select' => Submission::query()
-    //     //         ->orderByDesc('number')
-    //     //         ->whereColumn('work_logs.id', 'work_log_id')
-    //     //         ->take(1)
-    //     // ])
-    //     ->count();
-    // }
-
-    public function workScopeTitle (): string {
-        if ($this->workScope)
-            return $this->workScope->title;
-        return $this->custom_workscope_title ?: 'Skop tidak diset!';
-    }
-
     public function submitable (): bool {
         return
         !$this->submissions()->count() || (
@@ -140,7 +87,7 @@ class WorkLog extends Model
     public function evaluatable (): bool {
         // TODO: FOR WHAT?? but something is wrong here please take a look dont leave it
         return Auth::user()->currentlyIs(UserRoleCodes::EVALUATOR_1) &&
-        $this->latestSubmission && // Makes sure this exists then can check deeper
+        $this->latestSubmission && // Makes sure this exists tzhen can check deeper
         !$this->latestSubmission->evaluated_at
         ;
 
@@ -165,14 +112,32 @@ class WorkLog extends Model
         return $this->author->name;
     }
 
-    public function section(): BelongsTo
+    public function unit()
     {
-        return $this->belongsTo(StaffSection::class, 'staff_section_id');
+        if ($this->wrkscp_is_main)
+            return $this->workScopeMain->staffUnit();
+        return $this->workScopeAltUnit();
     }
 
-    public function workScope(): BelongsTo
+    public function workScopeTitle(): string
     {
-        return $this->belongsTo(WorkScope::class);
+        if ($this->wrkscp_is_main)
+            return $this->workScopeMain->title;
+        return $this->wrkscp_alt_title;
+    }
+
+    public function workScopeAltUnit(): BelongsTo
+    {
+        return $this->belongsTo(StaffUnit::class, 'wrkscp_alt_unit_id');
+    }
+
+    public function workScopeMain(): BelongsTo
+    {
+        return $this->belongsTo(WorkScope::class, 'wrkscp_main_id');
+    }
+
+    public function workScopeAlt(): string {
+        return $this->wrkscp_alt_title;
     }
 
     // Submission place starts
@@ -226,9 +191,15 @@ class WorkLog extends Model
             })->groupBy('sub_fk_id');
 
         return WorkLog::query()
-            ->leftJoin('work_scopes','work_logs.work_scope_id', '=', 'work_scopes.id')
-            // ->leftJoin('submissions','work_logs.id', '=', 'submissions.wor_log_id')
+            ->leftJoin('work_scopes','work_logs.wrkscp_main_id', '=', 'work_scopes.id')
             ->join('users','users.id', '=', 'work_logs.author_id')
+            ->leftJoinSub($latestSubmissions, 'latest_submission', function (JoinClause $join) {
+                $join->on('sub_fk_id', '=', 'work_logs.id');
+            })
+            ->select('work_logs.*', 'users.name', 'work_scopes.title',
+                'latest_submission.*',
+            )
+            // Excluding their own worklogs???
             ->when(!auth()->user()->isAdmin(), function (Builder $q) {
                 $q->where('work_logs.author_id', [
                         UserRoleCodes::EVALUATOR_1 => '!=',
@@ -237,61 +208,56 @@ class WorkLog extends Model
                     ][session('selected_role_id')],
                     auth()->user()->id);
             })
-            // Date rules START
+            // // Date rules START
             ->where(function (Builder $q) use ($queried_date) {
                 $q->whereNotNull('work_logs.started_at')
                 ->whereRaw('YEAR(work_logs.started_at) <= ' . $queried_date->format('Y'))
                 ->whereRaw('MONTH(work_logs.started_at) <= ' . $queried_date->format('m'));
             })
-            ->where(function (Builder $q) use ($queried_date) {
-                $q->where(function (Builder $q) use ($queried_date) {
-                    $q->whereNotNull('work_logs.expected_at')
-                    ->whereRaw('YEAR(work_logs.expected_at) >= ' . $queried_date->format('Y'))
-                    ->whereRaw('MONTH(work_logs.expected_at) >= ' . $queried_date->format('m'));
-                });
-                // ->orWhere(function (Builder $q) use ($queried_date) {
-                //     $q->whereNotNull('submissions_submitted_at')
-                //     ->whereRaw('YEAR(submissions_submitted_at) >= ' . $queried_date->format('Y'))
-                //     ->whereRaw('MONTH(submissions_submitted_at) >= ' . $queried_date->format('m'));
-                // });
-            })
+            // ->where(function (Builder $q) use ($queried_date) {
+            //     $q->where(function (Builder $q) use ($queried_date) {
+            //         $q->whereNotNull('work_logs.expected_at')
+            //         ->whereRaw('YEAR(work_logs.expected_at) >= ' . $queried_date->format('Y'))
+            //         ->whereRaw('MONTH(work_logs.expected_at) >= ' . $queried_date->format('m'));
+            //     });
+            //     // ->orWhere(function (Builder $q) use ($queried_date) {
+            //     //     $q->whereNotNull('submissions_submitted_at')
+            //     //     ->whereRaw('YEAR(submissions_submitted_at) >= ' . $queried_date->format('Y'))
+            //     //     ->whereRaw('MONTH(submissions_submitted_at) >= ' . $queried_date->format('m'));
+            //     // });
+            // })
             // Date rules END
 
             // Rules Start
-            ->when(auth()->user()->currentlyIs(UserRoleCodes::STAFF), function (Builder $q) {
-                $q->where('author_id', auth()->user()->id);
-            })
-            ->when(! auth()->user()->currentlyIs(UserRoleCodes::STAFF), function (Builder $q) {
-                $q->whereNot('author_id', auth()->user()->id);
-            })
-            // Only show submitted submissions
+            // ->when(auth()->user()->currentlyIs(UserRoleCodes::STAFF), function (Builder $q) {
+            //     $q->where('author_id', auth()->user()->id);
+            // })
+            // ->when(! auth()->user()->currentlyIs(UserRoleCodes::STAFF), function (Builder $q) {
+            //     $q->whereNot('author_id', auth()->user()->id);
+            // })
+            // Only show submitted submissions for evaluator 2
             ->when(auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_2), function (Builder $query) {
                 $query->whereNotNull('sub_fk_id')
                 ->where('sub_is_accept', true);
-            })
-            ->leftJoinSub($latestSubmissions, 'latest_submission', function (JoinClause $join) {
-                $join->on('sub_fk_id', '=', 'work_logs.id');
-            })
-            ->select('work_logs.*', 'users.name', 'work_scopes.title',
-                'latest_submission.*',
-            );
+            });
     }
 
     protected static function booted(): void
     {
         static::creating(function (WorkLog $worklog) {
             Log::warning('Creating worklog: Attempt');
-            if (
-                // WorkScope from database should be chosen if custom workscope title is not filled
-                (!$worklog->custom_workscope_title && !$worklog->workScope) ||
-                // When using custom title, staff section cannot be null
-                ($worklog->custom_workscope_title && !$worklog->staff_section_id)
-            ) {
-                Log::warning('Either all workscope setting is absoluetly missing, or staff section null when using custom title');
-                return false;
-            }
-            if ($worklog->workScope)
-                $worklog->staff_section_id = $worklog->workScope->staffUnit->staffSection->id;
+            // if (
+            //     $worklog->workScope
+            //     // WorkScope from database should be chosen if custom workscope title is not filled
+            //     // (!$worklog->custom_workscope_title && !$worklog->workScope) ||
+            //     // When using custom title, staff section cannot be null
+            //     // ($worklog->custom_workscope_title && !$worklog->staff_section_id)
+            // ) {
+            //     Log::warning('Either all workscope setting is absoluetly missing, or staff section null when using custom title');
+            //     return false;
+            // }
+            // if ($worklog->workScope)
+            //     $worklog->staff_section_id = $worklog->workScope->staffUnit->staffSection->id;
             // if ($worklog->custom_workscope_title) {
             //     $worklog->staff_section_id = auth()->user()
             // }

@@ -8,7 +8,7 @@
             </h5>
             <div>
                 <p class="mb-1 font-bold text-right text-gray-600">Bahagian</p>
-                <p class="mb-3 text-sm text-right">{{ $workLog->workScope->staffUnit->staffSection->name }}</p>
+                <p class="mb-3 text-sm text-right">{{ $workLog->unit->staffSection->name }}</p>
             </div>
         </div>
 

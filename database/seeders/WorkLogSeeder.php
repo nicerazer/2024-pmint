@@ -16,18 +16,28 @@ class WorkLogSeeder extends Seeder
      */
     public function run(): void
     {
+        // $wlog = new WorkLog();
+        // $wlog->author_id = 1;
+        // $wlog->wrkscp_main_id = 1;
+        // $wlog->wrkscp_alt_unit_id = 1;
+        // $wlog->started_at = ;
+        // $wlog->wrkscp_alt_unit_id = 1;
+        // $wlog->save();
+
         $workScopes = WorkScope::first();
 
         $admin = User::where('name', 'admin')->first();
         $staff = User::where('name', 'staff')->first();
 
         $reject_count = 3;
-        WorkLog::factory(3)->for($workScopes)->for($admin, 'author')
+        // WorkLog::factory(1)->for($workScopes, 'workScopeMain')->for($admin, 'author')->create();
+        WorkLog::factory(3)->for($admin, 'author')->create();
+        WorkLog::factory(3)->for($workScopes, 'workScopeMain')->for($admin, 'author')
         ->has(Submission::factory($reject_count)->rejected())
         ->has(Submission::factory()->accepted())
         ->create();
 
-        WorkLog::factory(3)->for($workScopes)->for($staff, 'author')
+        WorkLog::factory(3)->for($workScopes, 'workScopeMain')->for($staff, 'author')
         ->has(Submission::factory($reject_count)->rejected())
         ->has(Submission::factory()->accepted())
         ->create();

@@ -30,8 +30,9 @@ class SubmissionFactory extends Factory
                 'evaluated_at' => now(),
                 'is_accept' => false,
             ];
-       })->afterMaking(function (Submission $submission) {
-            $submission->evaluator_id = $submission->worklog->section->evaluator1_id;
+       })
+       ->afterMaking(function (Submission $submission) {
+            $submission->evaluator_id = $submission->worklog->unit->staffSection->evaluator1_id;
        });
     }
 
@@ -43,7 +44,7 @@ class SubmissionFactory extends Factory
                 'is_accept' => true,
             ];
        })->afterMaking(function (Submission $submission) {
-            $submission->evaluator_id = $submission->worklog->section->evaluator1_id;
+            $submission->evaluator_id = $submission->worklog->unit->staffSection->evaluator1_id;
        });
     }
 

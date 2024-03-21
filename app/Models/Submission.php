@@ -60,12 +60,12 @@ class Submission extends Model implements HasMedia
             Log::notice('Submission creating: attempt');
             if (
                 // Evaluator 1 must be set when creating submissions
-                !$submission->worklog->section->evaluator1 ||
+                !$submission->worklog->unit->staffSection->evaluator1 ||
                 // 1. When there's one and more submissions (If never made submission can proceed), and
                 // 2. The latest hasn't been evaluated, cancel the submission, throw error
                 $submission->worklog->submissions()->count() > 0 && $submission->worklog->latestSubmission->evaluator == null
             ) {
-                if (!$submission->worklog->section->evaluator1)
+                if (!$submission->worklog->unit->staffSection->evaluator1)
                     Log::error('There is no evaluator assigned');
                 if(!($submission->worklog->submissions()->count() > 0 && $submission->worklog->latestSubmission->evaluator)) {
                     Log::error('The latest submission hasn\'t been evaluated yet. Do that first.');

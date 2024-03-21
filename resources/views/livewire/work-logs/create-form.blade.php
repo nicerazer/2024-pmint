@@ -12,7 +12,7 @@
             <div class="form-control">
                 <select class="w-full select select-bordered @error('form.staffUnit') select-error @enderror"
                     wire:change="switchUnit($event.target.value)" wire:model="form.staffUnit">
-                    <option disabled selected value="">Pilih Unit</option>
+                    <option disabled selected value="-1">Pilih Unit</option>
                     @foreach ($staffUnits as $staff_unit)
                         <option wire:key="{{ $staff_unit->id }}" value="{{ $staff_unit->id }}">{{ $staff_unit->name }}
                         </option>
@@ -36,12 +36,12 @@
                             x-on:change="activityType = $event.target.value">
                             <option disabled>Jenis Aktiviti</option>
                             <option value="main" selected>Aktiviti Utama</option>
-                            <option value="side">Aktiviti Sampingan</option>
+                            <option value="alternative">Aktiviti Sampingan</option>
                         </select>
                         <select
-                            class="w-full rounded-r-full select select-bordered @error('form.workMain') select-error @enderror"
-                            wire:model="form.workMain" x-show="activityType == 'main'" required>
-                            <option disabled selected value="">Pilih Aktiviti</option>
+                            class="w-full rounded-r-full select select-bordered @error('form.workScopeMainId') select-error @enderror"
+                            wire:model="form.workScopeMainId" x-show="activityType == 'main'" required>
+                            <option disabled selected value="-1">Pilih Aktiviti</option>
                             @foreach ($work_scopes as $work_scope)
                                 <option wire:key="{{ $work_scope->id }}" value="{{ $work_scope->id }}">
                                     {{ $work_scope->title }}
@@ -49,11 +49,11 @@
                             @endforeach
                         </select>
                         <input type="text" class="w-full rounded-r-full input input-bordered"
-                            x-show="activityType == 'side'" placeholder="Isi aktiviti sampingan"
+                            x-show="activityType == 'alternative'" placeholder="Isi aktiviti sampingan"
                             wire:model="form.workAlternative">
                     </div>
                     <div class="label">
-                        @error('form.workMain')
+                        @error('form.workScopeMainId')
                             <span class="text-error label-text-alt ml-52">{{ $message }}</span>
                         @enderror
                     </div>
