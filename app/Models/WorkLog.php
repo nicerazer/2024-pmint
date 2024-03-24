@@ -211,8 +211,8 @@ class WorkLog extends Model
             // // Date rules START
             ->where(function (Builder $q) use ($queried_date) {
                 $q->whereNotNull('work_logs.started_at')
-                ->whereRaw('YEAR(work_logs.started_at) <= ' . $queried_date->format('Y'))
-                ->whereRaw('MONTH(work_logs.started_at) <= ' . $queried_date->format('m'));
+                ->whereRaw('YEAR(work_logs.started_at) = ' . $queried_date->format('Y'))
+                ->whereRaw('MONTH(work_logs.started_at) = ' . $queried_date->format('m'));
             })
             // ->where(function (Builder $q) use ($queried_date) {
             //     $q->where(function (Builder $q) use ($queried_date) {

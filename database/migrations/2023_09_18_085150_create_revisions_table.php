@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Worklog;
+use App\Models\WorkLog;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('revisions', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignIdFor(Worklog::class);
+            $table->foreignIdFor(WorkLog::class);
             // $table->string('title');
             $table->string('body');
 
