@@ -42,6 +42,13 @@ class WorkLogSeeder extends Seeder
         ->has(Submission::factory()->accepted())
         ->create();
 
+        User::all()->each(function ($user) use ($workScopes, $reject_count) {
+            WorkLog::factory(3)->for($workScopes, 'workScopeMain')->for($user, 'author')
+            ->has(Submission::factory($reject_count)->rejected())
+            ->has(Submission::factory()->accepted())
+            ->create();
+        });
+
         // $singleSubmissionWithoutAccept = Submission::factory()->sequence(fn (Sequence $s) => ['number' => $s->index]);
         // $multipleSubmissionWithRejectsOnly = Submission::factory($reject_count)
         //     ->sequence(fn (Sequence $s) => ['number' => $s->index]);

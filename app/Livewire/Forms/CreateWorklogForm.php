@@ -47,10 +47,12 @@ class CreateWorklogForm extends Form
             'activityType' => 'required|string|in:main,alternative',
             // 'workScopeMainId' => 'required|',
             'workScopeMainId' => [function (string $attribute, mixed $value, Closure $fail) {
-                if ($this->activityType == 'main' && !$value || $value == -1) {
-                    $fail("Aktiviti perlu dipilih");
-                } else if (!WorkScope::find($value)) {
-                    $fail("Aktiviti tidak wujud dalam sistem");
+                if ($this->activityType == 'main') {
+                    if (!$value || $value == -1) {
+                        $fail("Aktiviti perlu dipilih");
+                    } else if (!WorkScope::find($value)) {
+                        $fail("Aktiviti tidak wujud dalam sistem");
+                    }
                 }
             }],
             'workAlternative' => ['nullable','string',function (string $attribute, mixed $value, Closure $fail) {
@@ -108,7 +110,7 @@ class CreateWorklogForm extends Form
             'expected_at' => $this->expected_submitted_at,
             'author_id' => auth()->user()->id,
             'wrkscp_is_main' => $this->activityType == 'main',
-            'wrkscp_main_id' => $this->workScopeMainId,
+            'wrkscp_main_id' => $this->workScopeMainId == -1 ? 1 : $this->workScopeMainId,
             'wrkscp_alt_unit_id' => auth()->user()->unit->id,
             'wrkscp_alt_title' => $this->workAlternative,
 

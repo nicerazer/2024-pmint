@@ -13,6 +13,19 @@
             // const data = [{x: 'Jan', net: 100, cogs: 50, gm: 50}, {x: 'Feb', net: 120, cogs: 55, gm: 75}];
             // const data = [{'x': 'Jan', 'Staff A': 100, 'Staff B': 50, 'Staff C': 50}, {'x': 'Feb', 'Staff A': 120, 'Staff B': 55, 'Staff C': 75}];
             const data = {{ Js::from($data) }};
+            // const staffs = ['Staff A', 'Staff B', 'Staff C'];
+            const staffs = {{ Js::from($staffs) }};
+            let objs = [];
+
+            staffs.forEach(staff => {
+                objs.push({
+                    label: staff,
+                    data: data,
+                    parsing: {
+                        yAxisKey: staff
+                    }
+                });
+            });
 
             new Chart(
                 document.getElementById('acquisitions'), {
@@ -25,27 +38,10 @@
                     //     }]
                     // }
                     data: {
-    labels: ['Jan', 'Feb'],
-    datasets: [{
-      label: 'Staff A',
-      data: data,
-      parsing: {
-        yAxisKey: 'Staff A'
-      }
-    }, {
-      label: 'Staff B',
-      data: data,
-      parsing: {
-        yAxisKey: 'Staff B'
-      }
-    }, {
-      label: 'Staff C',
-      data: data,
-      parsing: {
-        yAxisKey: 'Staff C'
-      }
-    }]
-  },
+                        // labels: ['Jan', 'Feb'],
+                        // datasets: objs
+                        datasets: objs
+                    },
                 }
             );
 

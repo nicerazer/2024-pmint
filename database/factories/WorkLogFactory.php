@@ -31,14 +31,14 @@ class WorkLogFactory extends Factory
 
         switch ($status) {
             case WorkLogCodes::ONGOING: case WorkLogCodes::SUBMITTED: case WorkLogCodes::TOREVISE:
-                $started_at     = now()->subHours(4);
-                $expected_at    = now()->addHours(3)->addHours(mt_rand(1,10));
+                $started_at     = now()->subDays(4);
+                $expected_at    = now()->addDays(3)->addDays(mt_rand(1,10));
                 // $submitted_at   = null;
                 break;
             case 3:case 4:
-                $started_at     = now()->subHours(12);
-                $expected_at    = now()->subHours(10)->addHours(1,10);
-                // $submitted_at   = now()->subHours(3)->addHours(4,50);
+                $started_at     = now()->subDays(12);
+                $expected_at    = now()->subDays(10)->addDays(1,10);
+                // $submitted_at   = now()->subDays(3)->addDays(4,50);
                 break;
         }
 

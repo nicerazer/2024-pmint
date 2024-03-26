@@ -1,6 +1,8 @@
 <?php
 
+use App\Helpers\ReportQueries;
 use App\Helpers\UserRoleCodes;
+use App\Helpers\WorkLogCodes;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffSectionController;
 use App\Http\Controllers\SwitchRoleController;
@@ -35,47 +37,15 @@ Route::get('/pictest', function () {
 });
 
 Route::get('/report', function () {
-    $month = 1;
+    $month = 3;
     $year = 2024;
     $date_cursor = new Carbon("$year-$month-01");
 
-    $selected_section = StaffSection::inRandomOrder()->first();
-    $worklogs = WorkLog::indexQuery($date_cursor)->get();
-
-    // $worklogs
-
-    // $worklogs = WorkLog::where([
-    //     ['started_at', '>=', $date_cursor->toDateString()],
-    //     // ['expected_at', '<=', $date_cursor->addMonth()->subDay()->toDateString()],
-    //     // ['staff_unit_id', $selected_section->id]
-    // ])
-    // ->get();
-
-    $staffInfo = [
-        [ 'id' => 1, 'name' => 'Staff A' ],
-        [ 'id' => 2, 'name' => 'Staff B' ],
-        [ 'id' => 3, 'name' => 'Staff C' ],
-    ];
-
-    $monthAbbs = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    $data = collect();
-    for($i = 0; $i < 12; ++$i) {
-        $temp = collect([
-            'x' => $monthAbbs[$i]
-        ]);
-        $temp['Staff A'] = 100;
-        $temp['Staff B'] = 50;
-        $temp['Staff C'] = 20;
-        $data->push($temp);
-    }
+    $reportData = ReportQueries::annual($date_cursor);
 
     return view('pages.reports.index', [
-        'data' => $data
-        // '' => 'asdasd'
-        // 'data' => [
-        //     ['x' => 'Jan', 'Staff A' => 100, 'Staff B' => 50, 'Staff C' => 50],
-        //     ['x' => 'Feb', 'Staff A' => 120, 'Staff B' => 55, 'Staff C' => 75]
-        // ]
+        'data' => $reportData['data']->all(),
+        'staffs' => $reportData['staffs'],
     ]);
 });
 
