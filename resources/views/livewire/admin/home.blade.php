@@ -255,10 +255,25 @@
             <livewire:admin.edit-staffunit :$model_id />
         </div>
     </div>
-
-    @push('scripts')
-        <script>
-            // let staffSections = {{ Illuminate\Support\Js::from($staff_sections) }};
-        </script>
-    @endpush
 </div>
+
+{{-- @script --}}
+<script type="module">
+    (async function () {
+        // Data from back end for bridge
+        // Event listener for model change
+        // Refresh the mapping, re-execute function
+        // // When to refresh? When the component refresh via Livewire
+
+        // Methods to bind data
+        // 1. Sync using morph
+        // --- Listener
+        // 2. Sync through alpinejs
+        // --- Listener
+        // --- Internal props
+        // document.addEventListener(('wire:init') => {
+
+        // })
+    })();
+</script>
+{{-- @endscript --}}

@@ -37,7 +37,7 @@
         </div>
 
         <button class="mr-4 text-white btn btn-ghost btn-circle">
-            {{-- Notifications --}}
+            <!-- Notifications -->
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -45,7 +45,7 @@
             </svg>
         </button>
         <button class="text-white btn btn-ghost btn-circle">
-            {{-- Messages --}}
+            <!-- Messages -->
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -64,10 +64,15 @@
             <div tabindex="0" class="dropdown-content z-[1] card card-compact w-96 p-2 bg-white shadow">
                 <div class="card-body">
                     <div class="flex gap-4 mb-3">
-                        <div class="w-16 h-16 bg-gray-400 rounded-full"></div>
+                        @if (auth()->user()->getMedia('avatar')->count())
+                            <img src="{{ auth()->user()->getFirstMediaUrl('avatar') }}" alt="Avatar"
+                                class="w-16 mx-auto bg-white border rounded-full aspect-square">
+                        @else
+                            <div class="w-16 h-16 bg-gray-400 rounded-full"></div>
+                        @endif
                         <div class="flex-grow">
                             <h4 class="mb-0 capitalize card-title">{{ auth()->user()->name }}</h4>
-                            <h5 class="mb-2">id: {{ auth()->user()->id }}</h5>
+                            <h5 class="mb-2">ID NO: {{ auth()->user()->id }}</h5>
                             <div class="w-8 h-1 rounded-full bg-accent"></div>
                         </div>
 

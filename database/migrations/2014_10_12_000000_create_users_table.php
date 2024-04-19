@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('ic')->unique();
             $table->string('email')->unique();
+            $table->string('position');
             $table->foreignIdFor(StaffUnit::class);
             // $table->foreignIdFor(StaffUnit::class)->nullable();
             $table->timestamp('email_verified_at')->nullable();

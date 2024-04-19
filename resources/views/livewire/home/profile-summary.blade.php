@@ -6,16 +6,21 @@
 <div class="w-[20rem]"><!-- Profile Section -->
     @if (auth()->user()->getMedia('avatar')->count())
         <img src="{{ auth()->user()->getFirstMediaUrl('avatar') }}" alt="Avatar"
-            class="w-[16rem] mb-8 border rounded-full bg-white mx-auto">
+            class="w-[16rem] mb-8 border rounded-full bg-white mx-auto aspect-square">
     @else
-        <div class="flex items-center justify-center text-center border rounded-full bg-slate-300 w-[16rem] h-[16rem]">
+        <div class="flex items-center justify-center text-center border rounded-full bg-slate-300 w-[16rem] h-[16rem] mx-auto">
             Tiada Gambar</div>
     @endif
-    <div class="mb-4">
+    <div class="my-4 text-center">
         <h2 class="text-lg font-bold capitalize">{{ auth()->user()->name }}</h2>
         <p class="text-lg text-gray-600 capitalize">{{ 'Pengurus Besar Khidmat Sokongan' }}</p>
     </div>
-    <a href="{{ route('profile.edit') }}" wire:navigate class="w-full btn btn-ghost">Kemaskini Profil</a>
+    <a href="{{ route('profile.edit') }}" wire:navigate class="w-full btn btn-secondary btn-sm">
+        <span>Kemaskini Profil</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+            <path d="m2.695 14.762-1.262 3.155a.5.5 0 0 0 .65.65l3.155-1.262a4 4 0 0 0 1.343-.886L17.5 5.501a2.121 2.121 0 0 0-3-3L3.58 13.419a4 4 0 0 0-.885 1.343Z" />
+        </svg>
+    </a>
     <div class="divider"></div>
     <div class="w-full bg-white border stats stats-vertical">
 

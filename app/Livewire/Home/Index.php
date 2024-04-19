@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
-use Livewire\Attributes\Renderless;
 use Livewire\Component;
 
 class Index extends Component

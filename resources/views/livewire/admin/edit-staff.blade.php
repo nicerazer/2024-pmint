@@ -1,12 +1,16 @@
-<div class="card-body">
+<div class="card-body" x-data="
+    monthly_staff:
+">
     @php
         use App\Helpers\UserRoleCodes;
     @endphp
 
     <h2 class="card-title">Kemaskini Staff</h2>
-    {{ $form->selected_section_id }}
-    {{ $form->selected_unit_id }}
+    {{-- {{ $form->selected_section_id }}
+    {{ $form->selected_unit_id }} --}}
     @if ($staff)
+        <div style="width: 800px;"><canvas id="monthly_staff"></canvas></div>
+
         <form wire:submit="save">
             <label class="w-full mb-2 form-control">
                 <div class="label">
@@ -138,6 +142,10 @@
                 <button class="btn btn-primary w-72">Kemaskini</button>
             </div>
         </form>
+
+        {{-- script not loading --}}
+
+
     @else
         Sedang ambil data dari sistem...
     @endif
@@ -145,3 +153,7 @@
         {{ $message }}
     @endforeach
 </div>
+
+{{-- @script
+<script></script>
+@endscript --}}

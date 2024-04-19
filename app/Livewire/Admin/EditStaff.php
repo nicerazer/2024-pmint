@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Helpers\ReportQueries;
 use App\Helpers\UserRoleCodes;
 use App\Livewire\Forms\EditStaffForm;
 use App\Models\StaffUnit;
@@ -19,6 +20,7 @@ class EditStaff extends Component
     #[Reactive]
     public $model_id;
     public $staff;
+    public $report_monthly_staff;
 
     // public $selected_section_id = -1;
     // public $selected_unit_id = -1;
@@ -98,6 +100,10 @@ class EditStaff extends Component
             $this->form->has_role_evaluator_1 = in_array(UserRoleCodes::EVALUATOR_1, $staff_roles);
             $this->form->has_role_evaluator_2 = in_array(UserRoleCodes::EVALUATOR_2, $staff_roles);
             $this->form->has_role_staff = in_array(UserRoleCodes::STAFF, $staff_roles);
+
+            $this->report_monthly_staff = [
+                'data' => ReportQueries::monthlyStaff(now())
+            ];
         }
         // }
         // $this->form->selected_section_id = 5;

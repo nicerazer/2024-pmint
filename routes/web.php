@@ -22,30 +22,37 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Home\Index as HomeIndex;
+use App\Livewire\Test\Example as TestExample;
 
-// auth()->logout();
-// session()->clear = null;
-
-// if (! auth()->check())
-    // auth()->login(User::where('email', 'evaluator-2@mail.com')->first());
-
-Route::get('/pictest', function () {
-    // return fake()->imageUrl();
-    // return "<img src='" . Submission::first()->getFirstMediaUrl('images') . "' />";
-    // return "<img src='" . database_path('seeders/stubs/photo-1550258987-190a2d41a8ba.jpg') . "' />";
-    // return '<img src="">';
-});
+// Route::get('testexample', )
 
 Route::get('/report', function () {
     $month = 3;
     $year = 2024;
     $date_cursor = new Carbon("$year-$month-01");
 
-    $reportData = ReportQueries::annual($date_cursor);
+    $monthlyStaff = ReportQueries::monthlyStaff($date_cursor);
+    $monthlyUnit = ReportQueries::monthlyUnit($date_cursor);
+    $monthlySection = ReportQueries::monthlySection($date_cursor);
+    $monthlyOverall = ReportQueries::monthlyOverall($date_cursor);
+    $annualSection = ReportQueries::annualSection($date_cursor);
 
     return view('pages.reports.index', [
-        'data' => $reportData['data']->all(),
-        'staffs' => $reportData['staffs'],
+        'monthly_staff' => [
+            'data' => $monthlyStaff,
+        ],
+        'monthly_unit' => [
+            'data' => $monthlyUnit['data']->all(),
+            'labels' => $monthlyUnit['staffs'],
+        ],
+        'monthly_section' => [
+            'data' => $monthlySection['data']->all(),
+            'labels' => $monthlySection['labels'],
+        ],
+        'monthly_overall' => $monthlyOverall,
+        'annual_section' => [
+            'data' => $annualSection,
+        ],
     ]);
 });
 
@@ -58,6 +65,7 @@ Route::get('/organization-treeview', function () {
 Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
 
 Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
+    Route::get('/example', TestExample::class)->name('example');
     Route::get('/', HomeIndex::class)->name('home');
     Route::put('/switch-role/{role}', SwitchRoleController::class)->name('switch-role');
 

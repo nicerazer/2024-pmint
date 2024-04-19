@@ -78,17 +78,13 @@
                 {{-- Login Form --}}
                 <div class="w-full mb-12">
                     @csrf
-                    <label class="form-control">
+                    <label class="mb-3 form-control">
                         <div class="label">
                             <span class="label-text">No IC</span>
                         </div>
                         <input type="text" placeholder="Isi no ic" class="w-full input input-bordered" name="email"
                             :value="old('email')" required autofocus autocomplete="email" />
-
-                        <div class="label">
-                            <span class="label-text-alt text-error">IC tidak wujud!</span>
-                        </div>
-
+                        <x-input-login-error :messages="$errors->get('email')" />
                     </label>
                     <label class="form-control">
                         <div class="label">
@@ -96,9 +92,7 @@
                         </div>
                         <input type="password" name="password" placeholder="Isi kata laluan"
                             class="w-full input input-bordered" required autocomplete="current-password" />
-                        <div class="label">
-                            <span class="label-text-alt text-error">Kata laluan tidak betul</span>
-                        </div>
+                        <x-input-login-error :messages="$errors->get('password')" />
                     </label>
                 </div>
                 {{-- Forget password --}}

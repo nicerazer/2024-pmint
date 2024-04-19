@@ -12,10 +12,17 @@ class CreateStaffsection extends Component
     public $name = '';
 
     public function save() {
-        // dd($this->only(['name']));
-        StaffSection::create(
+        $newSection = StaffSection::create(
             $this->only(['name'])
         );
+
+        session()->flash('status-class', 'success');
+        session()->flash('message', 'Bahagian telah ditambah');
+        session()->flash('admin_is_creating', 0);
+        session()->flash('admin_model_context', 'staff_section');
+        session()->flash('admin_model_id', $newSection->id);
+
+        $this->redirect('/');
     }
 
     public function render()
