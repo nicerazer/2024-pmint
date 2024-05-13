@@ -4,6 +4,7 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -27,7 +28,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            $this->username() => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,7 +42,8 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->credentials(), $this->boolean('remember'))) {
+        // if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -73,6 +75,23 @@ class LoginRequest extends FormRequest
                 'minutes' => ceil($seconds / 60),
             ]),
         ]);
+    }
+
+    /**
+     * Get the needed authorization credentials from the request.
+     *
+     * @return array
+     */
+    protected function credentials()
+    {
+        return $this->only($this->username(), 'password');
+    }
+
+    private function username()
+    {
+        $field = (filter_var($this->email, FILTER_VALIDATE_EMAIL) || !$this->email) ? 'email' : 'ic';
+        $this->merge([$field => $this->email]); // 'username' => '123456'
+        return $field;
     }
 
     /**

@@ -13,6 +13,7 @@ use Rappasoft\LaravelLivewireTables\Views\Traits\IsExternalFilter;
 class Month extends Component
 {
     public Carbon $selected_date;
+    public Collection $worklog_count_by_month;
 
     #[Url(as: 'bulan')]
     public string $month_translated;

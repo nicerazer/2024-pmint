@@ -172,6 +172,9 @@ class RappasoftTable extends DataTableComponent
                 ->searchable(
                     fn(Builder $query, $searchTerm) => $query
                         ->orWhere(function (Builder $q) use ($searchTerm) {
+                            $q->where('users.name', 'like', "%$searchTerm%");
+                        })
+                        ->orWhere(function (Builder $q) use ($searchTerm) {
                             $q->where('wrkscp_is_main', 1)
                             ->where('work_scopes.title', 'like', "%$searchTerm%");
                         })
@@ -210,7 +213,7 @@ class RappasoftTable extends DataTableComponent
 
     public function filters(): array
     {
-        return [];
+        // return [];
         return array_values(array_filter([
             SelectFilter::make('Status')
                 ->options(WorkLogCodes::GETOPTIONS())
@@ -219,21 +222,21 @@ class RappasoftTable extends DataTableComponent
                         $query->where('work_logs.status', $value);
                 }),
 
-            // session('selected_role_id') == UserRoleCodes::EVALUATOR_1 || session('selected_role_id') == UserRoleCodes::EVALUATOR_2 ?
-            //     SelectFilter::make('Bahagian')
-            //         ->options(
-            //             ['' => 'Semua Bahagian'] +
-            //             Auth::user()
-            //                 ->sectionsByRole()
-            //                 ->orderBy('name')
-            //                 ->get()
-            //                 ->keyBy('id')
-            //                 ->map(fn($section) => "📝 $section->name")
-            //                 ->toArray()
-            //         )
-            //         ->filter(function(Builder $query, string $value) {
-            //             $query->where('work_logs.staff_section_id', $value);
-            //         }):NULL,
+            session('selected_role_id') == UserRoleCodes::EVALUATOR_1 || session('selected_role_id') == UserRoleCodes::EVALUATOR_2 ?
+                SelectFilter::make('Bahagian')
+                    ->options(
+                        ['' => 'Semua Bahagian'] +
+                        Auth::user()
+                            ->sectionsByRole()
+                            ->orderBy('name')
+                            ->get()
+                            ->keyBy('id')
+                            ->map(fn($section) => "📝 $section->name")
+                            ->toArray()
+                    )
+                    ->filter(function(Builder $query, string $value) {
+                        $query->where('work_logs.staff_section_id', $value);
+                    }):NULL,
             // LivewireComponentFilter::make('My External Filter')
             //     ->setLivewireComponent('work-logs.filters.month')
             //     ->filter(function (Builder $builder, string $value) {

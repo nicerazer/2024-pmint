@@ -99,21 +99,21 @@ class Index extends Component
         // Date rules START
         ->where(function (Builder $q) {
             $q->whereNotNull('work_logs.started_at')
-            ->whereRaw('YEAR(work_logs.started_at) <= ' . $this->selected_month->format('Y'))
-            ->whereRaw('MONTH(work_logs.started_at) <= ' . $this->selected_month->format('m'));
+            ->whereRaw('YEAR(work_logs.started_at) = ' . $this->selected_month->format('Y'))
+            ->whereRaw('MONTH(work_logs.started_at) = ' . $this->selected_month->format('m'));
         })
-        ->where(function (Builder $q) {
-            $q->where(function (Builder $q) {
-                $q->whereNotNull('work_logs.expected_at')
-                ->whereRaw('YEAR(work_logs.expected_at) >= ' . $this->selected_month->format('Y'))
-                ->whereRaw('MONTH(work_logs.expected_at) >= ' . $this->selected_month->format('m'));
-            })
-            ->orWhere(function (Builder $q) {
-                $q->whereNotNull('submissions_submitted_at')
-                ->whereRaw('YEAR(submissions_submitted_at) >= ' . $this->selected_month->format('Y'))
-                ->whereRaw('MONTH(submissions_submitted_at) >= ' . $this->selected_month->format('m'));
-            });
-        })
+        // ->where(function (Builder $q) {
+        //     $q->where(function (Builder $q) {
+        //         $q->whereNotNull('work_logs.expected_at')
+        //         ->whereRaw('YEAR(work_logs.expected_at) >= ' . $this->selected_month->format('Y'))
+        //         ->whereRaw('MONTH(work_logs.expected_at) >= ' . $this->selected_month->format('m'));
+        //     })
+        //     ->orWhere(function (Builder $q) {
+        //         $q->whereNotNull('submissions_submitted_at')
+        //         ->whereRaw('YEAR(submissions_submitted_at) >= ' . $this->selected_month->format('Y'))
+        //         ->whereRaw('MONTH(submissions_submitted_at) >= ' . $this->selected_month->format('m'));
+        //     });
+        // })
         // Date rules END
 
         ->leftJoinSub($latestSubmissions, 'latest_submission_id', function (JoinClause $join) {

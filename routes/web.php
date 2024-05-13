@@ -3,6 +3,7 @@
 use App\Helpers\ReportQueries;
 use App\Helpers\UserRoleCodes;
 use App\Helpers\WorkLogCodes;
+use App\Http\Controllers\DataReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffSectionController;
 use App\Http\Controllers\SwitchRoleController;
@@ -26,36 +27,6 @@ use App\Livewire\Test\Example as TestExample;
 
 // Route::get('testexample', )
 
-Route::get('/report', function () {
-    $month = 3;
-    $year = 2024;
-    $date_cursor = new Carbon("$year-$month-01");
-
-    $monthlyStaff = ReportQueries::monthlyStaff($date_cursor);
-    $monthlyUnit = ReportQueries::monthlyUnit($date_cursor);
-    $monthlySection = ReportQueries::monthlySection($date_cursor);
-    $monthlyOverall = ReportQueries::monthlyOverall($date_cursor);
-    $annualSection = ReportQueries::annualSection($date_cursor);
-
-    return view('pages.reports.index', [
-        'monthly_staff' => [
-            'data' => $monthlyStaff,
-        ],
-        'monthly_unit' => [
-            'data' => $monthlyUnit['data']->all(),
-            'labels' => $monthlyUnit['staffs'],
-        ],
-        'monthly_section' => [
-            'data' => $monthlySection['data']->all(),
-            'labels' => $monthlySection['labels'],
-        ],
-        'monthly_overall' => $monthlyOverall,
-        'annual_section' => [
-            'data' => $annualSection,
-        ],
-    ]);
-});
-
 Route::get('/organization-treeview', function () {
     if (auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_1))
         return view('pages.organization-treeview');
@@ -65,6 +36,9 @@ Route::get('/organization-treeview', function () {
 Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
 
 Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
+
+    Route::get('/data-report', DataReportController::class)->name('data-report');
+
     Route::get('/example', TestExample::class)->name('example');
     Route::get('/', HomeIndex::class)->name('home');
     Route::put('/switch-role/{role}', SwitchRoleController::class)->name('switch-role');

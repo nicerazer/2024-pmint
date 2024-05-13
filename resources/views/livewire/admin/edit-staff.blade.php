@@ -1,6 +1,4 @@
-<div class="card-body" x-data="
-    monthly_staff:
-">
+<div class="card-body">
     @php
         use App\Helpers\UserRoleCodes;
     @endphp
@@ -8,8 +6,8 @@
     <h2 class="card-title">Kemaskini Staff</h2>
     {{-- {{ $form->selected_section_id }}
     {{ $form->selected_unit_id }} --}}
+    <div style="width: 800px;" wire:ignore><canvas id="canvas_monthly_staff"></canvas></div>
     @if ($staff)
-        <div style="width: 800px;"><canvas id="monthly_staff"></canvas></div>
 
         <form wire:submit="save">
             <label class="w-full mb-2 form-control">
@@ -152,8 +150,34 @@
     @foreach ($errors->all() as $message)
         {{ $message }}
     @endforeach
+    <script>
+        document.addEventListener('livewire:init', () => {
+
+            const chart = new Chart(
+                document.getElementById('canvas_monthly_staff'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Empty'],
+                        datasets: [
+                            {
+                                label: 'Empty',
+                                data: [0]
+                            }
+                        ]
+                    },
+                }
+            );
+
+            Livewire.on('change-something', (data) => {
+                console.log(data[0]);
+                // chart.data = [1,2,4,5,5,6,1];
+                chart.data.datasets[0].data = data[0];
+                chart.update();
+            });
+        });
+
+    </script>
 </div>
 
 {{-- @script
-<script></script>
 @endscript --}}

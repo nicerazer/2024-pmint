@@ -3,10 +3,12 @@
         <a href="/" wire:navigate class="text-lg text-white normal-case btn btn-ghost">PMINT - Sistem Log
             Aktiviti</a>
         <div class="ml-12 text-white">
-            <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Senarai Log Kerja</a>
-            {{-- @if (auth()->user()->isStaff() || auth()->user()->isAnEvaluator())
-                <a href="/logkerja" wire:navigate class="text-white capitalize btn btn-ghost">Kerja</a>
-            @else --}}
+            @if (auth()->user()->isAdmin())
+                <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Ruang Kemaskini</a>
+                <a href="/data-report" wire:navigate class="text-white capitalize btn btn-ghost">Laporan</a>
+            @else
+                <a href="/" wire:navigate class="text-white capitalize btn btn-ghost">Senarai Log Kerja</a>
+            @endif
             {{-- <a href="/staff-units" wire:navigate class="text-white capitalize btn btn-ghost">Unit</a> --}}
             {{-- @endif --}}
         </div>
@@ -22,8 +24,8 @@
             <div tabindex="0" role="button" class="text-white capitalize btn btn-ghost rounded-btn">Mod
                 <span class="badge-secondary badge">
                     {{ App\Models\Role::find(session('selected_role_id'))->title }}
+                </span>
             </div>
-            </span>
             <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
                 @foreach (auth()->user()->roles as $role)
                     <li>

@@ -5,7 +5,7 @@
             <div class="label">
                 <span class="label-text">Nama Bahagian</span>
             </div>
-            <input type="text" placeholder="Isi nama unit" class="w-full input input-bordered" wire:model="name">
+            <input type="text" placeholder="Isi nama bahagian" class="w-full input input-bordered" wire:model="name">
             @error('name')
                 <div class="label text-error">
                     <span class="label-text-alt">{{ $message }}</span>

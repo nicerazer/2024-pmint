@@ -28,6 +28,9 @@ class Example extends Component
         2016,
     ];
 
+
+    public string $strr = 'asdasd';
+
     public array $datasets = [
         'label' => 'Acquisitions by year',
         'data' => [
@@ -54,7 +57,13 @@ class Example extends Component
 
     public function changesomething() {
         $this->report_monthly_staff[0]['count'] = 100;
-        $this->dispatch('change-something');
+        $this->labels[0] = 202124;
+        $this->strr = '202124asdasd';
+        Log::debug($this->labels);
+        // $this->dispatch('change-something',
+        //     $this->datasets['data']);
+        $this->dispatch('change-something',
+            [1,2,4,5,5,6,1]);
     }
 
     public function render() {

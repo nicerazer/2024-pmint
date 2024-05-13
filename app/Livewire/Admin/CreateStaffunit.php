@@ -18,7 +18,7 @@ class CreateStaffunit extends Component
         );
 
         session()->flash('status-class', 'success');
-        session()->flash('message', 'Bahagian telah ditambah');
+        session()->flash('message', 'Unit telah ditambah');
         session()->flash('admin_is_creating', 0);
         session()->flash('admin_model_context', 'staff_unit');
         session()->flash('admin_model_id', $newUnit->id);

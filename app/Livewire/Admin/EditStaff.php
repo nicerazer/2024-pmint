@@ -101,18 +101,14 @@ class EditStaff extends Component
             $this->form->has_role_evaluator_2 = in_array(UserRoleCodes::EVALUATOR_2, $staff_roles);
             $this->form->has_role_staff = in_array(UserRoleCodes::STAFF, $staff_roles);
 
-            $this->report_monthly_staff = [
-                'data' => ReportQueries::monthlyStaff(now())
-            ];
+            $this->report_monthly_staff = ReportQueries::monthlyStaff(now());
+            Log::debug($this->report_monthly_staff);
+            // }
         }
-        // }
         // $this->form->selected_section_id = 5;
 
         // Log::debug('Staff');
         // Log::debug($this->staff_units->count());
         return view('livewire.admin.edit-staff');
     }
-
-    // public function render() {
-    // }
 }
