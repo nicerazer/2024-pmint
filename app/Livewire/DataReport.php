@@ -52,17 +52,15 @@ class DataReport extends Component
         }
         else if ($this->model_context == 'staff_unit') {
             $monthly_unit_temp = ReportQueries::monthlyUnit($this->date_cursor, $this->model_id);
-            Log::debug($monthly_unit_temp);
-
-            // return [];
-            // Data is correct
-            // $this->monthly_unit = [
-            //     'data' => $monthly_unit_temp['data']->all(),
-            //     'labels' => $monthly_unit_temp['staffs'],
-            // ];
             return [
                 'data' => $monthly_unit_temp['data']->all(),
                 'labels' => $monthly_unit_temp['staffs'],
+            ];
+        } else if ($this->model_context == 'staff_section') {
+            $monthly_unit_temp = ReportQueries::monthlySection($this->date_cursor, $this->model_id);
+            return [
+                'data' => $monthly_unit_temp['data']->all(),
+                'labels' => $monthly_unit_temp['labels'],
             ];
         }
     }
@@ -88,7 +86,7 @@ class DataReport extends Component
 
         $monthlyStaff = ReportQueries::monthlyStaff($this->date_cursor, User::find($this->model_id));
         $monthlyUnit = ReportQueries::monthlyUnit($this->date_cursor, $this->model_id);
-        $monthlySection = ReportQueries::monthlySection($this->date_cursor);
+        $monthlySection = ReportQueries::monthlySection($this->date_cursor, $this->model_id);
         $monthlyOverall = ReportQueries::monthlyOverall($this->date_cursor);
         // $annualSection = ReportQueries::annualSection($this->date_cursor);
 

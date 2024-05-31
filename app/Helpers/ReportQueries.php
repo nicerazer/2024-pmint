@@ -97,7 +97,7 @@ class ReportQueries {
         return ['data' => $data, 'staffs' => $staffs];
     }
 
-    static public function monthlySection($date) {
+    static public function monthlySection($date, $staff_section_id) {
         $year = 2024;
 
         $wl_count_infos = WorkLog::query()
@@ -117,7 +117,7 @@ class ReportQueries {
             "staff_units.name",
             DB::raw("COUNT(author_id) AS count")
         )
-        ->where("staff_sections.id", 1)
+        ->where("staff_sections.id", $staff_section_id)
         ->whereRaw("YEAR(started_at) >= " . $year)
         ->whereRaw("YEAR(started_at) < " . $year + 1)
         ->groupBy("month", "staff_units.id")

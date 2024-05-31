@@ -49,8 +49,8 @@
             <div class="flex justify-between">
                 <div>
                     <h3 class="text-lg font-bold">Laporan Bahagian</h3>
-                    @if ($selected_unit)
-                        <h4 class="mb-2 text-lg">{{$selected_unit->name}}</h4>
+                    @if ($selected_section)
+                        <h4 class="mb-2 text-lg">{{$selected_section->name}}</h4>
                         {{-- <h4><div class="badge badge-neutral">IC</div> {{$selected_unit->ic}}</h4>
                         <h4><div class="badge badge-neutral">ID</div> {{$selected_unit->id}}</h4> --}}
                         {{-- <h4>Bahagian {{$selected_unit->staff_section}}</h4> --}}
@@ -133,22 +133,22 @@
                         }
                     });
                 });
-
-                    // {
-                    //     [a]: {
-                    //         labels: b,
-                    //         data: c
-                    //     }
-                    // };
-                // chart_staff.data.datasets[0].data = data[0];
                 chart_unit.data.datasets = temp;
-                // data: { datasets: temp };
                 chart_unit.update();
             });
 
-            Livewire.on('update-chart-section_section', (data) => {
-                console.log(data[0]);
-                chart_section.data.datasets[0].data = data[0];
+            Livewire.on('update-chart-staff_section', (data) => {
+                let temp = [];
+                data[0].labels.forEach(label => {
+                    temp.push({
+                        label: label,
+                        data: data[0].data,
+                        parsing: {
+                            yAxisKey: label
+                        }
+                    });
+                });
+                chart_section.data.datasets = temp;
                 chart_section.update();
             });
 
@@ -178,22 +178,6 @@
                     }
                 });
             });
-            // datasets [
-            //     {
-            //         'label': 'staff A'
-            //         'data': ['x', 'staff a': 1, 'staff b': 3],
-            //         parsing: {
-            //             yAxisKey: label
-            //         }
-            //     },
-            //     {
-            //         'label': 'staff B'
-            //         'data': ['x', 'staff a': 1, 'staff b': 3],
-            //         parsing: {
-            //             yAxisKey: label
-            //         }
-            //     },
-            // ]
 
             const chart_unit = new Chart(
                 document.getElementById('monthly_unit'), {
