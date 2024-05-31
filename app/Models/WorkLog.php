@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Helpers\UserRoleCodes;
 use App\Helpers\WorkLogCodes;
 use App\Helpers\WorkLogHelper;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -75,6 +76,10 @@ class WorkLog extends Model
     public function isToRevise(): bool { return $this->status == WorkLogHelper::TOREVISE; }
     public function isCompleted(): bool { return $this->status == WorkLogHelper::COMPLETED; }
     public function isClosed(): bool { return $this->status == WorkLogHelper::CLOSED; }
+
+    // public function evaluator(): BelongsTo {
+    //     return $this->belongsTo(User::class, 'sub_evaluator_id', 'id');
+    // }
 
     public function submitable (): bool {
         return
@@ -167,7 +172,14 @@ class WorkLog extends Model
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    public static function indexQuery($queried_date): \Illuminate\Database\Eloquent\Builder
+
+    /**
+     * Undocumented function
+     *
+     * @param \Carbon\Carbon $queried_date
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function indexQuery(Carbon $queried_date): \Illuminate\Database\Eloquent\Builder
     {
         // $latestSubmissions = Submission::select(
         //     DB::raw('DISTINCT submissions.work_log_id AS sub_fk_id'),
@@ -183,6 +195,7 @@ class WorkLog extends Model
                 DB::raw('MAX(t1.number) AS sub_number'),
                 DB::raw('MAX(t1.id) AS sub_id'),
                 DB::raw('MAX(t1.is_accept) AS sub_is_accept'),
+                DB::raw('MAX(t1.evaluator_id) AS sub_evaluator_id'),
                 // DB::raw('MAX(t1.evaluated_at) AS sub_evaluated_at'),
                 DB::raw('MAX(t1.submitted_at) AS sub_submitted_at')
             )->join(DB::raw('submissions AS t2'), function (JoinClause $join) {
@@ -196,8 +209,10 @@ class WorkLog extends Model
             ->leftJoinSub($latestSubmissions, 'latest_submission', function (JoinClause $join) {
                 $join->on('sub_fk_id', '=', 'work_logs.id');
             })
+            ->leftJoin(DB::raw('users AS evaluator'), 'evaluator.id', '=', 'sub_evaluator_id')
             ->select('work_logs.*', 'users.name', 'work_scopes.title',
                 'latest_submission.*',
+                DB::raw('`evaluator`.`name` as `evaluator_name`'), DB::raw('`evaluator`.`id` as `evaluator_id`')
             )
             // Excluding their own worklogs???
             ->when(!auth()->user()->isAdmin(), function (Builder $q) {

@@ -9,6 +9,9 @@
     <div class="flex gap-8"> <!-- Activity Section -->
         <div class="w-[30rem]">
             <label class="block mb-3 text-lg font-semibold">Unit</label>
+
+            {{-- Started At {{ $form->workNotes }} --}}
+
             <div class="form-control">
                 <select class="w-full select select-bordered @error('form.staffUnit') select-error @enderror"
                     wire:change="switchUnit($event.target.value)" wire:model="form.staffUnit">
@@ -76,7 +79,7 @@
 
     <div> <!-- Description Section -->
         <label for="" class="block mb-1 text-lg font-semibold">Nota Aktiviti</label>
-        <textarea class="w-full textarea textarea-bordered" placeholder="" rows="2" wire:model="form.workNotes"></textarea>
+        <textarea class="w-full textarea textarea-bordered" placeholder="" rows="2" wire:model="form.workNotes" required></textarea>
     </div> <!-- Description Section -->
 
     <div class="flex gap-4"> <!-- Activity and Dates Section -->
@@ -101,8 +104,8 @@
                 </div>
             </div>
             <div class="w-full join">
-                <input type="date" class="w-full input input-bordered join-item" wire:model="form.started_at"
-                    required />
+                <x-forms.datepicker wire_model="form.started_at" />
+
                 <input type="date" class="w-full input input-bordered join-item"
                     wire:model="form.expected_submitted_at" required />
             </div>

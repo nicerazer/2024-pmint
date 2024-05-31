@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\StaffUnit;
 use App\Models\User;
 use App\Models\WorkLog;
 use Illuminate\Support\Facades\DB;
@@ -9,9 +10,23 @@ use Illuminate\Support\Facades\DB;
 class ReportQueries {
     private static $months_abbrs = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-
-    static public function monthlyStaff($date) {
-        $author_id = User::find(3)->id;
+    static public function monthlyStaff($date, ?User $staff): array {
+        if (! $staff)
+            return [
+                [ "month" => "Jan", "count" => 0, ],
+                [ "month" => "Feb", "count" => 0, ],
+                [ "month" => "Mac", "count" => 0, ],
+                [ "month" => "Apr", "count" => 0, ],
+                [ "month" => "Mei", "count" => 0, ],
+                [ "month" => "Jun", "count" => 0, ],
+                [ "month" => "Jul", "count" => 0, ],
+                [ "month" => "Aug", "count" => 0, ],
+                [ "month" => "Sep", "count" => 0, ],
+                [ "month" => "Oct", "count" => 0, ],
+                [ "month" => "Nov", "count" => 0, ],
+                [ "month" => "Dec", "count" => 0, ],
+            ];
+        $author_id = $staff->id;
 
         $year = 2024;
         $wl_count_infos = WorkLog::query()
@@ -38,8 +53,9 @@ class ReportQueries {
         return $data->all();
     }
 
-    static public function monthlyUnit($date) {
+    static public function monthlyUnit($date, $staff_unit_id) {
         $year = 2024;
+
         $wl_count_infos = WorkLog::query()
             ->where("status", WorkLogCodes::REVIEWED)
             ->join("users", "users.id", "=", "work_logs.author_id")
@@ -50,7 +66,7 @@ class ReportQueries {
             "author_id",
             DB::raw("COUNT(author_id) AS count")
             )
-            ->where("staff_unit_id", 1)
+            ->where("staff_unit_id", $staff_unit_id)
             ->whereRaw("YEAR(started_at) >= " . $year)
             ->whereRaw("YEAR(started_at) < " . $year + 1)
             ->groupBy("author_id", "month_started_at")

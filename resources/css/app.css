@@ -13,3 +13,11 @@
 [x-cloak] {
     display: none !important;
 }
+
+#table-filter-status, #table-filter-penilai1, #table-filter-bahagian, #table-filter-workScopeAltTitle {
+    @apply px-3 py-1;
+}
+
+#table-perPage {
+    @apply px-3 py-2 border;
+}

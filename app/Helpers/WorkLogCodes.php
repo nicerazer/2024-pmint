@@ -37,13 +37,19 @@ class WorkLogCodes {
     }
 
     public static function GETOPTIONS(): array {
+        if (auth()->user()->isEvaluator2() == UserRoleCodes::EVALUATOR_2)
+            return [
+                self::COMPLETED => self::TRANSLATION[self::COMPLETED],
+                self::REVIEWED => self::TRANSLATION[self::REVIEWED],
+            ];
+
         return [
-            self::ALL => self::TRANSLATION[-1],
-            self::ONGOING => self::TRANSLATION[0],
-            self::SUBMITTED => self::TRANSLATION[1],
-            self::TOREVISE => self::TRANSLATION[2],
-            self::COMPLETED => self::TRANSLATION[3],
-            self::CLOSED => self::TRANSLATION[4],
+            self::ALL => self::TRANSLATION[self::ALL],
+            self::ONGOING => self::TRANSLATION[self::ONGOING],
+            self::SUBMITTED => self::TRANSLATION[self::SUBMITTED],
+            self::TOREVISE => self::TRANSLATION[self::TOREVISE],
+            self::COMPLETED => self::TRANSLATION[self::COMPLETED],
+            self::CLOSED => self::TRANSLATION[self::CLOSED],
         ];
     }
 

@@ -27,7 +27,7 @@
                 </span>
             </div>
             <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
-                @foreach (auth()->user()->roles as $role)
+                @foreach (auth()->user()->roles->sortBy('id') as $role)
                     <li>
                         <form action="{{ route('switch-role', $role->id) }}" method="POST" class="flex p-0">
                             @csrf @method('PUT')

@@ -4,6 +4,7 @@ use App\Helpers\ReportQueries;
 use App\Helpers\UserRoleCodes;
 use App\Helpers\WorkLogCodes;
 use App\Http\Controllers\DataReportController;
+use App\Livewire\DataReport as DataReportLivewire;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StaffSectionController;
 use App\Http\Controllers\SwitchRoleController;
@@ -37,7 +38,8 @@ Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-
 
 Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
 
-    Route::get('/data-report', DataReportController::class)->name('data-report');
+    Route::get('/data-report-temp', DataReportController::class)->name('data-report-temp');
+    Route::get('/data-report', DataReportLivewire::class)->name('data-report');
 
     Route::get('/example', TestExample::class)->name('example');
     Route::get('/', HomeIndex::class)->name('home');

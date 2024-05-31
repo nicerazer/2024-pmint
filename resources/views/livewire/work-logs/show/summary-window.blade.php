@@ -1,3 +1,7 @@
+@php
+use App\Helpers\WorkLogCodes;
+@endphp
+
 <div class="flex flex-col basis-5/12"> {{-- Left Side : Worklog Summary --}}
     <div class="w-full">
         <div class="flex justify-between">
@@ -64,4 +68,7 @@
         @endif --}}
 
     </div>
+    @if (auth()->user()->isEvaluator1() && in_array($workLog->status, [WorkLogCodes::ONGOING, WorkLogCodes::SUBMITTED, WorkLogCodes::TOREVISE]))
+        <form action="" class="mx-auto w-72"><button class="btn btn-block btn-error btn-sm">Batal Log Aktviti</button></form>
+    @endif
 </div>{{-- Left Side : Worklog Summary --}}

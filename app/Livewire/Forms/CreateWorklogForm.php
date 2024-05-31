@@ -60,7 +60,7 @@ class CreateWorklogForm extends Form
                     $fail("Aktiviti perlu diisi");
                 }
             },],
-            'workNotes' => 'nullable|string',
+            'workNotes' => 'required|string',
             'workStatus' => ['required', Rule::in([WorkLogCodes::ONGOING, WorkLogCodes::SUBMITTED])],
             'started_at' => 'required|date',
             // 'expected_submitted_at' => ['required','date', function (string $attribute, mixed $value, Closure $fail) {
@@ -102,6 +102,8 @@ class CreateWorklogForm extends Form
     public function store() {
 
         $this->validate();
+
+        dd($this->started_at);
 
         $attributes = [
             'description' => $this->workNotes,

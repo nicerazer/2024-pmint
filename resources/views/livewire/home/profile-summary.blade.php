@@ -36,6 +36,8 @@
             <div class="stat-value">{{ $worklog_count_in_a_month_by_statuses[WorkLogCodes::ALL] }}</div>
             {{-- <div class="stat-desc">Jan 1st - Feb 1st</div> --}}
         </div>
+
+        @if(!auth()->user()->isEvaluator2())
         <div class="stat">
             <div class="stat-figure text-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -48,7 +50,7 @@
             <div class="stat-title">Log Aktivti Dibatalkan</div>
             <div class="stat-value">{{ $worklog_count_in_a_month_by_statuses[WorkLogCodes::CLOSED] }}</div>
         </div>
-
+        @endif
 
     </div>
 </div><!-- Profile Section -->

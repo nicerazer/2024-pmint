@@ -80,7 +80,7 @@
                     @csrf
                     <label class="mb-3 form-control">
                         <div class="label">
-                            <span class="label-text">No IC</span>
+                            <span class="label-text">E-mel</span>
                         </div>
                         <input type="text" placeholder="Isi no ic" class="w-full input input-bordered" name="email"
                             :value="old('email')" required autofocus autocomplete="email" />

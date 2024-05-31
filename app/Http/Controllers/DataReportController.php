@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class DataReportController extends Controller
 {
+    // ADMIN AREA
+    public $model_context = 'staff_section';
+    public $model_id = -1;
+    public $model_is_creating = false;
+    public $staff_sections;
     /**
      * Handle the incoming request.
      */

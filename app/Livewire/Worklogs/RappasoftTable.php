@@ -7,6 +7,7 @@ use App\Helpers\WorkLogCodes;
 use App\Helpers\WorkLogCountForAYear;
 use App\Models\StaffSection;
 use App\Models\Submission;
+use App\Models\User;
 use App\Models\WorkLog;
 use App\Models\WorkScope;
 use Carbon\Carbon;
@@ -73,6 +74,8 @@ class RappasoftTable extends DataTableComponent
     public function configure(): void
     {
         // $this->setDebugEnabled();
+        $this->setFilterLayout('slide-down');
+
         $this->setSearchFieldAttributes([
             'default' => false,
             'class' => 'inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600',
@@ -92,9 +95,11 @@ class RappasoftTable extends DataTableComponent
             ->setTableRowUrlTarget(function($row) {
                 return 'navigate';
             });
-        $this->setBulkActions([
-            'acceptSubmissions' => 'Sahkan',
-        ]);
+        if (! auth()->user()->isEvaluator2()) {
+            $this->setBulkActions([
+                'acceptSubmissions' => 'Sahkan',
+            ]);
+        }
             // ->setComponentWrapperAttributes([
             //     'id' => 'rappasofttable-id',
             //     'class' => 'w-full',
@@ -164,7 +169,20 @@ class RappasoftTable extends DataTableComponent
     public function columns(): array
     {
         return [
+
             Column::make('ID', 'id'),
+            Column::make('Penilai 1', 'id')
+                ->format(
+                    fn($value, $row, Column $column) => $row->evaluator_name
+                )->searchable(
+                    fn(Builder $query, $searchTerm) => $query->orWhere('author_name', $searchTerm)
+                ),
+            // Column::make('Penilai 1'),
+            //     label(
+            //         fn($row, Column $column) => $this->;
+            //     )
+            //     // TODO: Column nama penilai 1 boleh search
+            // ->searchable(),
             Column::make('Aktiviti')
                 ->label(
                     fn($row, Column $column) => $row->workScopeTitle()
@@ -214,29 +232,49 @@ class RappasoftTable extends DataTableComponent
     public function filters(): array
     {
         // return [];
-        return array_values(array_filter([
+        return array_values(array_filter([ // Resets index to remove null
             SelectFilter::make('Status')
-                ->options(WorkLogCodes::GETOPTIONS())
+                ->options(
+                    WorkLogCodes::GETOPTIONS()
+                )
                 ->filter(function(Builder $query, string $value) {
                     if ($value >= 0)
                         $query->where('work_logs.status', $value);
                 }),
+            SelectFilter::make('Penilai 1')
+                ->options(
+                    User::query()
+                        ->where('staff_unit_id', auth()->user()->unit->id)
+                        ->orderBy('name')
+                        ->get()
+                        ->keyBy('id')
+                        ->map(fn($evaluator_1) => $evaluator_1->name)
+                        ->toArray()
+                )
+                ->setFirstOption('-')
+                ->filter(function(Builder $builder, string $value) {
+                    $builder->where('evaluator.id', $value);
+                }),
 
+            // Filter :: Section START
+            // Comparison
             session('selected_role_id') == UserRoleCodes::EVALUATOR_1 || session('selected_role_id') == UserRoleCodes::EVALUATOR_2 ?
                 SelectFilter::make('Bahagian')
-                    ->options(
-                        ['' => 'Semua Bahagian'] +
-                        Auth::user()
-                            ->sectionsByRole()
-                            ->orderBy('name')
-                            ->get()
-                            ->keyBy('id')
-                            ->map(fn($section) => "📝 $section->name")
-                            ->toArray()
-                    )
-                    ->filter(function(Builder $query, string $value) {
-                        $query->where('work_logs.staff_section_id', $value);
-                    }):NULL,
+                ->options(
+                    ['' => 'Semua Bahagian'] +
+                    Auth::user()
+                        ->sectionsByRole()
+                        ->orderBy('name')
+                        ->get()
+                        ->keyBy('id')
+                        ->map(fn($section) => "📝 $section->name")
+                        ->toArray()
+                )
+                ->filter(function(Builder $query, string $value) {
+                    $query->where('work_logs.staff_section_id', $value);
+                }) : NULL,
+            // Filter :: Section END
+
             // LivewireComponentFilter::make('My External Filter')
             //     ->setLivewireComponent('work-logs.filters.month')
             //     ->filter(function (Builder $builder, string $value) {
@@ -264,23 +302,27 @@ class RappasoftTable extends DataTableComponent
             //         'max' => '2023-12-31',
             //         'pillFormat' => 'd M Y',
             //     ])->setFilterDefaultValue('2023-08-01'),
+
+            // Filter :: Workscope START
             SelectFilter::make('Skop Kerja', 'workScopeAltTitle')
-                ->options(
-                    ['-1' => '💼 Aktiviti Sampingan'] +
-                    WorkScope::query()
-                        ->orderBy('title')
-                        ->get()
-                        ->keyBy('id')
-                        ->map(fn($workscope) => "📝 $workscope->title")
-                        ->toArray()
-                )
-                ->filter(function (Builder $query, string $search) {
-                    // if ($search == -1) {
-                    //     $query->where('custom_workscope_title', '!=', "''");
-                    // } else {
-                    //     $query->where('_id', $search);
-                    // }
-                })
+            ->options(
+                ['-1' => '💼 Aktiviti Sampingan'] +
+                WorkScope::query()
+                    ->orderBy('title')
+                    ->get()
+                    ->keyBy('id')
+                    ->map(fn($workscope) => "📝 $workscope->title")
+                    ->toArray()
+            )
+            // ->filter(function (Builder $query, string $search) {
+            //     // if ($search == -1) {
+            //     //     $query->where('custom_workscope_title', '!=', "''");
+            //     // } else {
+            //     //     $query->where('_id', $search);
+            //     // }
+            // })
+            // Filter :: Workscope END
+
                 // ->hiddenFromAll()
                 // ->filter(function(Builder $query, string $value) {
                 //     $query->when(($value), fn($q, $v) => $q->where('work_logs.work_scope_id', $v));

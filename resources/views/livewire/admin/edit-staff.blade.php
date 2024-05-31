@@ -6,7 +6,7 @@
     <h2 class="card-title">Kemaskini Staff</h2>
     {{-- {{ $form->selected_section_id }}
     {{ $form->selected_unit_id }} --}}
-    <div style="width: 800px;" wire:ignore><canvas id="canvas_monthly_staff"></canvas></div>
+    {{-- <div style="width: 800px;" wire:ignore><canvas id="canvas_monthly_staff"></canvas></div> --}}
     @if ($staff)
 
         <form wire:submit="save">

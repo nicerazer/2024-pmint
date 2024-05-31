@@ -27,15 +27,9 @@ class Index extends Component
     public $model_is_creating = false;
     public $staff_sections;
 
-    // #[Renderless]
     #[On('update_month')]
     public function updateTheMonth(string $date) {
-        // Log::debug($this->selected_month);
         $this->selected_month = new Carbon($date);
-        // $this->selected_month = $date;
-        Log::debug('Incoming : '.$date);
-        Log::debug('Parent : '. $this->selected_month);
-        // Log::debug('AAAAAA');
     }
 
     public function mount() {
