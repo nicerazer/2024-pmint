@@ -20,7 +20,7 @@ class DataReport extends Component
     public $model_id = -1;
     public $is_creating = false;
     public $staff_sections;
-    public $date_cursor;
+    public Carbon $date_cursor;
     public $monthly_staff;
     public $monthly_unit;
     public $monthly_section;
@@ -42,25 +42,32 @@ class DataReport extends Component
         $this->dispatch($updateChartContextString,
             self::getChartUpdateData()
         );
+        // Log::debug('Date outside: ' . $this->date_cursor);
     }
 
     public function getChartUpdateData() : array {
         if ($this->model_context == 'staff') {
             return collect(
-                ReportQueries::monthlyStaff($this->date_cursor, User::find($this->model_id))
+                ReportQueries::monthlyStaff($this->selected_month, User::find($this->model_id))
                 )->pluck("count")->all();
-        }
-        else if ($this->model_context == 'staff_unit') {
-            $monthly_unit_temp = ReportQueries::monthlyUnit($this->date_cursor, $this->model_id);
+        } else if ($this->model_context == 'staff_unit') {
+            $monthly_unit_temp = ReportQueries::monthlyUnit($this->selected_month, $this->model_id);
             return [
                 'data' => $monthly_unit_temp['data']->all(),
                 'labels' => $monthly_unit_temp['staffs'],
             ];
         } else if ($this->model_context == 'staff_section') {
-            $monthly_unit_temp = ReportQueries::monthlySection($this->date_cursor, $this->model_id);
+            $monthly_section_temp = ReportQueries::monthlySection($this->selected_month, $this->model_id);
             return [
-                'data' => $monthly_unit_temp['data']->all(),
-                'labels' => $monthly_unit_temp['labels'],
+                'data' => $monthly_section_temp['data']->all(),
+                'labels' => $monthly_section_temp['labels'],
+            ];
+        } else if ($this->model_context == 'monthly_overall') {
+            // return ReportQueries::monthlyOverall($this->selected_month);
+            $monthly_overall_temp = ReportQueries::monthlyOverall($this->selected_month);
+            return [
+                'data' => $monthly_overall_temp['data']->all(),
+                'labels' => $monthly_overall_temp['labels'],
             ];
         }
     }

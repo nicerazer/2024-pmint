@@ -5,12 +5,15 @@ namespace App\Helpers;
 use App\Models\StaffUnit;
 use App\Models\User;
 use App\Models\WorkLog;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReportQueries {
     private static $months_abbrs = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    static public function monthlyStaff($date, ?User $staff): array {
+    static public function monthlyStaff(Carbon $date_cursor, $staff_id): array {
+        $staff = User::find($staff_id);
         if (! $staff)
             return [
                 [ "month" => "Jan", "count" => 0, ],
@@ -28,13 +31,14 @@ class ReportQueries {
             ];
         $author_id = $staff->id;
 
-        $year = 2024;
+        Log::debug('REPORT QUERIES: MONTHLY STAFF: DATE: ' . $date_cursor->toDateTimeString());
+
         $wl_count_infos = WorkLog::query()
             ->where("status", WorkLogCodes::REVIEWED)
             ->where("author_id", $author_id)
             ->select(DB::raw("MONTH(started_at) AS month"), DB::raw("COUNT(id) AS count"))
-            ->whereRaw("YEAR(started_at) >= " . $year)
-            ->whereRaw("YEAR(started_at) < " . $year + 1)
+            ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
+            ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
             ->groupBy("month")
             ->orderBy("month")
             ->get();
@@ -53,7 +57,7 @@ class ReportQueries {
         return $data->all();
     }
 
-    static public function monthlyUnit($date, $staff_unit_id) {
+    static public function monthlyUnit($date_cursor, $staff_unit_id) {
         $year = 2024;
 
         $wl_count_infos = WorkLog::query()
@@ -67,8 +71,8 @@ class ReportQueries {
             DB::raw("COUNT(author_id) AS count")
             )
             ->where("staff_unit_id", $staff_unit_id)
-            ->whereRaw("YEAR(started_at) >= " . $year)
-            ->whereRaw("YEAR(started_at) < " . $year + 1)
+            ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
+            ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
             ->groupBy("author_id", "month_started_at")
             ->orderBy("month_started_at")
             ->orderBy("author_id")
@@ -97,7 +101,7 @@ class ReportQueries {
         return ['data' => $data, 'staffs' => $staffs];
     }
 
-    static public function monthlySection($date, $staff_section_id) {
+    static public function monthlySection($date_cursor, $staff_section_id) {
         $year = 2024;
 
         $wl_count_infos = WorkLog::query()
@@ -118,8 +122,8 @@ class ReportQueries {
             DB::raw("COUNT(author_id) AS count")
         )
         ->where("staff_sections.id", $staff_section_id)
-        ->whereRaw("YEAR(started_at) >= " . $year)
-        ->whereRaw("YEAR(started_at) < " . $year + 1)
+        ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
+        ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
         ->groupBy("month", "staff_units.id")
         ->orderBy("month")
         ->orderBy("staff_units.id")
@@ -148,7 +152,7 @@ class ReportQueries {
         return ['data' => $data, 'labels' => $labels];
     }
 
-    static public function monthlyOverall() {
+    static public function monthlyOverall($date_cursor) {
         $year = 2024;
         $wl_count_infos = WorkLog::query()
           ->join("work_scopes", "work_scopes.id", "=", "work_logs.wrkscp_main_id")
@@ -166,8 +170,8 @@ class ReportQueries {
             DB::raw("MONTH(started_at) AS month"),
             DB::raw("COUNT(work_logs.id) AS count")
           )
-          ->whereRaw("YEAR(started_at) >= " . $year)
-          ->whereRaw("YEAR(started_at) < " . $year + 1)
+          ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
+          ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
           ->groupBy("staff_section_id", "month")
           ->orderBy("month")
           ->get();

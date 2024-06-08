@@ -43,7 +43,7 @@
                                                     <li
                                                         @click="
                                                         model_context = 'staff';
-                                                        model_id = {{ $staff->id }};;
+                                                        model_id = {{ $staff->id }};
                                                         $wire.$parent.set('model_id', {{ $staff->id }});
                                                         $wire.$parent.set('model_context', 'staff');
                                                         $wire.$parent.call('updateChart');

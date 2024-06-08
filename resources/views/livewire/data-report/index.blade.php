@@ -14,7 +14,21 @@
     >
         <div class="flex flex-col items-end gap-2 w-[28rem]">
             <h2 class="text-2xl font-bold">Laman Laporan Sistem</h2>
+            {{ $selected_month }}
             <livewire:work-logs.filters.month :$selected_month />
+
+            <button class="btn btn-sm btn-block btn-primary"
+                @click="
+                    model_context = 'monthly_overall';
+                    $wire.set('model_context', 'monthly_overall');
+                    $wire.call('updateChart');
+                ">
+                Klik disini untuk laporan tahunan
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
+                </svg>
+            </button>
+
             <livewire:navigation.report-treeview :staff_sections="$staff_sections" />
         </div>
 
@@ -45,6 +59,29 @@
             </div>
             <div class="w-full" wire:ignore><canvas id="monthly_staff"></canvas></div>
         </div>
+        <div x-show="model_context == 'staff_unit'" x-cloak class="w-full px-4 py-3 bg-white border card h-fit">
+            <div class="flex justify-between">
+                <div>
+                    <h3 class="text-lg font-bold">Laporan Unit</h3>
+                    @if ($selected_unit)
+                        <h4 class="mb-2 text-lg">{{$selected_unit->name}}</h4>
+                        {{-- <h4><div class="badge badge-neutral">IC</div> {{$selected_unit->ic}}</h4>
+                        <h4><div class="badge badge-neutral">ID</div> {{$selected_unit->id}}</h4> --}}
+                        {{-- <h4>Bahagian {{$selected_unit->staff_section}}</h4> --}}
+                    @else
+                        <h4>Sila pilih unit</h4>
+                    @endif
+                </div>
+                <div>
+                    <button type="button" class="flex flex-row items-center justify-center w-56 gap-2 align-middle btn-sm btn btn-secondary"><div>Excel: Muat Turun</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                            <path d="M8 1a.75.75 0 0 1 .75.75V5h-1.5V1.75A.75.75 0 0 1 8 1ZM7.25 5v4.44L6.03 8.22a.75.75 0 0 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l2.5-2.5a.75.75 0 1 0-1.06-1.06L8.75 9.44V5H11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2.25Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="w-full" wire:ignore><canvas id="monthly_unit"></canvas></div>
+        </div>
         <div x-show="model_context == 'staff_section'" x-cloak class="w-full px-4 py-3 bg-white border card h-fit">
             <div class="flex justify-between">
                 <div>
@@ -69,18 +106,10 @@
 
             <div class="w-full" wire:ignore><canvas id="monthly_section"></canvas></div>
         </div>
-        <div x-show="model_context == 'staff_unit'" x-cloak class="w-full px-4 py-3 bg-white border card h-fit">
+        <div x-show="model_context == 'monthly_overall'" x-cloak class="w-full px-4 py-3 bg-white border card h-fit">
             <div class="flex justify-between">
                 <div>
-                    <h3 class="text-lg font-bold">Laporan Unit</h3>
-                    @if ($selected_unit)
-                        <h4 class="mb-2 text-lg">{{$selected_unit->name}}</h4>
-                        {{-- <h4><div class="badge badge-neutral">IC</div> {{$selected_unit->ic}}</h4>
-                        <h4><div class="badge badge-neutral">ID</div> {{$selected_unit->id}}</h4> --}}
-                        {{-- <h4>Bahagian {{$selected_unit->staff_section}}</h4> --}}
-                    @else
-                        <h4>Sila pilih unit</h4>
-                    @endif
+                    <h3 class="text-lg font-bold">Laporan Keseluruhan</h3>
                 </div>
                 <div>
                     <button type="button" class="flex flex-row items-center justify-center w-56 gap-2 align-middle btn-sm btn btn-secondary"><div>Excel: Muat Turun</div>
@@ -90,8 +119,10 @@
                     </button>
                 </div>
             </div>
-            <div class="w-full" wire:ignore><canvas id="monthly_unit"></canvas></div>
+
+            <div class="w-full" wire:ignore><canvas id="monthly_overall"></canvas></div>
         </div>
+
     </div>
 
     <div style="width: 800px;"><canvas id="monthly_overall"></canvas></div>
@@ -150,6 +181,21 @@
                 });
                 chart_section.data.datasets = temp;
                 chart_section.update();
+            });
+
+            Livewire.on('update-chart-monthly_overall', (data) => {
+                let temp = [];
+                data[0].labels.forEach(label => {
+                    temp.push({
+                        label: label,
+                        data: data[0].data,
+                        parsing: {
+                            yAxisKey: label
+                        }
+                    });
+                });
+                chart_monthly_overall.data.datasets = temp;
+                chart_monthly_overall.update();
             });
 
             // Chart monthly staff
@@ -215,7 +261,7 @@
                 });
             });
 
-            const chart_overall = new Chart(
+            const chart_monthly_overall = new Chart(
                 document.getElementById('monthly_overall'), {
                     type: 'bar',
                     data: { datasets: monthly_overall_datasets },
