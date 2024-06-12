@@ -6,6 +6,7 @@ use App\Helpers\ReportQueries;
 use App\Models\StaffSection;
 use App\Models\StaffUnit;
 use App\Models\User;
+use App\Services\SpreadsheetExport;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
@@ -35,6 +36,16 @@ class DataReport extends Component
         $this->selected_month = new Carbon($date);
     }
 
+    public function download() : \Symfony\Component\HttpFoundation\StreamedResponse {
+        $sheet_exporter = new SpreadsheetExport();
+        if (in_array($this->model_context, ['staff', 'staff_unit', 'staff_section'])) {
+            return $sheet_exporter->{
+                ['staff' => 'annualStaff', 'staff_unit' => 'annualUnit', 'staff_section' => 'annualSection'][$this->model_context]
+            }($this->selected_month, $this->model_id);
+        }
+        return $sheet_exporter->annualOverall($this->selected_month);
+    }
+
     public function updateChart() {
         $updateChartContextString = 'update-chart-'.$this->model_context;
         Log::debug('Update context:' . $updateChartContextString);
@@ -54,7 +65,7 @@ class DataReport extends Component
             $monthly_unit_temp = ReportQueries::monthlyUnit($this->selected_month, $this->model_id);
             return [
                 'data' => $monthly_unit_temp['data']->all(),
-                'labels' => $monthly_unit_temp['staffs'],
+                'labels' => $monthly_unit_temp['labels'],
             ];
         } else if ($this->model_context == 'staff_section') {
             $monthly_section_temp = ReportQueries::monthlySection($this->selected_month, $this->model_id);
@@ -81,9 +92,9 @@ class DataReport extends Component
     public function render()
     {
         $this->staff_sections = StaffSection::query()->select('id', 'name')->get();
-        $month = 3;
-        $year = 2024;
-        $this->date_cursor = new Carbon("$year-$month-01");
+        // $month = 3;
+        // $year = 2024;
+        // $this->date_cursor = new Carbon("$year-$month-01");
 
         // Set staff
         $this->selected_staff = null;
@@ -91,10 +102,10 @@ class DataReport extends Component
             $this->selected_staff = User::find($this->model_id);
         // Log::debug($this->selected_staff);
 
-        $monthlyStaff = ReportQueries::monthlyStaff($this->date_cursor, User::find($this->model_id));
-        $monthlyUnit = ReportQueries::monthlyUnit($this->date_cursor, $this->model_id);
-        $monthlySection = ReportQueries::monthlySection($this->date_cursor, $this->model_id);
-        $monthlyOverall = ReportQueries::monthlyOverall($this->date_cursor);
+        $monthlyStaff = ReportQueries::monthlyStaff($this->selected_month, User::find($this->model_id));
+        $monthlyUnit = ReportQueries::monthlyUnit($this->selected_month, $this->model_id);
+        $monthlySection = ReportQueries::monthlySection($this->selected_month, $this->model_id);
+        $monthlyOverall = ReportQueries::monthlyOverall($this->selected_month);
         // $annualSection = ReportQueries::annualSection($this->date_cursor);
 
         $this->monthly_staff = [
@@ -102,7 +113,7 @@ class DataReport extends Component
         ];
         $this->monthly_unit = [
             'data' => $monthlyUnit['data']->all(),
-            'labels' => $monthlyUnit['staffs'],
+            'labels' => $monthlyUnit['labels'],
         ];
         $this->monthly_section = [
             'data' => $monthlySection['data']->all(),

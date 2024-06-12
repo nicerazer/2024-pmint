@@ -1,94 +1,41 @@
-<div x-data="{
-    staff_section_id: 1,
-    staff_unit_id: -1,
-    staff_id: -1,
-    activity_id: -1,
-    model_context: '{{ $model_context }}',
-    model_id: {{ $model_id }},
-    is_creating: {{ $model_is_creating ? 1 : 0 }} == 1 ? true : false,
-    staff_sections: {{ Illuminate\Support\Js::from($this->staff_sections) }}
-}">
-    {{-- <span>{{ $model_id }}</span> --}}
-    {{-- <span x-text="model_context"></span>
-    <span x-text="model_id"></span> --}}
-    {{-- <span x-text="is_creating == 1 ? 'creating' : 'editing'"></span> --}}
-    <div class="flex gap-4">
-        <div class="w-full max-w-lg">
-            <button class="btn btn-xs btn-primary"
-                @click="
-                    model_context = 'staff_section';
-                    model_id = -1;
-                    is_creating = true;
-                ">
-                Cipta Bahagian
-            </button>
-            <button class="btn btn-xs btn-primary"
-                @click="
-                    model_context = 'staff_unit';
-                    model_id = -1;
-                    is_creating = true;
-                ">
-                Cipta Unit
-            </button>
-            <button class="btn btn-xs btn-primary"
-                @click="
-                    model_context = 'staff';
-                    model_id = -1;
-                    is_creating = true;
-                ">
-                Tambah Staff
-            </button>
-            <button class="btn btn-xs btn-primary"
-                @click="
-                    model_context = 'workscope';
-                    model_id = -1;
-                    is_creating = true;
-                ">
-                Tambah Aktiviti
-            </button>
-        </div>
-        <!-- TODO: Breadcrumbs -->
-        <div class="w-full">
-            <div class="text-sm breadcrumbs">
-                <ul>
-                    {{-- <li><a>Bahagian&nbsp;<span x-text="staff_sections[staff_section_id].name"></span></a></li> --}}
-                    {{-- <li>Cipta Unit</li> --}}
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="flex gap-4">
-        {{-- <ul class="w-full max-w-lg rounded-lg menu menu-xs"> <!-- Treeview -->
+        <ul class="w-full max-w-lg rounded-lg menu menu-xs"> <!-- Treeview -->
             @foreach ($staff_sections as $staff_section)
                 <li>
                     <details open>
                         <summary wire:ignore
                             @click="
-                                model_context = 'staff_section'
-                                model_id = {{ $staff_section->id }}
-                                is_creating = false
-                                $wire.set('model_id', {{ $staff_section->id }})
+                                model_context = 'staff_section';
+                                model_id = {{ $staff_section->id }};
+                                is_creating = false;
+                                $wire.$parent.set('model_id', {{ $staff_section->id }});
                             ">
                             🏛️ Bahagian {{ $staff_section->name }}
                         </summary>
                         <ul wire:ignore>
+                            @php $ev1s = App\Models\User::evaluator1s($staff_section->id);
+                                 $ev2s = App\Models\User::evaluator2s($staff_section->id);
+                            @endphp
                             <li> <!-- Penilai 1 -->
                                 <details open>
                                     <summary>
                                         👮 Penilai 1
                                     </summary>
                                     <ul>
-                                        @if ($staff_section->evaluator1)
-                                            <li><a>
+                                        @foreach ($ev1s as $ev1)
+                                            <li @click="
+                                                model_context = 'staff';
+                                                model_id = {{ $ev1->id }};
+                                                is_creating = false;
+                                                $wire.$parent.set('model_id', {{ $ev1->id }});
+                                            "><span>
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
                                                         fill="currentColor" class="w-4 h-4">
                                                         <path
                                                             d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                                                     </svg>
-                                                    {{ $staff_section->evaluator1->name }}
-                                                </a></li>
-                                        @endif
+                                                    {{ $ev1->name }}
+                                            </span></li>
+                                        @endforeach
                                     </ul>
                                 </details>
                             </li> <!-- Penilai 1 -->
@@ -98,16 +45,21 @@
                                         👮 Penilai 2
                                     </summary>
                                     <ul>
-                                        @if ($staff_section->evaluator2)
-                                            <li><a class="active">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
-                                                        fill="currentColor" class="w-4 h-4">
-                                                        <path
-                                                            d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                                                    </svg>
-                                                    {{ $staff_section->evaluator2->name }}
-                                                </a></li>
-                                        @endif
+                                        @foreach ($ev2s as $ev2)
+                                            <li @click="
+                                                model_context = 'staff';
+                                                model_id = {{ $ev2->id }};
+                                                is_creating = false;
+                                                $wire.$parent.set('model_id', {{ $ev2->id }});
+                                            "><span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+                                                    fill="currentColor" class="w-4 h-4">
+                                                    <path
+                                                        d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                                                </svg>
+                                                {{ $ev2->name }}
+                                            </span></li>
+                                        @endforeach
                                     </ul>
                                 </details>
                             </li> <!-- Penilai 2 -->
@@ -120,7 +72,7 @@
                                                 model_context = 'staff_unit'
                                                 model_id = {{ $staff_unit->id }}
                                                 is_creating = false
-                                                $wire.set('model_id', {{ $staff_unit->id }})
+                                                $wire.$parent.set('model_id', {{ $staff_unit->id }})
                                             ">
                                             🎫 Unit {{ $staff_unit->name }}
                                         </summary>
@@ -143,7 +95,7 @@
                                                                 model_context = 'staff';
                                                                 model_id = {{ $staff->id }};
                                                                 is_creating = false;
-                                                                $wire.set('model_id', {{ $staff->id }});
+                                                                $wire.$parent.set('model_id', {{ $staff->id }});
                                                             ">
                                                                 <span>
 
@@ -180,7 +132,7 @@
                                                                 model_context = 'workscope';
                                                                 model_id = {{ $workscope->id }};
                                                                 is_creating = false;
-                                                                $wire.set('model_id', {{ $workscope->id }});
+                                                                $wire.$parent.set('model_id', {{ $workscope->id }});
                                                             ">
                                                                 <span>
                                                                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -205,79 +157,4 @@
                     </details>
                 </li>
             @endforeach
-        </ul> --}}
-
-        <livewire:navigation.admin-treeview :$staff_sections />
-
-        <div x-show="
-            model_context == 'staff_section' && is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.create-staffsection />
-        </div>
-        <div x-show="
-            model_context == 'staff_unit' && is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.create-staffunit />
-        </div>
-        <div x-show="
-            model_context == 'staff' && is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.create-staff />
-        </div>
-        <div x-show="
-            model_context == 'workscope' && is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.create-workscope />
-        </div>
-        {{-- Edit windows --}}
-        <div x-show="
-            model_context == 'workscope' && !is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.edit-workscope :$model_id />
-        </div>
-        <div x-show="
-            model_context == 'staff' && !is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.edit-staff :$model_id />
-        </div>
-        <div x-show="
-            model_context == 'staff_section' && !is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.edit-staffsection :$model_id />
-        </div>
-        <div x-show="
-            model_context == 'staff_unit' && !is_creating
-        " x-cloak
-            class="w-full bg-white border card h-fit">
-            <livewire:admin.edit-staffunit :$model_id />
-        </div>
-    </div>
-</div>
-
-{{-- @script --}}
-<script type="module">
-    (async function () {
-        // Data from back end for bridge
-        // Event listener for model change
-        // Refresh the mapping, re-execute function
-        // // When to refresh? When the component refresh via Livewire
-
-        // Methods to bind data
-        // 1. Sync using morph
-        // --- Listener
-        // 2. Sync through alpinejs
-        // --- Listener
-        // --- Internal props
-        // document.addEventListener(('wire:init') => {
-
-        // })
-    })();
-</script>
-{{-- @endscript --}}
+        </ul>

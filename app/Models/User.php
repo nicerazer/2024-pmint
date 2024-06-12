@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Helpers\UserRoleCodes;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -42,6 +43,37 @@ class User extends Authenticatable implements HasMedia
     public function currentlyIs($userRoleCode) {
         return session('selected_role_id') == $userRoleCode;
     }
+
+
+    // public function
+
+    // public function scopeEvaluator1(Builder $builder)
+    // {
+    //     return $builder->wherePivot('published_at');
+    // }
+
+    public static function evaluator1s($staff_section_id) {
+        return self::buildsUserMode($staff_section_id, "Penilai 1");
+    }
+
+    public static function evaluator2s($staff_section_id) {
+        return self::buildsUserMode($staff_section_id, "Penilai 2");
+    }
+
+    private static function buildsUserMode($staff_section_id, $role_title) {
+        return User::query()
+          // ->join('users', 'staff_units.id', '=', 'users.staff_units_id')
+          ->join("staff_units", "staff_units.id", "=", "users.staff_unit_id")
+          ->join("role_user", "users.id", "=", "role_user.user_id")
+          ->join("roles", "role_user.role_id", "roles.id")
+
+          ->where("roles.title", $role_title)
+          ->where("staff_units.staff_section_id", $staff_section_id)
+
+          ->select("users.name", "users.id")
+          ->get();
+    }
+
 
     /**
      * Get the post's image.

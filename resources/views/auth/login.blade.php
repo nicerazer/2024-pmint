@@ -82,7 +82,7 @@
                         <div class="label">
                             <span class="label-text">E-mel</span>
                         </div>
-                        <input type="text" placeholder="Isi no ic" class="w-full input input-bordered" name="email"
+                        <input type="text" placeholder="Isi e-mel" class="w-full input input-bordered" name="email"
                             :value="old('email')" required autofocus autocomplete="email" />
                         <x-input-login-error :messages="$errors->get('email')" />
                     </label>

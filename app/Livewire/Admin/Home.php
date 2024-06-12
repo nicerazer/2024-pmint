@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\StaffSection;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Home extends Component
@@ -18,11 +19,14 @@ class Home extends Component
     public $model_context = 'staff_section';
     public $model_id = -1;
     public $is_creating = false;
-    public $staff_sections;
+
+    #[Computed]
+    public function staff_sections() {
+        return StaffSection::query()->select('id', 'name')->get();
+    }
 
     public function render()
     {
-        $this->staff_sections = StaffSection::query()->select('id', 'name')->get();
         return view('livewire.admin.home');
     }
 }

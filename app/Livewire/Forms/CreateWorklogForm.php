@@ -25,7 +25,7 @@ class CreateWorklogForm extends Form
     public $workAlternative = '';
     public $workNotes = '';
     public $workStatus = ''.WorkLogCodes::ONGOING;
-    public $started_at;
+    public $started_at = '2024';
     public $expected_submitted_at;
     public $submissionNotes = '';
     public $attachments = [];

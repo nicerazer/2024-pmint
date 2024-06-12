@@ -5,11 +5,12 @@ namespace App\Livewire\Admin;
 use Livewire\Attributes\Validate;
 use App\Models\StaffUnit;
 use App\Models\WorkScope;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class CreateWorkscope extends Component
 {
-    public $staff_units;
+    // public $staff_units;
 
     #[Validate('required', message: 'Sila pilih bahagian daripdada dropdown')]
     #[Validate('gte:1', message: 'Sila pilih bahagian daripdada dropdown')]
@@ -28,7 +29,6 @@ class CreateWorkscope extends Component
 
     public function render()
     {
-        $this->staff_units = StaffUnit::where('staff_section_id', $this->selected_section_id)->get();
         return view('livewire.admin.create-workscope');
     }
 
@@ -50,10 +50,16 @@ class CreateWorkscope extends Component
         $this->redirect('/');
     }
 
+    #[Computed]
+    public function staff_units() {
+        return StaffUnit::where('staff_section_id', $this->selected_section_id)->get();
+    }
+
     public function switchSection($section_id)
     {
         $this->resetValidation(['staffUnit']);
         $this->selected_section_id = $section_id;
-        $this->staff_units = StaffUnit::where('staff_section_id', $this->selected_section_id)->get();
+        $this->selected_unit_id = -1;
+        // unset($this->staff_units);
     }
 }

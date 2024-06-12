@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ReportQueries {
-    private static $months_abbrs = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    private static $months_abbrs = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sept','Okt','Nov','Dis'];
 
     static public function monthlyStaff(Carbon $date_cursor, $staff_id): array {
-        $staff = User::find($staff_id);
+        $staff = User::where('id', $staff_id)->first();
         if (! $staff)
             return [
                 [ "month" => "Jan", "count" => 0, ],
@@ -23,11 +23,11 @@ class ReportQueries {
                 [ "month" => "Mei", "count" => 0, ],
                 [ "month" => "Jun", "count" => 0, ],
                 [ "month" => "Jul", "count" => 0, ],
-                [ "month" => "Aug", "count" => 0, ],
-                [ "month" => "Sep", "count" => 0, ],
-                [ "month" => "Oct", "count" => 0, ],
+                [ "month" => "Ogos", "count" => 0, ],
+                [ "month" => "Sept", "count" => 0, ],
+                [ "month" => "Okt", "count" => 0, ],
                 [ "month" => "Nov", "count" => 0, ],
-                [ "month" => "Dec", "count" => 0, ],
+                [ "month" => "Dis", "count" => 0, ],
             ];
         $author_id = $staff->id;
 
@@ -98,7 +98,7 @@ class ReportQueries {
             ->values()
             ->all();
 
-        return ['data' => $data, 'staffs' => $staffs];
+        return ['data' => $data, 'labels' => $staffs];
     }
 
     static public function monthlySection($date_cursor, $staff_section_id) {
@@ -155,26 +155,26 @@ class ReportQueries {
     static public function monthlyOverall($date_cursor) {
         $year = 2024;
         $wl_count_infos = WorkLog::query()
-          ->join("work_scopes", "work_scopes.id", "=", "work_logs.wrkscp_main_id")
-          ->join("staff_units", "staff_units.id", "=", "work_scopes.staff_unit_id")
-          ->join(
-            "staff_sections",
-            "staff_sections.id",
-            "=",
-            "staff_units.staff_section_id"
-          )
-          ->where("status", WorkLogCodes::REVIEWED)
-          ->where("author_id", 3)
-          ->select(
-            DB::raw("CONCAT(staff_sections.name,' #',staff_section_id) AS section"),
-            DB::raw("MONTH(started_at) AS month"),
-            DB::raw("COUNT(work_logs.id) AS count")
-          )
-          ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
-          ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
-          ->groupBy("staff_section_id", "month")
-          ->orderBy("month")
-          ->get();
+            ->join("work_scopes", "work_scopes.id", "=", "work_logs.wrkscp_main_id")
+            ->join("staff_units", "staff_units.id", "=", "work_scopes.staff_unit_id")
+            ->join(
+                "staff_sections",
+                "staff_sections.id",
+                "=",
+                "staff_units.staff_section_id"
+            )
+            ->where("status", WorkLogCodes::REVIEWED)
+            ->where("author_id", 3)
+            ->select(
+                DB::raw("CONCAT(staff_sections.name,' #',staff_section_id) AS section"),
+                DB::raw("MONTH(started_at) AS month"),
+                DB::raw("COUNT(work_logs.id) AS count")
+            )
+            ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
+            ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
+            ->groupBy("staff_section_id", "month")
+            ->orderBy("month")
+            ->get();
 
         $data = collect();
         for ($i = 0; $i < 12; ++$i) {

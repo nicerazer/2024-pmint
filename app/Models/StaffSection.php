@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StaffSection extends Model
@@ -22,16 +23,6 @@ class StaffSection extends Model
     public function staffUnits() : HasMany
     {
         return $this->hasMany(StaffUnit::class);
-    }
-
-    public function evaluator1() : BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evaluator1_id');
-    }
-
-    public function evaluator2() : BelongsTo
-    {
-        return $this->belongsTo(User::class, 'evaluator2_id');
     }
 
     public function memberCount() : int

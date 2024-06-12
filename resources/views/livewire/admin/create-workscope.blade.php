@@ -27,7 +27,7 @@
                 </div>
             @else
                 <select class="w-full select select-bordered" wire:model.live="selected_unit_id">
-                    <option disabled selected>Pilih Unit</option>
+                    <option disabled selected value="-1">Pilih Unit</option>
                     @foreach ($this->staff_units as $staff_unit)
                         <option value="{{ $staff_unit->id }}">{{ $staff_unit->name }}</option>
                     @endforeach

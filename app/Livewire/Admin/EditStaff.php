@@ -24,12 +24,12 @@ class EditStaff extends Component
 
     // public $selected_section_id = -1;
     // public $selected_unit_id = -1;
-    public $staff_units;
+    // public $staff_units;
 
     public EditStaffForm $form;
 
     #[Computed]
-    public function staffUnits () {
+    public function staff_units () {
         return StaffUnit::where('staff_section_id', $this->form->selected_section_id)->get();
     }
 
@@ -48,27 +48,25 @@ class EditStaff extends Component
     public function switchSection($id) {
         $this->form->selected_section_id = $id;
         $this->form->selected_unit_id = -1;
-        $this->staff_units = StaffUnit::where('staff_section_id', $this->form->selected_section_id)->get();
+        // $this->staff_units = StaffUnit::where('staff_section_id', $this->form->selected_section_id)->get();
     }
 
-    public function switchUnit($id) {
-        // $this->selected_unit_id = $id;
-        // $this->units = StaffUnit::where('' this->selected_unit_id);
-    }
+    // public function mount(){
 
-    // public function mount($model_id, $staff) {
-    //     $this->form->setStaff(User::find($this->model_id));
-    //     $this->model_id = $model_id;
-    //     $this->staff = $staff;
     // }
+
+    public function destroy($id) {
+        $res = User::destroy($id);
+
+        return redirect()->route('/')
+            ->with('status-class', 'success')
+            ->with('message', 'Staf telah dibuang: ID ' . $res);
+    }
 
     public function render()
     {
 
-        // $this->form->setStaff(User::find($this->model_id));
-
-
-
+        // Init ids
         if (!$this->staff) {
             $this->form->selected_section_id = -1;
             $this->form->selected_unit_id = -1;
@@ -82,7 +80,6 @@ class EditStaff extends Component
             Log::debug($this->model_id);
         }
 
-        // if (false) {
         if ($this->staff && $this->old_model_id != $this->model_id) {
             $this->form->resetValidation();
             $this->old_model_id = $this->model_id;
@@ -91,8 +88,6 @@ class EditStaff extends Component
             $this->form->name = $this->staff->name;
             $this->form->email = $this->staff->email;
             $this->form->ic = $this->staff->ic;
-            // Log::debug('numberrrrr:' . $this->staff->unit->id);
-            // $this->form->selected_section_id += 5;
             $this->form->selected_section_id = $this->staff->unit->staffsection->id;
             $this->form->selected_unit_id = $this->staff->unit->id;
             $this->form->roles = $this->staff->roles->pluck('id')->toArray();
@@ -101,14 +96,9 @@ class EditStaff extends Component
             $this->form->has_role_evaluator_2 = in_array(UserRoleCodes::EVALUATOR_2, $staff_roles);
             $this->form->has_role_staff = in_array(UserRoleCodes::STAFF, $staff_roles);
 
-            $this->report_monthly_staff = ReportQueries::monthlyStaff(now());
+            $this->report_monthly_staff = ReportQueries::monthlyStaff(now(), $this->form->staff->id);
             Log::debug($this->report_monthly_staff);
-            // }
         }
-        // $this->form->selected_section_id = 5;
-
-        // Log::debug('Staff');
-        // Log::debug($this->staff_units->count());
         return view('livewire.admin.edit-staff');
     }
 }

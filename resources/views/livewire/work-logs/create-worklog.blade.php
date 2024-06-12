@@ -4,9 +4,9 @@
 
 @endphp
 
-<form wire:submit="save" class="flex flex-col gap-4" x-data="{ isSubmit: false }">
+<form wire:submit="save" class="flex flex-col gap-2" x-data="{ isSubmit: false }">
 
-    <div class="flex gap-8"> <!-- Activity Section -->
+    <div class="flex gap-4"> <!-- Activity Section -->
         <div class="w-[30rem]">
             <label class="block mb-3 text-lg font-semibold">Unit</label>
 
@@ -94,20 +94,21 @@
             </select>
         </div>
         <div class="w-full">
-            <div class="flex">
+            <div class="flex gap-4">
                 <div class="flex-1 w-full">
-                    <label class="block mb-3 text-lg font-semibold">Tarikh Mula</label>
+                    <label class="block mb-3 text-lg font-semibold">Tarikh Mula {{ $this->form->started_at }}</label>
                 </div>
                 <div class="flex-1 w-full">
                     <label class="block mb-3 text-lg font-semibold"
                         x-text="isSubmit ? 'Tarikh Akhir' : 'Jangka Siap'">Tarikh Akhir</label>
                 </div>
             </div>
-            <div class="w-full join">
+            <div class="flex gap-4">
                 <x-forms.datepicker wire_model="form.started_at" />
+                <x-forms.datepicker wire_model="form.created_at" />
 
-                <input type="date" class="w-full input input-bordered join-item"
-                    wire:model="form.expected_submitted_at" required />
+                {{-- <input type="date" class="w-full input input-bordered join-item"
+                    wire:model="form.expected_submitted_at" required /> --}}
             </div>
         </div>
     </div> <!-- Activity and Dates Section -->

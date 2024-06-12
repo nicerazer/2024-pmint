@@ -54,6 +54,6 @@ class CreateWorklog extends Component
         // ->whereExists($workScopes)
         ->get();
 
-        return view('livewire.work-logs.create-form');
+        return view('livewire.work-logs.create-worklog');
     }
 }

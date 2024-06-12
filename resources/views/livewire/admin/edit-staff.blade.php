@@ -24,6 +24,18 @@
             </label>
             <label class="w-full mb-2 form-control">
                 <div class="label">
+                    <span class="label-text">E-mel</span>
+                </div>
+                <input wire:model="form.email" type="text" placeholder="Isi e-mel"
+                    class="w-full input input-bordered" />
+                @error('form.email')
+                    <div class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                    </div>
+                @enderror
+            </label>
+            <label class="w-full mb-2 form-control">
+                <div class="label">
                     <span class="label-text">IC Staff</span>
                 </div>
                 <input wire:model="form.ic" type="text" placeholder="Isi nama unit"
@@ -73,12 +85,12 @@
                     <select wire:change="switchUnit($event.target.value)" wire:model="form.selected_unit_id"
                         class="w-full select select-bordered">
                         <option disabled selected value="-1">Pilih Unit</option>
-                        @foreach ($this->staffUnits as $staff_unit)
+                        @foreach ($this->staff_units as $staff_unit)
                             <option wire:key="{{ $staff_unit->id }}" value="{{ $staff_unit->id }}">
                                 {{ $staff_unit->name }}</option>
                         @endforeach
                     </select>
-                @elseif ($this->staffUnits->count() == 0)
+                @elseif ($this->staff_units->count() == 0)
                     <div class="w-full border border-gray-300 join">
                         <div class="flex items-center justify-center w-full h-12 gap-2 pl-4 bg-gray-200 join-item">
                             Tiada unit yang wujud
@@ -141,7 +153,41 @@
             </div>
         </form>
 
+        <div class="divider"></div>
+
+        {{-- <div class="flex justify-between"> --}}
+            <div class="mb-3">
+                <h3 class="mb-2 text-lg font-bold">Buang staff?</h3>
+                <p class="text-gray-700">Semua log kerja berkaitan dengan staff ini akan dibuang.</p>
+            </div>
+
+            <button class="btn btn-error w-52" onclick="delete_model_modal.showModal()">Buang Staff</button>
+        {{-- </div> --}}
+
         {{-- script not loading --}}
+
+        <!-- Open the modal using ID.showModal() method -->
+        <dialog id="delete_model_modal" class="modal">
+        <div class="modal-box">
+            <div class="flex items-center justify-center w-12 h-12 mx-auto text-red-500 border border-red-100 rounded bg-red-50">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <h3 class="mb-2 text-lg font-bold text-center">Buang staff?</h3>
+            <p class="py-4 text-center text-gray-700">Isi kata laluan</p>
+            <div class="flex justify-center">
+                <input type="password" class="w-96 input input-bordered" placeholder="Kata Laluan">
+            </div>
+            <div class="flex items-center justify-center gap-2 modal-action">
+                <form method="dialog">
+                    <!-- if there is a button in form, it will close the modal -->
+                    <button class="btn">Batal</button>
+                </form>
+                <button class="btn btn-error">Buang Staff</button>
+            </div>
+        </div>
+        </dialog>
 
 
     @else
