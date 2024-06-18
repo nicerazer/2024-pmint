@@ -19,8 +19,15 @@ class CreateWorklog extends Component
     public $work_scopes;
     public $staffUnits = [];
 
+    public function mount() {
+        $this->form->started_at = now();
+        $this->form->expected_submitted_at = now();
+    }
+
     public function save()
     {
+        // dd($this->form->started_at->toDateString());
+        dd($this->form->expected_submitted_at);
         $this->form->store();
 
         return redirect()->route('home')
@@ -51,7 +58,6 @@ class CreateWorklog extends Component
             ->whereColumn('work_scopes.staff_unit_id', 'staff_units.id');
 
         $this->staffUnits = StaffUnit::where('staff_section_id', auth()->user()->unit->staffSection->id)
-        // ->whereExists($workScopes)
         ->get();
 
         return view('livewire.work-logs.create-worklog');

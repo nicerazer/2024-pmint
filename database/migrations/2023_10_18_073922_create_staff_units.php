@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('staff_units', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignIdFor(StaffSection::class);
+            $table->foreignIdFor(StaffSection::class)->cascadeOnDelete();;
             $table->timestamps();
         });
     }

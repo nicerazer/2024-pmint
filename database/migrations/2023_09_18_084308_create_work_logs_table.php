@@ -38,7 +38,7 @@ return new class extends Migration
             // Revisions
             // Images
 
-            $table->foreignIdFor(User::class, 'author_id');
+            $table->foreignIdFor(User::class, 'author_id')->cascadeOnDelete();;
             // $table->boolean('is_main')->default(false);
 
             // wrkscp_is_main : form
@@ -46,8 +46,8 @@ return new class extends Migration
             // wrkscp_alt_section_id : auth()->user()->section->id
             // wrkscp_alt_title : ? form
             $table->boolean('wrkscp_is_main')->default(true);
-            $table->foreignIdFor(WorkScope::class, 'wrkscp_main_id');
-            $table->foreignIdFor(StaffUnit::class, 'wrkscp_alt_unit_id');
+            $table->foreignIdFor(WorkScope::class, 'wrkscp_main_id')->cascadeOnDelete();;
+            $table->foreignIdFor(StaffUnit::class, 'wrkscp_alt_unit_id')->cascadeOnDelete();;
             $table->string('wrkscp_alt_title')->nullable();
 
             // $table->foreignIdFor(StaffSection::class)->nullable(); // Fallback field
@@ -55,7 +55,7 @@ return new class extends Migration
             // $table->string('custom_workscope_title')->nullable(); // Alternative field
 
             $table->timestamps();
-            $table->softDeletes();
+            // $table->softDeletes();
         });
     }
 

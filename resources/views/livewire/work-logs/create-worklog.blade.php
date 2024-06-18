@@ -100,12 +100,13 @@
                 </div>
                 <div class="flex-1 w-full">
                     <label class="block mb-3 text-lg font-semibold"
-                        x-text="isSubmit ? 'Tarikh Akhir' : 'Jangka Siap'">Tarikh Akhir</label>
+                        x-text="isSubmit ? 'Tarikh Akhir' : 'Jangka Siap'">Tarikh Akhir</label> {{ $this->form->expected_submitted_at }}
                 </div>
             </div>
             <div class="flex gap-4">
-                <x-forms.datepicker wire_model="form.started_at" />
-                <x-forms.datepicker wire_model="form.created_at" />
+
+                <livewire:forms.date-picker :name="'form.started_at'" />
+                <livewire:forms.date-picker :name="'form.expected_submitted_at'" />
 
                 {{-- <input type="date" class="w-full input input-bordered join-item"
                     wire:model="form.expected_submitted_at" required /> --}}

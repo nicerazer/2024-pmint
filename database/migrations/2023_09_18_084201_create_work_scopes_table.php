@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('work_scopes', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignIdFor(StaffUnit::class);
+            $table->foreignIdFor(StaffUnit::class)->cascadeOnDelete();;
             $table->timestamps();
             $table->softDeletes();
         });

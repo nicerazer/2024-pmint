@@ -21,6 +21,7 @@ class EditStaff extends Component
     public $model_id;
     public $staff;
     public $report_monthly_staff;
+    public $delete_confirm_pass;
 
     // public $selected_section_id = -1;
     // public $selected_unit_id = -1;
@@ -55,7 +56,12 @@ class EditStaff extends Component
 
     // }
 
-    public function destroy($id) {
+    public function delete($id) {
+        if(password_verify('passwords', auth()->user()->password))
+            return redirect()->route('/')
+                ->with('status-class', 'error')
+                ->with('message', 'Kata laluan salah');
+
         $res = User::destroy($id);
 
         return redirect()->route('/')

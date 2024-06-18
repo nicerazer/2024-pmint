@@ -1,5 +1,3 @@
-@props(['name'])
-
 <div x-data="{
     MONTH_NAMES: ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'],
     DAYS: ['Ahad', 'Isn', 'Sel', 'Rabu', 'Kha', 'Jum', 'Sabt'],
@@ -31,7 +29,7 @@
         this.datepickerValue = selectedDate.toDateString();
 
         this.$refs.date.value = selectedDate.getFullYear() +'-'+ ('0'+ selectedDate.getMonth()).slice(-2) +'-'+ ('0' + selectedDate.getDate()).slice(-2);
-        console.log($wire.set('$parent.form.expected_submitted_at', this.$refs.date.value));
+        $wire.$parent.set('{{$name}}', this.$refs.date.value);
 
         console.log(this.$refs.date.value);
 
@@ -60,7 +58,7 @@
     }
 }" x-init="[initDate(), getNoOfDays()]" x-cloak class="flex-1">
     <div class="relative">
-        <input type="hidden" wire:model="$parent.form.expected_submitted_at" x-ref="date">
+        <input type="hidden" wire:model="$parent.{{$name}}" x-ref="date">
         <input
         type="text"
         readonly

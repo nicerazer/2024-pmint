@@ -15,8 +15,6 @@ return new class extends Migration
         Schema::create('staff_sections', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignIdFor(User::class, 'evaluator1_id')->nullable();
-            $table->foreignIdFor(User::class, 'evaluator2_id')->nullable();
             $table->timestamps();
         });
     }

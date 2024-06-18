@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('ic')->unique();
             $table->string('email')->unique();
-            $table->string('position');
-            $table->foreignIdFor(StaffUnit::class);
+            $table->string('position')->nullable();
+            $table->foreignIdFor(StaffUnit::class)->cascadeOnDelete();;
             // $table->foreignIdFor(StaffUnit::class)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             // $table->foreignIdFor(User::class, 'evaluator1_id')->nullable();
