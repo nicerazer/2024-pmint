@@ -96,11 +96,11 @@
         <div class="w-full">
             <div class="flex gap-4">
                 <div class="flex-1 w-full">
-                    <label class="block mb-3 text-lg font-semibold">Tarikh Mula {{ $this->form->started_at }}</label>
+                    <label class="block mb-3 text-lg font-semibold">Tarikh Mula</label>
                 </div>
                 <div class="flex-1 w-full">
                     <label class="block mb-3 text-lg font-semibold"
-                        x-text="isSubmit ? 'Tarikh Akhir' : 'Jangka Siap'">Tarikh Akhir</label> {{ $this->form->expected_submitted_at }}
+                        x-text="isSubmit ? 'Tarikh Akhir' : 'Jangka Siap'">Tarikh Akhir</label>
                 </div>
             </div>
             <div class="flex gap-4">
