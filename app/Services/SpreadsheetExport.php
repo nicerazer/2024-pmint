@@ -16,8 +16,11 @@ use PhpOffice\PhpSpreadsheet\Chart\Title;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Chart\Legend as ChartLegend;
+use PhpOffice\PhpSpreadsheet\Chart\Renderer\MtJpGraphRenderer;
 use PhpOffice\PhpSpreadsheet\Helper\Sample;
+use PhpOffice\PhpSpreadsheet\Settings;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Throwable;
 
 class SpreadsheetExport {
     private Spreadsheet $spreadsheet;
@@ -52,11 +55,13 @@ class SpreadsheetExport {
         $this->writer->save($filename);
     }
 
-    public function download() {
-        return Storage::download('sheet-tmp\\'.basename($this->temp_file_name), $this->real_file_name);
+    public function download() : \Symfony\Component\HttpFoundation\StreamedResponse {
+        $path = 'sheet-tmp\\'.basename($this->temp_file_name);
+        // Log::debug($path . '\n' . $this->real_file_name);
+        return Storage::download($path, $this->real_file_name);
     }
 
-    public function annualStaff($date_cursor, $staff_id) : \Symfony\Component\HttpFoundation\StreamedResponse {
+    public function annualStaff($date_cursor, $staff_id): \Symfony\Component\HttpFoundation\StreamedResponse {
 
         $staff = User::find($staff_id);
         $staff_name = $staff->name;
@@ -76,6 +81,9 @@ class SpreadsheetExport {
         self::setupForWriting();
         self::writeSheet();
         return self::download();
+
+        // $path = 'sheet-tmp\\'.basename($this->temp_file_name);
+        // return [$path, $this->real_file_name];
     }
 
     public function annualUnit($date_cursor, $staff_unit_id) : \Symfony\Component\HttpFoundation\StreamedResponse {
@@ -237,12 +245,52 @@ class SpreadsheetExport {
         $chart->setBottomRightPosition($chart_cell_pos[1]);
         $this->worksheet->addChart($chart);
 
-        $helper = new Sample();
+        // $helper = new Sample();
 
-        $helper->renderChart($chart, __FILE__);
+        // $helper->renderChart($chart, __FILE__);
+    }
+
+    private function renderChart(Chart $chart, string $fileName, ?Spreadsheet $spreadsheet = null): void
+    {
+        Settings::setChartRenderer(MtJpGraphRenderer::class);
+
+        $fileName = $this->getFilename($fileName, 'png');
+        $title = $chart->getTitle();
+        $caption = null;
+        if ($title !== null) {
+            $calculatedTitle = $title->getCalculatedTitle($spreadsheet);
+            if ($calculatedTitle !== null) {
+                $caption = $title->getCaption();
+                $title->setCaption($calculatedTitle);
+            }
+        }
+
+        try {
+            $chart->render($fileName);
+            Log::debug('Rendered image: ' . $fileName);
+            $imageData = @file_get_contents($fileName);
+            if ($imageData !== false) {
+                echo '<div><img src="data:image/gif;base64,' . base64_encode($imageData) . '" /></div>';
+            } else {
+                Log::debug('Unable to open chart' . PHP_EOL);
+            }
+        } catch (Throwable $e) {
+            Log::debug('Error rendering chart: ' . $e->getMessage() . PHP_EOL);
+        }
+        // if (isset($title, $caption)) {
+        //     $title->setCaption($caption);
+        // }
+        Settings::unsetChartRenderer();
+    }
+
+    public function getFilename(string $filename, string $extension = 'xlsx'): string
+    {
+        return '';
+        // $originalExtension = pathinfo($filename, PATHINFO_EXTENSION);
+
+        // return $this->getTemporaryFolder() . '/' . str_replace('.' . $originalExtension, '.' . $extension, basename($filename));
     }
 }
-
 /** Sample data for staff monthly
     * $data = [
     *     ['', 'Staff A'],

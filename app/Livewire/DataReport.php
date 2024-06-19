@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\SpreadsheetExport;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -38,12 +39,21 @@ class DataReport extends Component
 
     public function download() : \Symfony\Component\HttpFoundation\StreamedResponse {
         $sheet_exporter = new SpreadsheetExport();
+
         if (in_array($this->model_context, ['staff', 'staff_unit', 'staff_section'])) {
             return $sheet_exporter->{
                 ['staff' => 'annualStaff', 'staff_unit' => 'annualUnit', 'staff_section' => 'annualSection'][$this->model_context]
             }($this->selected_month, $this->model_id);
+            // Log::debug('CHECKPOINT 1');
+            // return Storage::download($download_info[0], $download_info[1]);
         }
+
+        // Log::debug('CHECKPOINT 2');
         return $sheet_exporter->annualOverall($this->selected_month);
+
+        // Log::debug('CHECKPOINT 3');
+        // return Storage::download($download_info[0], $download_info[1]);
+
     }
 
     public function updateChart() {
