@@ -29,8 +29,8 @@ class DataReport extends Component
     public $monthly_overall;
     public $annual_section;
     public ?User $selected_staff;
-    public ?User $selected_unit;
-    public ?User $selected_section;
+    public ?StaffUnit $selected_unit;
+    public ?StaffSection $selected_section;
 
     #[On('update_month')]
     public function updateTheMonth(string $date) {
@@ -110,6 +110,14 @@ class DataReport extends Component
         $this->selected_staff = null;
         if ($this->model_context == 'staff')
             $this->selected_staff = User::find($this->model_id);
+
+        $this->selected_unit = null;
+        if ($this->model_context == 'staff_unit')
+            $this->selected_unit = StaffUnit::find($this->model_id);
+
+        $this->selected_section = null;
+        if ($this->model_context == 'staff_section')
+            $this->selected_section = StaffSection::find($this->model_id);
         // Log::debug($this->selected_staff);
 
         $monthlyStaff = ReportQueries::monthlyStaff($this->selected_month, User::find($this->model_id));

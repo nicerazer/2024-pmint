@@ -133,11 +133,11 @@
 
     </div>
 
-    <div style="width: 800px;"><canvas id="monthly_overall"></canvas></div>
+    {{-- <div style="width: 800px;"><canvas id="monthly_overall"></canvas></div> --}}
     {{-- <div style="width: 800px;"><canvas id="annual_section"></canvas></div> --}}
     {{-- @dump($data) --}}
 
-    <livewire:test.example>
+    {{-- <livewire:test.example> --}}
 
     <script type="module">
         (async function() {
@@ -153,12 +153,14 @@
             let monthly_overall_datasets = [];
 
             Livewire.on('update-chart-staff', (data) => {
+                console.log('Updating chart for staff');
                 console.log(data[0]);
                 chart_staff.data.datasets[0].data = data[0];
                 chart_staff.update();
             });
 
             Livewire.on('update-chart-staff_unit', (data) => {
+                console.log('Updating chart for staff unit');
                 console.log(data[0]);
                 // chart_unit.data.labels = data[0].labels;
                 // chart_unit.data.datasets[0].data = data[0].data;
@@ -172,11 +174,18 @@
                         }
                     });
                 });
-                chart_unit.data.datasets = temp;
+                // chart_unit.data.datasets = temp;
+                // chart_unit.data.datasets = [{
+                //     data: [20, 10],
+                // }],
+                // chart_unit.data.labels = [{
+                //     labels: ['a', 'b']
+                // }]
                 chart_unit.update();
             });
 
             Livewire.on('update-chart-staff_section', (data) => {
+                console.log('Updating chart for staff section');
                 let temp = [];
                 data[0].labels.forEach(label => {
                     temp.push({
@@ -192,6 +201,7 @@
             });
 
             Livewire.on('update-chart-monthly_overall', (data) => {
+                console.log('Updating chart for overall');
                 let temp = [];
                 data[0].labels.forEach(label => {
                     temp.push({
