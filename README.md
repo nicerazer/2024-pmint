@@ -1,6 +1,8 @@
 Absolute Recommended Specifications
 MySQL 5.7+
-PHP 8.2
+PHP 8.2.10
+Composer 2.6.3
+NPM 8.7.0
 
 Compatibility Concerns
 MySQL 5.7+

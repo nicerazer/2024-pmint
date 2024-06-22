@@ -9,16 +9,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TestLaravelMail extends Mailable
+class TestMail extends Mailable
 {
     use Queueable, SerializesModels;
+    public $mailData;
 
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($mailData)
     {
-        //
+        $this->mailData = $mailData;
     }
 
     /**
@@ -27,7 +28,7 @@ class TestLaravelMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Test Laravel Mail',
+            subject: 'Logkerja anda melebihi jangka waktu',
         );
     }
 
@@ -37,7 +38,8 @@ class TestLaravelMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.worklog-pastdue',
+            with: ['user' => '']
         );
     }
 

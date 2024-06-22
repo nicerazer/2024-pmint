@@ -38,22 +38,71 @@
             </ul>
         </div>
 
-        <button class="mr-4 text-white btn btn-ghost btn-circle">
-            <!-- Notifications -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-            </svg>
-        </button>
-        <button class="text-white btn btn-ghost btn-circle">
-            <!-- Messages -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-            </svg>
-        </button>
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                <div class="indicator">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-white size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                    </svg>
+                    <span class="badge badge-sm indicator-item">8</span>
+                </div>
+            </div>
+            <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-[24rem] bg-base-100 shadow">
+                <div class="card-body">
+                    <div class="flex justify-between pb-1 border-b">
+                        <h4 class="font-semibold text-gray-600 hover:text-gray-700">
+                            <span>Notifikasi</span>
+
+                        </h4>
+                        <button class="link link-secondary link-hover">Set baca semua</button>
+                    </div>
+                    <div class="flex flex-col gap-2 border-b">
+                        @foreach ([1,2,3,4] as $i)
+                            @if ($i % 2 == 0)
+                                <x-notifications.item />
+                            @else
+                                <div class="flex gap-3 px-2 py-2 -mx-2 rounded-lg hover:bg-gray-200">
+                                    <!-- Worklog past due -->
+                                    <div class="relative flex items-center justify-center w-12 h-12">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-ping size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="absolute size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </div>
+                                    <!-- Notification Content -->
+                                    <div>
+                                        <h3 class="mb-2"><a href="" class="link link-hover">Log kerja anda</a> <span class="text-gray-400">melebihi jangka waktu.</span></h3>
+                                        <div class="text-sm text-gray-400">
+                                            <span>Jangka siap </span>
+                                            <span class="inline-block w-1 h-1 mx-1 mb-0.5 bg-gray-400 rounded-full"></span>
+                                            <span> 1 Jun 2024</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                        @endforeach
+                    </div>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <span>5 belum dibaca</span>
+                        <button class="link link-hover link-neutral" onclick="notifModal.showModal()">
+                            Buka lagi
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="ml-1 mb-0.5 inline size-5">
+                                <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 0 0-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 0 0 .75-.75v-4a.75.75 0 0 1 1.5 0v4A2.25 2.25 0 0 1 12.75 17h-8.5A2.25 2.25 0 0 1 2 14.75v-8.5A2.25 2.25 0 0 1 4.25 4h5a.75.75 0 0 1 0 1.5h-5Z" clip-rule="evenodd" />
+                                <path fill-rule="evenodd" d="M6.194 12.753a.75.75 0 0 0 1.06.053L16.5 4.44v2.81a.75.75 0 0 0 1.5 0v-4.5a.75.75 0 0 0-.75-.75h-4.5a.75.75 0 0 0 0 1.5h2.553l-9.056 8.194a.75.75 0 0 0-.053 1.06Z" clip-rule="evenodd" />
+                              </svg>
+                        </button>
+                    </div>
+                    {{-- <span class="text-lg font-bold">8 Items</span>
+                    <span class="text-info">Subtotal: $999</span>
+                    <div class="card-actions">
+                    <button class="btn btn-primary btn-block">View cart</button>
+                    </div> --}}
+                </div>
+            </div>
+        </div>
         <div class="ml-12 dropdown dropdown-end">
             <label tabindex="0" class="flex gap-4 text-white capitalize btn btn-ghost">
                 {{ auth()->user()->name }}
@@ -74,16 +123,16 @@
                         @endif
                         <div class="flex-grow">
                             <h4 class="mb-0 capitalize card-title">{{ auth()->user()->name }}</h4>
-                            <h5 class="mb-2">ID NO: {{ auth()->user()->id }}</h5>
-                            <div class="w-8 h-1 rounded-full bg-accent"></div>
+                            <h5 class="mb-2"><span class="mr-2 badge badge-ghost">Id</span> <span class="font-bold">{{ auth()->user()->id }}</span></h5>
+                            <div class="w-4 h-0.5 rounded-full bg-accent"></div>
                         </div>
 
                     </div>
                     <ul class="p-0 menu">
                         <li><a href="/profile">Profil</a></li>
-                        <li><a href="/messages">Mesej</a></li>
+                        <li><a href="/notifications">Notifikasi</a></li>
                         <li>
-                            <a href="{{ route('logout') }}" class="btn-error btn btn-sm !text-start mt-2">Logout</a>
+                            <a href="{{ route('logout') }}" class="btn-error btn btn-sm !text-start mt-2">Log Keluar</a>
                             {{-- <button>asdasd</button> --}}
                             {{-- <form action="{{ route('logout') }}" method="POST">
                                 @csrf
@@ -95,4 +144,5 @@
             </div>
         </div>
     </div>
+    <livewire:notifications.modal />
 </nav>

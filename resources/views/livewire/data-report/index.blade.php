@@ -14,7 +14,6 @@
     >
         <div class="flex flex-col items-end gap-2 w-[28rem]">
             <h2 class="text-2xl font-bold">Laman Laporan Sistem</h2>
-            {{ $selected_month }}
             <livewire:work-logs.filters.month :$selected_month />
 
             <button class="btn btn-sm btn-block btn-primary"
@@ -39,15 +38,18 @@
         <div x-show="model_context == 'staff'" x-cloak class="w-full px-4 py-3 bg-white border card h-fit">
             <div class="flex justify-between">
                 <div>
-                    <h3 class="text-lg font-bold">Laporan staff</h3>
-                    @if ($selected_staff)
-                        <h4 class="mb-2 text-lg">{{$selected_staff->name}}</h4>
-                        <h4><div class="badge badge-neutral">IC</div> {{$selected_staff->ic}}</h4>
-                        <h4><div class="badge badge-neutral">ID</div> {{$selected_staff->id}}</h4>
-                        <h4>Bahagian {{$selected_staff->staff_section}}</h4>
-                    @else
-                        <h4>Sila pilih staff</h4>
-                    @endif
+                    <h3 class="text-lg"><span class="font-bold">Laporan staf</span> @if ($selected_staff)<button wire:click="navigateToEdit"
+                         class="link link-hover">{{$selected_staff->name}}</button>@endif</h3>
+                    <div class="flex flex-row gap-3">
+                        @if ($selected_staff)
+                        <h4><div class="mr-1 badge badge-sm badge-ghost">IC</div> {{$selected_staff->ic}}</h4>
+                        <h4><div class="mr-1 badge badge-sm badge-ghost">ID</div> {{$selected_staff->id}}</h4>
+                        <h4><div class="mr-1 badge badge-sm badge-ghost">Email</div> {{$selected_staff->email}}</h4>
+                        @endif
+                        @unless ($selected_staff)
+                            <h4>Sila pilih staff</h4>
+                        @endunless
+                    </div>
                 </div>
                 <div>
                     <button
@@ -66,7 +68,7 @@
                 <div>
                     <h3 class="text-lg font-bold">Laporan Unit</h3>
                     @if ($selected_unit)
-                        <h4 class="mb-2 text-lg">{{$selected_unit->name}}</h4>
+                        <h4 class="mb-2 text-xl">Unit {{$selected_unit->name}}</h4>
                         {{-- <h4><div class="badge badge-neutral">IC</div> {{$selected_unit->ic}}</h4>
                         <h4><div class="badge badge-neutral">ID</div> {{$selected_unit->id}}</h4> --}}
                         {{-- <h4>Bahagian {{$selected_unit->staff_section}}</h4> --}}
@@ -91,7 +93,7 @@
                 <div>
                     <h3 class="text-lg font-bold">Laporan Bahagian</h3>
                     @if ($selected_section)
-                        <h4 class="mb-2 text-lg">{{$selected_section->name}}</h4>
+                        <h4 class="mb-2 text-xl">Bahagian {{$selected_section->name}}</h4>
                         {{-- <h4><div class="badge badge-neutral">IC</div> {{$selected_unit->ic}}</h4>
                         <h4><div class="badge badge-neutral">ID</div> {{$selected_unit->id}}</h4> --}}
                         {{-- <h4>Bahagian {{$selected_unit->staff_section}}</h4> --}}

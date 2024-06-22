@@ -184,7 +184,7 @@
                     <!-- if there is a button in form, it will close the modal -->
                     <button class="btn">Batal</button>
                 </form>
-                <button class="btn btn-error">Buang Staff</button>
+                <button wire:click='delete' class="btn btn-error">Buang Staff</button>
             </div>
         </div>
         </dialog>

@@ -97,6 +97,8 @@ class ReportQueries {
             ->unique()
             ->values()
             ->all();
+        if (empty($staffs))
+            $staffs = ['Tiada log kerja di bawah mana-mana staf'];
 
         return ['data' => $data, 'labels' => $staffs];
     }
@@ -148,6 +150,8 @@ class ReportQueries {
         ->unique()
         ->values()
         ->all();
+        if (empty($labels))
+            $labels = ['Tiada log kerja dalam mana-mana unit'];
 
         return ['data' => $data, 'labels' => $labels];
     }
@@ -188,9 +192,14 @@ class ReportQueries {
             $data->push($temp_builder->all());
         }
 
+        $labels = $wl_count_infos->map(fn($i) => $i->section)->unique()->all();
+
+        if (empty($labels))
+            $labels = ['Tiada log kerja tahun ini'];
+
         return [
             'data' => $data,
-            'labels' => $wl_count_infos->map(fn($i) => $i->section)->unique()->all()
+            'labels' => $labels
         ];
     }
 

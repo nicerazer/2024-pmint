@@ -56,15 +56,15 @@ class EditStaff extends Component
 
     // }
 
-    public function delete($id) {
+    public function delete() {
         if(password_verify('passwords', auth()->user()->password))
-            return redirect()->route('/')
+            return redirect('/')
                 ->with('status-class', 'error')
                 ->with('message', 'Kata laluan salah');
 
-        $res = User::destroy($id);
+        $res = User::destroy($this->model_id);
 
-        return redirect()->route('/')
+        return redirect('/')
             ->with('status-class', 'success')
             ->with('message', 'Staf telah dibuang: ID ' . $res);
     }

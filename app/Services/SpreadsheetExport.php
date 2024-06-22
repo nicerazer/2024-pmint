@@ -75,7 +75,7 @@ class SpreadsheetExport {
         $this->worksheet = $this->spreadsheet->getActiveSheet();
         $this->worksheet->fromArray($data->toArray());
 
-        self::charting(['B1'], ['A2', 'A13'], [['B2', 'B13']], 'Laporan untuk staff ' . $staff_name . ' pada ' . $date_cursor->year, ['A15', 'P38']);
+        self::charting(['B1'], ['A2', 'A13'], [['B2', 'B13']], 'Laporan untuk Staf ' . $staff_name . ' pada ' . $date_cursor->year, ['A15', 'P38']);
         // $helper->write($this->spreadsheet, __FILE__, ['Xlsx'], true);
 
         self::setupForWriting();
@@ -90,6 +90,7 @@ class SpreadsheetExport {
 
         $temp_q = ReportQueries::monthlyUnit(now(), $staff_unit_id);
         $data = [];
+        $this->real_file_name = 'laporan-tahunan-unit-' . $staff_unit_id . '-' . $date_cursor->year . '.xlsx';
 
         $staffs = $temp_q["labels"];
         array_unshift($staffs, "");
@@ -103,13 +104,14 @@ class SpreadsheetExport {
         $this->worksheet = $this->spreadsheet->getActiveSheet();
         $this->worksheet->fromArray($data->toArray());
         self::cellPrep($data);
-        self::charting($this->cell_name_labels, ['A2', 'A13'], $this->cell_name_values, 'Laporan untuk unit ' . StaffUnit::find($staff_unit_id)->name . ' pada ' . $date_cursor->year , ['A15', 'P38']);
+        self::charting($this->cell_name_labels, ['A2', 'A13'], $this->cell_name_values, 'Laporan untuk Unit ' . StaffUnit::find($staff_unit_id)->name . ' pada ' . $date_cursor->year , ['A15', 'P38']);
         self::setupForWriting();
         self::writeSheet();
         return self::download();
     }
 
     public function annualSection($date_cursor, int $staff_section_id) : \Symfony\Component\HttpFoundation\StreamedResponse {
+        $this->real_file_name = 'laporan-tahunan-bahagian-' . $staff_section_id . '-' . $date_cursor->year . '.xlsx';
         $temp_q = ReportQueries::monthlySection($date_cursor, $staff_section_id);
         $data = [];
         $temp_q;
@@ -133,6 +135,7 @@ class SpreadsheetExport {
 
     public function annualOverall($date_cursor) : \Symfony\Component\HttpFoundation\StreamedResponse {
         $temp_q = ReportQueries::monthlyOverall($date_cursor);
+        $this->real_file_name = 'laporan-tahunan-keseluruhan-' . $date_cursor->year . '.xlsx';
         $data = [];
         $temp_q;
         $labels = $temp_q["labels"];
@@ -147,7 +150,7 @@ class SpreadsheetExport {
         $this->worksheet = $this->spreadsheet->getActiveSheet();
         $this->worksheet->fromArray($data->toArray());
         self::cellPrep($data);
-        self::charting($this->cell_name_labels, ['A2', 'A13'], $this->cell_name_values, 'Laporan tahunan seluruh bahagian pada ' . $date_cursor->year, ['A15', 'P38']);
+        self::charting($this->cell_name_labels, ['A2', 'A13'], $this->cell_name_values, 'Laporan Tahunan Seluruh Bahagian pada ' . $date_cursor->year, ['A15', 'P38']);
         self::setupForWriting();
         self::writeSheet();
         return self::download();
@@ -230,7 +233,7 @@ class SpreadsheetExport {
         $plotArea = new PlotArea(null, [$series]);
         $legend = new ChartLegend(ChartLegend::POSITION_BOTTOM, null, false);
         $title = new Title($title);
-        $yAxisLabel = new Title('Worklog count');
+        $yAxisLabel = new Title('Jumlah log kerja');
         $chart = new Chart(
             'Worklog Chart', // name
             $title, // title

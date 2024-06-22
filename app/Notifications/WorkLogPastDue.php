@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\WorkLog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,12 +12,14 @@ class WorkLogPastDue extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    private WorkLog $worklog;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(WorkLog $wl)
     {
-        //
+        $this->worklog = $wl;
     }
 
     /**
@@ -26,7 +29,7 @@ class WorkLogPastDue extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -35,9 +38,8 @@ class WorkLogPastDue extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject('Log kerja melebihi jangka tempoh')
+            ->markdown('mail.worklog-pastdue', ['worklog' => $this->worklog]);
     }
 
     /**
@@ -48,7 +50,7 @@ class WorkLogPastDue extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'worklog_id' => $this->worklog->id
         ];
     }
 }

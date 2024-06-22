@@ -44,16 +44,9 @@ class DataReport extends Component
             return $sheet_exporter->{
                 ['staff' => 'annualStaff', 'staff_unit' => 'annualUnit', 'staff_section' => 'annualSection'][$this->model_context]
             }($this->selected_month, $this->model_id);
-            // Log::debug('CHECKPOINT 1');
-            // return Storage::download($download_info[0], $download_info[1]);
         }
 
-        // Log::debug('CHECKPOINT 2');
         return $sheet_exporter->annualOverall($this->selected_month);
-
-        // Log::debug('CHECKPOINT 3');
-        // return Storage::download($download_info[0], $download_info[1]);
-
     }
 
     public function updateChart() {
@@ -63,7 +56,6 @@ class DataReport extends Component
         $this->dispatch($updateChartContextString,
             self::getChartUpdateData()
         );
-        // Log::debug('Date outside: ' . $this->date_cursor);
     }
 
     public function getChartUpdateData() : array {
@@ -91,6 +83,16 @@ class DataReport extends Component
                 'labels' => $monthly_overall_temp['labels'],
             ];
         }
+    }
+
+
+    public function navigateToEdit()
+    {
+        session()->flash('admin_is_creating', 0);
+        session()->flash('admin_model_context', $this->model_id);
+        session()->flash('admin_model_id', $this->model_context);
+
+        $this->redirectRoute('home');
     }
 
     public function mount() {
@@ -144,7 +146,6 @@ class DataReport extends Component
 
         return view('livewire.data-report.index');
     }
-
     // TODO:  Mount init with empty datasets
     // Update data trip, use listener
 }
