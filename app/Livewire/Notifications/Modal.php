@@ -2,23 +2,24 @@
 
 namespace App\Livewire\Notifications;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class Modal extends Component
 {
-    public Collection $notifs;
+    public DatabaseNotificationCollection $notifs;
     public int $page = 1;
-    private int $pageSize = 5;
+    private int $pageSize = 8;
     public bool $loadable = true;
+    public bool $firstLoad = false;
 
     public array $unreadNotifs;
     public array $readNotifs;
     public array $allNotifs;
 
     public function mount() {
-        $this->notifs = $this->notifsQuery()->get();
+        $this->notifs = $this->notifsQuery(true)->get();
     }
 
     public function render()
@@ -35,27 +36,33 @@ class Modal extends Component
     public function resetNotifs(bool $onlyUnread = false) {
         $this->page = 1;
         $this->notifs = $this->notifsQuery($onlyUnread)->get();
-        return $this->notifs;
 
-        Log::debug($this->notifs);
+        Log::debug('Notifs resetting ');
+        Log::debug($this->notifs->count());
+        return $this->notifs->all();
 
     }
 
     public function loadMoreNotifs(int $page, bool $onlyUnread = false) : array {
-        if ($this->loadable) {
+        $this->notifs = $this->notifsQuery($onlyUnread)->get();
+
+        if (!$this->firstLoad && $this->loadable) {
             ++$page;
             $res = $this->notifsQuery($onlyUnread)->get();
             if ($res->isNotEmpty())
-                $this->notifs[] = $res;
+                $this->notifs->merge($res);
             elseif ($res->isEmpty())
                 $this->loadable = false;
         }
 
-        Log::debug($this->notifs);
+        $this->firstLoad = true;
+
+        Log::debug('Notifs loading more ');
+        Log::debug($this->notifs->count());
 
         return [
             'loadable' => $this->loadable,
-            'notifs' => $this->notifs,
+            'notifs' => $this->notifs->all(),
             'page' => $this->page,
         ];
     }

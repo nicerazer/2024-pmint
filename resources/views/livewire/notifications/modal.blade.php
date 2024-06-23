@@ -1,13 +1,13 @@
 <!-- You can open the modal using ID.showModal() method -->
 <dialog id="notifModal" class="modal" wire:ignore>
     <div class="modal-box" x-data="{
-        notifs: {{ Js::from($this->notifs) }},
+        notifs: {{ Js::from($this->notifs->all()) }},
         selectedNotifType: 'unread',
         page: 1,
         loadable: true,
 
         switchNotifs(notifType) {
-            this.notifs = $wire.resetNotifs(notifType)
+            this.notifs = $wire.resetNotifs(notifType == 'unread')
             this.selectedNotifType = notifType;
             this.loadable = true
             this.page = 1;
@@ -51,7 +51,7 @@
                 </h4> --}}
                 <button class="link link-secondary link-hover">Set baca semua</button>
             </div>
-            <div class="flex flex-col gap-2 border-b max-h-[30rem] overflow-y-auto overflow-x-hidden">
+            <div class="flex flex-col gap-2 border-b max-h-[25rem] h-[25rem] overflow-y-auto overflow-x-hidden">
                 <template x-for="notif in notifs">
                     <x-notifications.item />
                 </template>
