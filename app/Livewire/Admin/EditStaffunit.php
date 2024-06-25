@@ -15,7 +15,12 @@ class EditStaffunit extends Component
     public $model_id;
     public $staff_unit;
 
+    public $delete_confirm_pass;
+    public $delete_confirm_pass_unmatched;
+
     public function save() {
+        $this->validate();
+
         $this->staff_unit->update(
             $this->only(['name'])
         );
@@ -27,6 +32,20 @@ class EditStaffunit extends Component
         session()->flash('admin_model_id', $this->staff_unit->id);
 
         $this->redirect('/');
+    }
+
+    public function delete() {
+        if(! password_verify($this->delete_confirm_pass, auth()->user()->password)) {
+            $this->delete_confirm_pass = '';
+            $this->delete_confirm_pass_unmatched = true;
+            return;
+        }
+
+        $res = StaffUnit::destroy($this->model_id);
+
+        return redirect('/')
+            ->with('status-class', 'success')
+            ->with('message', 'Unit telah dibuang: ID ' . $res);
     }
 
     public function render()

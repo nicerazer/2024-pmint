@@ -15,6 +15,9 @@ class EditStaffsection extends Component
     public $model_id;
     public $staff_section;
 
+    public $delete_confirm_pass;
+    public $delete_confirm_pass_unmatched;
+
     public function save() {
         // dd($this->only(['name']));
         $this->staff_section->update(
@@ -28,6 +31,20 @@ class EditStaffsection extends Component
         session()->flash('admin_model_id', $this->staff_section->id);
 
         $this->redirect('/');
+    }
+
+    public function delete() {
+        if(! password_verify($this->delete_confirm_pass, auth()->user()->password)) {
+            $this->delete_confirm_pass = '';
+            $this->delete_confirm_pass_unmatched = true;
+            return;
+        }
+
+        $res = StaffSection::destroy($this->model_id);
+
+        return redirect('/')
+            ->with('status-class', 'success')
+            ->with('message', 'Bahagian telah dibuang: ID ' . $res);
     }
 
     public function render()

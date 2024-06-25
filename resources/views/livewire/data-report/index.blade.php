@@ -86,7 +86,7 @@
                     </button>
                 </div>
             </div>
-            <div class="w-full" wire:ignore><canvas id="monthly_unit"></canvas></div>
+            <div class="w-full" wire:ignore><canvas id="annual_unit"></canvas></div>
         </div>
         <div x-show="model_context == 'staff_section'" x-cloak class="w-full px-4 py-3 bg-white border card h-fit">
             <div class="flex justify-between">
@@ -145,8 +145,8 @@
         (async function() {
             let monthly_staff = {{ Js::from($monthly_staff) }};
 
-            let monthly_unit = {{ Js::from($monthly_unit) }};
-            let monthly_unit_datasets = [];
+            let annual_unit = {{ Js::from($annual_unit) }};
+            let annual_unit_datasets = [];
 
             let monthly_section = {{ Js::from($monthly_section) }};
             let monthly_section_datasets = [];
@@ -164,8 +164,6 @@
             Livewire.on('update-chart-staff_unit', (data) => {
                 console.log('Updating chart for staff unit');
                 console.log(data[0]);
-                // chart_unit.data.labels = data[0].labels;
-                // chart_unit.data.datasets[0].data = data[0].data;
                 let temp = [];
                 data[0].labels.forEach(label => {
                     temp.push({
@@ -176,13 +174,7 @@
                         }
                     });
                 });
-                // chart_unit.data.datasets = temp;
-                // chart_unit.data.datasets = [{
-                //     data: [20, 10],
-                // }],
-                // chart_unit.data.labels = [{
-                //     labels: ['a', 'b']
-                // }]
+                chart_unit.data.datasets = temp;
                 chart_unit.update();
             });
 
@@ -235,10 +227,10 @@
             );
 
             // Chart monthly unit
-            monthly_unit.labels.forEach(label => {
-                monthly_unit_datasets.push({
+            annual_unit.labels.forEach(label => {
+                annual_unit_datasets.push({
                     label: label,
-                    data: monthly_unit.data,
+                    data: annual_unit.data,
                     parsing: {
                         yAxisKey: label
                     }
@@ -246,9 +238,9 @@
             });
 
             const chart_unit = new Chart(
-                document.getElementById('monthly_unit'), {
+                document.getElementById('annual_unit'), {
                     type: 'bar',
-                    data: { datasets: monthly_unit_datasets },
+                    data: { datasets: annual_unit_datasets },
                 }
             );
 

@@ -263,7 +263,8 @@ class RappasoftTable extends DataTableComponent
                 ->options(
                     ['' => 'Semua Bahagian'] +
                     Auth::user()
-                        ->sectionsByRole()
+                        // TODO: SECTIONS????
+                        // ->sectionsByRole()
                         ->orderBy('name')
                         ->get()
                         ->keyBy('id')

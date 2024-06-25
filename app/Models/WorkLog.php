@@ -181,14 +181,6 @@ class WorkLog extends Model
      */
     public static function indexQuery(Carbon $queried_date): \Illuminate\Database\Eloquent\Builder
     {
-        // $latestSubmissions = Submission::select(
-        //     DB::raw('DISTINCT submissions.work_log_id AS sub_fk_id'),
-        //     DB::raw('submissions.id AS sub_id'),
-        //     DB::raw('MAX(submissions.number) AS sub_number'),
-        //     DB::raw('MAX(submissions.is_accept) AS sub_is_accept'),
-        //     DB::raw('MAX(submissions.evaluated_at) AS sub_evaluated_at'),
-        //     DB::raw('MAX(submissions.submitted_at) AS sub_submitted_at')
-        // );
         $latestSubmissions = DB::table('submissions as t1')
             ->select(
                 DB::raw('DISTINCT t1.work_log_id AS sub_fk_id'),

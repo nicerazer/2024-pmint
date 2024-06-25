@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HRIsPermitted
+class AdminIsPermitted
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,7 @@ class HRIsPermitted
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(! auth()->user()->isHR())
+        if(! auth()->user()->isAdmin())
             return redirect()->route('home')->with([
                 'status' => FlashStatusCode::ERROR,
                 'message' => 'You are not permitted to do this action',

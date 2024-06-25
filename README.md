@@ -13,6 +13,8 @@ PostgreSQL 9.3+
 SQLite 3.25+: The limit is ignored on older versions of SQLite. This way, your application tests still work.
 SQL Server 2008+
 
+Needs MYISAM database engine for delete support.
+
 PHP Extensions
 
 openssl

@@ -24,7 +24,7 @@ class DataReport extends Component
     public $staff_sections;
     public Carbon $date_cursor;
     public $monthly_staff;
-    public $monthly_unit;
+    public $annual_unit;
     public $monthly_section;
     public $monthly_overall;
     public $annual_section;
@@ -60,14 +60,17 @@ class DataReport extends Component
 
     public function getChartUpdateData() : array {
         if ($this->model_context == 'staff') {
+            $annual_staff_temp = ReportQueries::monthlyStaff($this->selected_month, $this->model_id);
+            Log::debug('Staff unit data was fetched');
+            Log::debug($annual_staff_temp);
             return collect(
-                ReportQueries::monthlyStaff($this->selected_month, User::find($this->model_id))
+                $annual_staff_temp
                 )->pluck("count")->all();
         } else if ($this->model_context == 'staff_unit') {
-            $monthly_unit_temp = ReportQueries::monthlyUnit($this->selected_month, $this->model_id);
+            $annual_unit_temp = ReportQueries::monthlyUnit($this->selected_month, $this->model_id);
             return [
-                'data' => $monthly_unit_temp['data']->all(),
-                'labels' => $monthly_unit_temp['labels'],
+                'data' => $annual_unit_temp['data'],
+                'labels' => $annual_unit_temp['labels'],
             ];
         } else if ($this->model_context == 'staff_section') {
             $monthly_section_temp = ReportQueries::monthlySection($this->selected_month, $this->model_id);
@@ -131,7 +134,7 @@ class DataReport extends Component
         $this->monthly_staff = [
             'data' => $monthlyStaff,
         ];
-        $this->monthly_unit = [
+        $this->annual_unit = [
             'data' => $monthlyUnit['data']->all(),
             'labels' => $monthlyUnit['labels'],
         ];

@@ -114,7 +114,7 @@ class User extends Authenticatable implements HasMedia
 
     public function evaluator1StaffSections(): HasMany
     {
-        return $this->hasMany(StaffSection::class, 'evaluator1_id');
+        return $this->hasMany(StaffSection::class);
     }
 
     public function evaluator2StaffSections(): HasMany

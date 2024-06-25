@@ -73,7 +73,7 @@ class ReportQueries {
             ->where("staff_unit_id", $staff_unit_id)
             ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
             ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
-            ->groupBy("author_id", "month_started_at")
+            ->groupBy("author_id", "month_started_at", "users.name")
             ->orderBy("month_started_at")
             ->orderBy("author_id")
             ->get();
@@ -126,7 +126,7 @@ class ReportQueries {
         ->where("staff_sections.id", $staff_section_id)
         ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
         ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
-        ->groupBy("month", "staff_units.id")
+        ->groupBy("month", "staff_unit_id", "staff_units.name")
         ->orderBy("month")
         ->orderBy("staff_units.id")
         ->get();
@@ -176,7 +176,7 @@ class ReportQueries {
             )
             ->whereRaw("YEAR(started_at) >= " . $date_cursor->year)
             ->whereRaw("YEAR(started_at) < " . $date_cursor->year + 1)
-            ->groupBy("staff_section_id", "month")
+            ->groupBy("staff_sections.name", "staff_section_id", "month")
             ->orderBy("month")
             ->get();
 
@@ -222,7 +222,7 @@ class ReportQueries {
             )
             ->whereRaw("YEAR(started_at) >= " . $year)
             ->whereRaw("YEAR(started_at) < " . $year + 1)
-            ->groupBy("staff_section_id")
+            ->groupBy("staff_sections.name","staff_section_id")
             ->orderBy("staff_section_id")
             ->get();
 

@@ -20,8 +20,12 @@ class EditStaff extends Component
     #[Reactive]
     public $model_id;
     public $staff;
+
+
     public $report_monthly_staff;
+
     public $delete_confirm_pass;
+    public $delete_confirm_pass_unmatched;
 
     // public $selected_section_id = -1;
     // public $selected_unit_id = -1;
@@ -57,10 +61,11 @@ class EditStaff extends Component
     // }
 
     public function delete() {
-        if(password_verify('passwords', auth()->user()->password))
-            return redirect('/')
-                ->with('status-class', 'error')
-                ->with('message', 'Kata laluan salah');
+        if(! password_verify($this->delete_confirm_pass, auth()->user()->password)) {
+            $this->delete_confirm_pass = '';
+            $this->delete_confirm_pass_unmatched = true;
+            return;
+        }
 
         $res = User::destroy($this->model_id);
 

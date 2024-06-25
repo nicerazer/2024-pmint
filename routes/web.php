@@ -14,7 +14,7 @@ use App\Http\Controllers\WorkLogController;
 use App\Http\Controllers\WorkLogDocumentController;
 use App\Http\Controllers\WorkLogImageController;
 use App\Http\Controllers\WorkScopeController;
-use App\Http\Middleware\HRIsPermitted;
+use App\Http\Middleware\AdminIsPermitted;
 use App\Models\StaffSection;
 use App\Models\Submission;
 use App\Models\WorkLog;
@@ -28,18 +28,18 @@ use App\Livewire\Test\Example as TestExample;
 
 // Route::get('testexample', )
 
-Route::get('/organization-treeview', function () {
-    if (auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_1))
-        return view('pages.organization-treeview');
-    return redirect('home');
-});
+// Route::get('/organization-treeview', function () {
+//     if (auth()->user()->currentlyIs(UserRoleCodes::EVALUATOR_1))
+//         return view('pages.organization-treeview');
+//     return redirect('home');
+// });
 
 Route::get('/your-role-is-empty', UserWithoutRoleController::class)->name('your-role-is-empty');
 
 Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
 
-    Route::get('/data-report-temp', DataReportController::class)->name('data-report-temp');
-    Route::get('/data-report', DataReportLivewire::class)->name('data-report');
+    // Route::get('/data-report-temp', DataReportController::class)->name('data-report-temp');
+    Route::get('/data-report', DataReportLivewire::class)->middleware([AdminIsPermitted::class])->name('data-report');
 
     Route::get('/example', TestExample::class)->name('example');
     Route::get('/', HomeIndex::class)->name('home');
@@ -54,14 +54,14 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     //     Route::delete('/profile/workLogs/{workLog}/images/{image}', 'destroy')->name('workLogs.images.destroy');
     // });
 
-    Route::controller(StaffSectionController::class)->middleware([HRIsPermitted::class])->group(function() {
+    Route::controller(StaffSectionController::class)->middleware([AdminIsPermitted::class])->group(function() {
         Route::get('/bahagian/{staffSection}/unit/{staffUnit}/warga-kerja/cipta', 'create')->name('staff-sections.create');
         Route::post('/bahagian/{staffSection}/unit/{staffUnit}/warga-kerja', 'store')->name('staff-sections.store');
         Route::get('/bahagian/{staffSection}/unit/{staffUnit}/warga-kerja/{staff}', 'show')->name('staff-sections.show');
     });
 
     //     // HR uses
-    Route::controller(StaffSectionController::class)->middleware([HRIsPermitted::class])->group(function() {
+    Route::controller(StaffSectionController::class)->middleware([AdminIsPermitted::class])->group(function() {
         Route::get('/bahagian/cipta', 'create')->name('staff-sections.create');
         Route::post('/bahagian', 'store')->name('staff-sections.store');
         Route::get('/bahagian', 'index')->name('staff-sections.index');
@@ -71,7 +71,7 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     });
 
     // HR uses
-    // Route::controller(StaffUnitController::class)->middleware([HRIsPermitted::class])->group(function() {
+    // Route::controller(StaffUnitController::class)->middleware([AdminIsPermitted::class])->group(function() {
     //     Route::get('/bahagian/{staffSection}/unit/cipta', 'create')->name('staff-units.create');
     //     Route::get('/bahagian/{staffSection}/unit', 'index')->name('staff-units.index');
     //     Route::get('/bahagian/{staffSection}/unit/{staffUnit}', 'show')->name('staff-units.show');
@@ -80,7 +80,7 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     //    // Route::delete('/work-units', 'destroy')->name('work-units.destroy');
     // });
 
-    Route::controller(WorkScopeController::class)->middleware([HRIsPermitted::class])->group(function() {
+    Route::controller(WorkScopeController::class)->middleware([AdminIsPermitted::class])->group(function() {
         Route::get('/work-scopes/create', 'create')->name('work-scopes.create');
         Route::get('/work-scopes', 'index')->name('work-scopes.index');
         Route::get('/work-scopes/{workScopes}', 'show')->name('work-scopes.show');
@@ -89,7 +89,7 @@ Route::middleware(['auth', 'ensure-user-has-a-role'])->group(function () {
     });
 
     // HR uses
-    // Route::controller(UserController::class)->middleware([HRIsPermitted::class])->group(function() {
+    // Route::controller(UserController::class)->middleware([AdminIsPermitted::class])->group(function() {
     //     Route::get('/users/create', 'create')->name('users.create');
     //     Route::post('/users', 'store')->name('users.store');
     //     Route::post('/users', 'show')->name('users.show');
