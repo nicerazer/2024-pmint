@@ -62,6 +62,34 @@ class EditStaffForm extends Form
         ];
     }
 
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Sila isi nama.',
+            'name.string' => 'Sila isi nama.',
+
+            'email.required' => 'Sila isi e-mel.',
+            'email.string' => 'Sila isi e-mel.',
+            'email.unique' => 'E\'mel wujud di dalam sistem. Sila tukar.',
+
+            'ic.required' => 'Sila isi no. kad pengenalan.',
+            'ic.string' => 'Sila isi no. kad pengenalan.',
+            'ic.unique' => 'Kad pengenalan wujud di dalam sistem. Sila tukar.',
+
+            'roles.array' => 'Masalah teknikal. Sila muat naik semula halaman.',
+
+            'selected_section_id.required' => 'Sila pilih bahagian.',
+            'selected_section_id.exists' => 'Sila pilih bahagian.',
+
+            'selected_unit_id.required' => 'Sila pilih unit.',
+            'selected_unit_id.exists' => 'Sila pilih unit.',
+
+            'password.string' => 'Masalah teknikal. Sila muat naik semula halaman.',
+            'password.min' => 'Kata laluan mesti 8 patah perkataan atau lebih.',
+        ];
+    }
+
     public function setStaff(User $staff)
     {
         $this->staff = $staff;

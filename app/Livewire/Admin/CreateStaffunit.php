@@ -4,15 +4,21 @@ namespace App\Livewire\Admin;
 
 use App\Models\StaffSection;
 use App\Models\StaffUnit;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class CreateStaffunit extends Component
 {
-    // #[Validate('required')]
+    #[Validate('required', message: 'Sila isi nama unit')]
+    #[Validate('string', message: 'Sila isi nama unit')]
+    #[Validate('unique:App\Models\StaffUnit,name', message: 'Unit dengan nama tersebut wujud di dalam sistem. Sila isi yang lain.')]
     public $name = '';
-    public $staff_section_id = -1;
+    #[Validate('required', message: 'Sila pilih bahagian.')]
+    #[Validate('exists:App\Models\StaffSection,id', message: 'Sila pilih bahagian.')]
+    public $staff_section_id = 0;
 
     public function save() {
+        $this->validate();
         $newUnit = StaffUnit::create(
             $this->only(['name', 'staff_section_id'])
         );

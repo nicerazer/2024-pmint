@@ -9,9 +9,7 @@
             <span wire:loading.class='animate-pulse'>{{ $staff->name }}</span>
         @endif
     </h2>
-    {{-- {{ $form->selected_section_id }}
-    {{ $form->selected_unit_id }} --}}
-    {{-- <div style="width: 800px;" wire:ignore><canvas id="canvas_monthly_staff"></canvas></div> --}}
+
     @if ($staff)
 
         <form wire:submit="save">
@@ -87,7 +85,7 @@
                 </div>
                 {{-- @if ($this->form->selected_section_id != 0 && $this->staffUnits->count() != 0) --}}
                 @if ($this->form->selected_section_id != 0)
-                    <select wire:change="switchUnit($event.target.value)" wire:model="form.selected_unit_id"
+                    <select wire:model="form.selected_unit_id"
                         class="w-full select select-bordered">
                         <option disabled selected value="-1">Pilih Unit</option>
                         @foreach ($this->staff_units as $staff_unit)
@@ -165,8 +163,8 @@
         <div class="divider"></div>
 
         <div class="flex justify-between w-full mb-3">
-            <h3 class="mb-2 text-xl font-bold">Buang bahagian</h3>
-            <p class="flex-grow-0 text-gray-700"><span class="font-bold">Semua log kerja</span> berkaitan dengan staff ini akan dibuang.</p>
+            <h3 class="mb-2 text-xl font-bold">Buang staf</h3>
+            <p class="flex-grow-0 text-gray-700"><span class="font-bold">Semua log kerja</span> berkaitan dengan staf ini akan dibuang.</p>
         </div>
 
         <button class="ml-auto btn btn-error w-60" onclick="delete_staff_modal.showModal()">

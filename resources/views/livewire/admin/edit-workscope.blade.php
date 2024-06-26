@@ -1,7 +1,11 @@
 <div class="card-body">
-    <h2 class="card-title">Kemaskini Aktiviti</h2>
-    {{-- {{ $model_id }}
-    {{ $workscope_title }} --}}
+
+    <h2 class="font-bold text-gray-600 card-title"><span class="text-gray-500">Kemaskini Aktiviti </span>
+        <span wire:loading class="loading loading-spinner loading-sm"></span>
+        @if ($workscope)
+            <span wire:loading.class='animate-pulse'>{{ $workscope->title }}</span>
+        @endif
+    </h2>
     @if ($workscope)
         <form wire:submit="save">
             <div class="mb-3">

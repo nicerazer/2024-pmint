@@ -73,6 +73,7 @@
                                                 model_id = {{ $staff_unit->id }}
                                                 is_creating = false
                                                 $wire.$parent.set('model_id', {{ $staff_unit->id }})
+                                                $wire.dispatch('switched-unit', { staff_unit_id: {{ $staff_unit->id }} });
                                             ">
                                             🎫 Unit {{ $staff_unit->name }}
                                         </summary>

@@ -35,7 +35,7 @@ class CreateWorklogForm extends Form
     {
         return [
             'staffUnit.required' => 'Unit perlu dipilih',
-            'staffUnit.exists' => 'Unit tidak wujud dalam sistem',
+            'staffUnit.exists' => 'Sila pilih unit dari senarai',
         ];
     }
 
@@ -103,7 +103,7 @@ class CreateWorklogForm extends Form
 
         $this->validate();
 
-        dd($this->started_at);
+        // dd($this->started_at);
 
         $attributes = [
             'description' => $this->workNotes,

@@ -20,6 +20,26 @@
                     </div>
                 @enderror
             </label>
+            <label class="w-full mb-2 form-control">
+                <div class="label">
+                    <span class="label-text">Bahagian</span>
+                </div>
+
+                <select class="w-full select select-bordered" wire:model="staff_section_id">
+                    <option disabled value="0">Pilih Bahagian</option>
+                    @foreach (App\Models\StaffSection::all() as $staff_section)
+                        <option wire:key="{{ $staff_section->id }}" value="{{ $staff_section->id }}">{{ $staff_section->name }}</option>
+                    @endforeach
+                </select>
+
+                @error('staff_section_id')
+                    <div class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                    </div>
+                @enderror
+            </label>
+
+            <!-- ACTION: Save the model -->
             <div class="justify-end mt-4 card-actions">
                 <button type="submit" class="w-60 btn btn-primary">Kemaskini
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="-mt-0.5 size-5">

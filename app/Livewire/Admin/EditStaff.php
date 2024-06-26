@@ -21,7 +21,6 @@ class EditStaff extends Component
     public $model_id;
     public $staff;
 
-
     public $report_monthly_staff;
 
     public $delete_confirm_pass;

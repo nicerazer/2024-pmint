@@ -7,8 +7,8 @@
             </div>
             <input type="text" placeholder="Isi nama bahagian" class="w-full input input-bordered" wire:model="name">
             @error('name')
-                <div class="label text-error">
-                    <span class="label-text-alt">{{ $message }}</span>
+                <div class="label">
+                    <span class="label-text-alt text-error">{{ $message }}</span>
                 </div>
             @enderror
         </label>
