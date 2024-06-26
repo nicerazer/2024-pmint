@@ -85,7 +85,7 @@
                 </div>
             @endif
         </label>
-        <h3 class="mt-6 mb-1 ml-1 text-lg font-bold">Role User</h3>
+        <h3 class="mt-6 mb-1 ml-1 text-lg font-bold">Mod Pengguna</h3>
         <div class="w-fit">
             <div class="form-control">
                 <label class="cursor-pointer label">

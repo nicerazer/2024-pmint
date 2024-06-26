@@ -5,25 +5,18 @@ namespace App\Livewire\Forms;
 use App\Helpers\UserRoleCodes;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Livewire\Attributes\Reactive;
-use Livewire\Attributes\Rule;
+use Illuminate\Validation\Rule;
 use Livewire\Form;
-use Livewire\Attributes\Validate;
 
 class CreateStaffForm extends Form
 {
-    #[Validate('required')]
     public $name;
-    #[Validate('required|email:rfc,dns|unique:App\Models\User')]
     public $email;
-    #[Validate('required|unique:App\Models\User')]
     public $ic;
-    #[Validate('required')]
+    public $position;
     public $password;
-    // #[Reactive]
-    #[Validate('required|min:1|exists:App\Models\StaffSection,id')]
+
     public $selected_section_id = -1;
-    #[Validate('required|min:1|exists:App\Models\StaffUnit,id')]
     public $selected_unit_id = -1;
 
     public $has_role_admin;
@@ -31,7 +24,61 @@ class CreateStaffForm extends Form
     public $has_role_evaluator_2;
     public $has_role_staff;
 
-    // public $newStaff;
+    public function rules()
+    {
+        return [
+            'name' => [ 'required', 'string', 'max:60'],
+            'email' => [
+                'required', 'string', 'email:rfc,dns'
+            ],
+            'ic' => [
+                'required', 'string', 'max:12'
+            ],
+            'position' => [
+                'sometimes', 'nullable', 'string', 'max:50',
+            ],
+            'roles' => [ 'array' ],
+            'selected_section_id' => [
+                'required', 'exists:App\Models\StaffSection,id'
+            ],
+            'selected_unit_id' => [
+                'required', 'exists:App\Models\StaffUnit,id'
+            ],
+            'password' => ['nullable', 'string', 'min:8'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'Sila isi nama.',
+            'name.string' => 'Sila isi nama.',
+            'name.max' => 'Nama tidak boleh melebihi 60 patah perkataan.',
+
+            'email.required' => 'Sila isi e-mel.',
+            'email.string' => 'Sila isi e-mel.',
+            'email.unique' => 'E\'mel wujud di dalam sistem. Sila tukar.',
+
+            'ic.required' => 'Sila isi no. kad pengenalan.',
+            'ic.string' => 'Sila isi no. kad pengenalan.',
+            'ic.unique' => 'Kad pengenalan wujud di dalam sistem. Sila tukar.',
+            'ic.max' => 'Nama tidak boleh melebihi 12. Sila ikut format tanpa \'-\'',
+
+            'position:string' => 'Masalah teknikal. Sila muat naik semula halaman.',
+            'position:max' => 'Jawatan tidak boleh melebihi 12.',
+
+            'roles.array' => 'Masalah teknikal. Sila muat naik semula halaman.',
+
+            'selected_section_id.required' => 'Sila pilih bahagian.',
+            'selected_section_id.exists' => 'Sila pilih bahagian.',
+
+            'selected_unit_id.required' => 'Sila pilih unit.',
+            'selected_unit_id.exists' => 'Sila pilih unit.',
+
+            'password.string' => 'Masalah teknikal. Sila muat naik semula halaman.',
+            'password.min' => 'Kata laluan mesti 8 patah perkataan atau lebih.',
+        ];
+    }
 
     public function store()
     {
@@ -41,6 +88,8 @@ class CreateStaffForm extends Form
 
         $newStaff->name = $validated['name'];
         $newStaff->email = $validated['email'];
+        if ($validated['position'])
+            $newStaff->position = $validated['position'];
         $newStaff->ic = $validated['ic'];
         $newStaff->password = Hash::make($validated['password']);
         $newStaff->staff_unit_id = $validated['selected_unit_id'];

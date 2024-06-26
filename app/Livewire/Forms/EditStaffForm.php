@@ -5,53 +5,44 @@ namespace App\Livewire\Forms;
 use App\Helpers\UserRoleCodes;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\Reactive;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
-use Livewire\Attributes\Validate;
 
 class EditStaffForm extends Form
 {
     public ?User $staff;
-    // #[Validate('required', message: 'Sila isi nama')]
-    // #[Validate('string', message: 'Sila isi nama')]
+
     public $name;
-
-    // #[Validate('unique:App\Models\User,email', message: 'Akaun dengan emel tersebut telah wujud dlm sistem')]
     public $email;
-
-    // #[Validate('unique:App\Models\User,ic', message: 'Akaun dengan ic tersebut telah wujud dlm sistem')]
-    // #[Validate('required', message: 'Sila isi nama')]
-    // #[Validate('string', message: 'Sila isi nama')]
     public $ic;
+    public $position;
+    public $password;
 
-    // #[Validate('array')]
-    public $roles;
-
-    // #[Reactive]
-    // #[Validate('required|exists:App\Models\StaffSection,id')]
     public $selected_section_id = -1;
-    // #[Validate('required|exists:App\Models\StaffUnit,id')]
     public $selected_unit_id = -1;
 
-    // #[Validate('required|exists:App\Models\StaffUnit,id')]
-    public $password;
     public $has_role_admin;
     public $has_role_evaluator_1;
     public $has_role_evaluator_2;
     public $has_role_staff;
 
+    // Extra stuff
+    public $roles;
+
     public function rules()
     {
         return [
-            'name' => [ 'required', 'string' ],
+            'name' => [ 'required', 'string', 'max:60'],
             'email' => [
-                'required', 'string', Rule::unique('users')->ignore($this->staff)
+                'required', 'string', 'email:rfc,dns', Rule::unique('users')->ignore($this->staff)
             ],
             'ic' => [
-                'required', 'string', Rule::unique('users')->ignore($this->staff)
-            ], 'roles' => [ 'array' ],
+                'required', 'string', Rule::unique('users')->ignore($this->staff), 'max:12'
+            ],
+            'position' => [
+                'sometimes', 'nullable', 'string', 'max:50',
+            ],
+            'roles' => [ 'array' ],
             'selected_section_id' => [
                 'required', 'exists:App\Models\StaffSection,id'
             ],
@@ -62,12 +53,12 @@ class EditStaffForm extends Form
         ];
     }
 
-
     public function messages()
     {
         return [
             'name.required' => 'Sila isi nama.',
             'name.string' => 'Sila isi nama.',
+            'name.max' => 'Nama tidak boleh melebihi 60 patah perkataan.',
 
             'email.required' => 'Sila isi e-mel.',
             'email.string' => 'Sila isi e-mel.',
@@ -76,6 +67,10 @@ class EditStaffForm extends Form
             'ic.required' => 'Sila isi no. kad pengenalan.',
             'ic.string' => 'Sila isi no. kad pengenalan.',
             'ic.unique' => 'Kad pengenalan wujud di dalam sistem. Sila tukar.',
+            'ic.max' => 'Nama tidak boleh melebihi 12. Sila ikut format tanpa \'-\'',
+
+            'position:string' => 'Masalah teknikal. Sila muat naik semula halaman.',
+            'position:max' => 'Jawatan tidak boleh melebihi 12.',
 
             'roles.array' => 'Masalah teknikal. Sila muat naik semula halaman.',
 
@@ -101,6 +96,8 @@ class EditStaffForm extends Form
 
         $staff->name = $validated['name'];
         $staff->ic = $validated['ic'];
+        if ($validated['position'])
+            $staff->position = $validated['position'];
         $staff->email = $validated['email'];
         $staff->staff_unit_id = $validated['selected_unit_id'];
         if ($validated['password'])

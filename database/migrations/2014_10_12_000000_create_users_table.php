@@ -16,10 +16,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('ic')->unique();
+            $table->string('name', 60);
+            $table->string('ic', 30)->unique();
             $table->string('email')->unique();
-            $table->string('position')->nullable();
+            $table->string('position', 50)->nullable();
             $table->foreignIdFor(StaffUnit::class)->cascadeOnDelete();;
             // $table->foreignIdFor(StaffUnit::class)->nullable();
             $table->timestamp('email_verified_at')->nullable();

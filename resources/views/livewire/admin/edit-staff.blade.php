@@ -18,7 +18,7 @@
                     <span class="label-text">Nama Staff</span>
                 </div>
                 <input wire:model="form.name" value="{{ $staff->name }}" type="text" placeholder="Isi nama unit"
-                    class="w-full input input-bordered" wire:model="name" disabled />
+                    class="w-full input input-bordered" wire:model="name" />
                 @error('form.name')
                     <div class="label">
                         <span class="label-text-alt text-error">{{ $message }}</span>
@@ -39,11 +39,23 @@
             </label>
             <label class="w-full mb-2 form-control">
                 <div class="label">
-                    <span class="label-text">IC Staff</span>
+                    <span class="label-text">No Kad Pengenalan</span>
                 </div>
                 <input wire:model="form.ic" type="text" placeholder="Isi nama unit"
                     class="w-full input input-bordered" />
                 @error('form.ic')
+                    <div class="label">
+                        <span class="label-text-alt text-error">{{ $message }}</span>
+                    </div>
+                @enderror
+            </label>
+            <label class="w-full mb-2 form-control">
+                <div class="label">
+                    <span class="label-text">Jawatan</span>
+                </div>
+                <input wire:model="form.position" type="text" placeholder="Isi nama unit"
+                    class="w-full input input-bordered" />
+                @error('form.position')
                     <div class="label">
                         <span class="label-text-alt text-error">{{ $message }}</span>
                     </div>
