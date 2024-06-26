@@ -12,9 +12,9 @@ class StaffUnit extends Model
 {
     protected $guarded = [];
 
-    public function staffSection() : BelongsTo
+    public function section() : BelongsTo
     {
-        return $this->belongsTo(StaffSection::class);
+        return $this->belongsTo(StaffSection::class, 'staff_section_id');
     }
 
     public function workScopes() : HasMany

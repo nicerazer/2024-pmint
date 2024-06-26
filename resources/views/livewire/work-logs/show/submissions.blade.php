@@ -1,4 +1,8 @@
 <div class="flex flex-col gap-8">
+    @php
+        Carbon\Carbon::setlocale(config('app.locale'));
+    @endphp
+
     @foreach ($submissions as $submission)
         <div
             class="shadow-lg card
@@ -42,7 +46,7 @@
                 <!-- Time stamps -->
                 <div class="flex items-end justify-between w-full">
                     <p class="@if ($submission->evaluated_at && $submission->is_accept) text-green-700 @endif">Pada
-                        {{ $submission->created_at->format('j F Y') }}</p>
+                        {{ $submission->created_at->locale('ms-MY')->translatedFormat('j F Y') }}</p>
                     @if ($submission->evaluated_at)
                         <p class="text-right @if ($submission->evaluated_at && $submission->is_accept) text-green-700 @endif">Pada
                             {{ $submission->evaluated_at }}</p>

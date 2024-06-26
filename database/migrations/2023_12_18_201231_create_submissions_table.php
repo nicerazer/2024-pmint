@@ -28,7 +28,9 @@ return new class extends Migration
 
             $table->unique(['work_log_id', 'number'],'wl_count_index');
 
-            $table->timestamps();
+            $table->timestamp('created_at');
+            $table->timestamp('updated_at')->nullable();
+            // $table->timestamps();
         });
     }
 

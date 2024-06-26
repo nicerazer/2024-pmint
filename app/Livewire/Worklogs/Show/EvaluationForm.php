@@ -2,7 +2,9 @@
 
 namespace App\Livewire\WorkLogs\Show;
 
-use Livewire\Attributes\On;
+use App\Helpers\WorkLogCodes;
+use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class EvaluationForm extends Component
@@ -15,24 +17,18 @@ class EvaluationForm extends Component
 
     public function save()
     {
-        // sleep(4);
-        // TODO: Check past submissions for evaluation timestamp. Can continue if filled
-        // dd ($this->only(['evaluator_comment', 'is_accept']) + ['evaluated_at' => now()]);
-        $this->submission->update(
-            $this->only(['evaluator_comment']) +
-            ['evaluated_at' => now(),
-            // 'evaluator_id' => auth()->user()->id,
-            'is_accept' => $this->is_accept == 'yes']
-        );
+        DB::transaction(function () {
+            $this->submission->evaluator_comment = $this->evaluator_comment;
+            $this->submission->evaluator_id = auth()->user()->id;
+            $this->submission->evaluated_at = now();
+            $this->submission->is_accept = $this->is_accept == 'yes';
+            $this->submission->status = WorkLogCodes::COMPLETED;
+
+            $this->submission->save();
+        });
+
         $this->dispatch('refresh-submissions');
     }
-
-
-    // #[On('refresh-submissions')]
-    // public function refreshComponent()
-    // {
-    //     $this->submitting = true;
-    // }
 
     public function render()
     {

@@ -23,12 +23,7 @@ use Livewire\Attributes\Renderless;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Columns\DateColumn;
-use Rappasoft\LaravelLivewireTables\Views\Filters\DateFilter;
-use Rappasoft\LaravelLivewireTables\Views\Filters\LivewireComponentFilter;
-use Rappasoft\LaravelLivewireTables\Views\Filters\MultiSelectDropdownFilter;
-use Rappasoft\LaravelLivewireTables\Views\Filters\MultiSelectFilter;
 use Rappasoft\LaravelLivewireTables\Views\Filters\SelectFilter;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class RappasoftTable extends DataTableComponent
 {
@@ -217,7 +212,7 @@ class RappasoftTable extends DataTableComponent
             //     )
             //     ->searchable()
             //     ->sortable(),
-            Column::make('Bahagian', 'unit.staffSection.name'),
+            Column::make('Bahagian', 'unit.section.name'),
             // Column::make('Unit', 'workscope.staffUnit.name'),
             DateColumn::make('Tarikh Mula', 'started_at')
                 ->searchable()

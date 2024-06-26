@@ -82,15 +82,6 @@ class CreateWorklogForm extends Form
         ];
     }
 
-    // public function setPost(Post $post)
-    // {
-    //     $this->post = $post;
-
-    //     $this->title = $post->title;
-
-    //     $this->content = $post->content;
-    // }
-
     public function initWorkScope($workScopes) {
         if ($workScopes->isEmpty()) {
             $this->workScopeMainId = -1;
@@ -102,9 +93,6 @@ class CreateWorklogForm extends Form
     public function store() {
 
         $this->validate();
-
-        // dd($this->started_at);
-
         $attributes = [
             'description' => $this->workNotes,
             'status' => $this->workStatus,

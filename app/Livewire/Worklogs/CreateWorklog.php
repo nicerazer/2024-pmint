@@ -35,6 +35,11 @@ class CreateWorklog extends Component
             ->with('message', 'Log Kerja dicipta.');
     }
 
+    // #Livewire[OnComputed]
+    // public function () {
+
+    // }
+
     public function switchUnit($unit_id)
     {
         // Log::info('Selecting unit from dropdown list');
@@ -54,10 +59,10 @@ class CreateWorklog extends Component
 
     public function render()
     {
-        $workScopes = WorkScope::query()
-            ->whereColumn('work_scopes.staff_unit_id', 'staff_units.id');
+        // $workScopes = WorkScope::query()
+        //     ->whereColumn('work_scopes.staff_unit_id', 'staff_units.id');
 
-        $this->staffUnits = StaffUnit::where('staff_section_id', auth()->user()->unit->staffSection->id)
+        $this->staffUnits = StaffUnit::where('staff_section_id', auth()->user()->unit->section->id)
         ->get();
 
         return view('livewire.work-logs.create-worklog');

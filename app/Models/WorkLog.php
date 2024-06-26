@@ -252,34 +252,50 @@ class WorkLog extends Model
     protected static function booted(): void
     {
         static::creating(function (WorkLog $worklog) {
-            Log::warning('Creating worklog: Attempt');
-            // if (
-            //     $worklog->workScope
-            //     // WorkScope from database should be chosen if custom workscope title is not filled
-            //     // (!$worklog->custom_workscope_title && !$worklog->workScope) ||
-            //     // When using custom title, staff section cannot be null
-            //     // ($worklog->custom_workscope_title && !$worklog->staff_section_id)
-            // ) {
-            //     Log::warning('Either all workscope setting is absoluetly missing, or staff section null when using custom title');
-            //     return false;
-            // }
-            // if ($worklog->workScope)
-            //     $worklog->staff_section_id = $worklog->workScope->staffUnit->staffSection->id;
-            // if ($worklog->custom_workscope_title) {
-            //     $worklog->staff_section_id = auth()->user()
-            // }
+            Log::debug('Creating worklog: Attempt');
+
+            if (! $worklog->wrkscp_is_main && ! $worklog->wrkscp_alt_unit_id) {
+                // When using custom title, alt unit id cannot be null
+                Log::warning('ERROR CREATING WORKLOG');
+                Log::warning('=== Alt but wrkscp_alt_unit_id was not set');
+                return false;
+            } else if (! $worklog->wrkscp_is_main && WorkScope::where('id', $worklog->wrkscp_alt_unit_id)->count()) {
+                // When using custom title, staff section cannot be null
+                Log::warning('ERROR CREATING WORKLOG');
+                Log::warning('=== Alt but wrkscp_alt_unit_id does not exist in database');
+                return false;
+            } else if (! $worklog->wrkscp_is_main && ! $worklog->wrkscp_alt_title) {
+                // When using custom title, staff section cannot be null
+                Log::warning('ERROR CREATING WORKLOG');
+                Log::warning('=== Alt but wrkscp_alt_title was not set');
+                return false;
+            } else if ($worklog->wrkscp_is_main && !$worklog->wrkscp_main_id) {
+                // WorkScope from database should be chosen if custom workscope title is not filled
+                Log::warning('ERROR CREATING WORKLOG');
+                Log::warning('=== Main but wrkscp_main_id was not set');
+                return false;
+            }
+
+            if ($worklog->wrkscp_is_main)
+                $worklog->wrkscp_alt_unit_id = $worklog->workScopeMain->staffUnit->id;
+            else {
+                $worklog->wrkscp_alt_unit_id = auth()->user()->unit->id;
+            }
             Log::warning('Creating worklog: Success');
         });
 
         static::updating(function (WorkLog $workLog) {
-            // $workLog->latestSubmission()->evaluator_id = auth()->user()->id;
-
-            // if ($workLog->latestSubmission()->evaluated_at) {
-            //     if ($workLog->latestSubmission()->is_accept)
-            //         $workLog->status = false;
-            //     else
-            //         $workLog->status = false;
-            // }
+            // Auto set the latest submission to retreive current user for id
+            // when it is currently on evaluator 1
+            if (auth()->user()->isEvaluator1()) {
+                $workLog->latestSubmission()->evaluator_id = auth()->user()->id;
+                if ($workLog->latestSubmission()->evaluated_at) {
+                    if ($workLog->latestSubmission()->is_accept)
+                        $workLog->status = false;
+                    else
+                        $workLog->status = false;
+                }
+            }
         });
     }
 

@@ -14,7 +14,6 @@ class StaffSection extends Model
 
     protected $guarded = [];
 
-
     public function worklogs(): BelongsTo
     {
         return $this->belongsTo(StaffSection::class);
