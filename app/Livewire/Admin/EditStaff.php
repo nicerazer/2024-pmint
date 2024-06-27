@@ -98,7 +98,7 @@ class EditStaff extends Component
             $this->form->name = $this->staff->name;
             $this->form->email = $this->staff->email;
             $this->form->ic = $this->staff->ic;
-            $this->form->selected_section_id = $this->staff->unit->staffsection->id;
+            $this->form->selected_section_id = $this->staff->unit->section->id;
             $this->form->selected_unit_id = $this->staff->unit->id;
             $this->form->roles = $this->staff->roles->pluck('id')->toArray();
             $this->form->has_role_admin = in_array(UserRoleCodes::ADMIN, $staff_roles);
