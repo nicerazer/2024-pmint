@@ -7,7 +7,7 @@ use App\Helpers\WorkLogCodes;
         <div class="flex justify-between">
             <h5>
                 <span class="text-xl font-bold">{{ $workLog->workScopeTitle() }}</span>
-                <span class="ml-1 font-light">{{ '# No.' . $workLog->id }}</span>
+                <span class="ml-1 font-light whitespace-nowrap">{{ '# No.' . $workLog->id }}</span>
                 <x-work-logs.status-badge :row="$workLog" />
             </h5>
             <div>

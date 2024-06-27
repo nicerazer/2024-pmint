@@ -284,19 +284,19 @@ class WorkLog extends Model
             Log::warning('Creating worklog: Success');
         });
 
-        static::updating(function (WorkLog $workLog) {
-            // Auto set the latest submission to retreive current user for id
-            // when it is currently on evaluator 1
-            if (auth()->user()->isEvaluator1()) {
-                $workLog->latestSubmission()->evaluator_id = auth()->user()->id;
-                if ($workLog->latestSubmission()->evaluated_at) {
-                    if ($workLog->latestSubmission()->is_accept)
-                        $workLog->status = false;
-                    else
-                        $workLog->status = false;
-                }
-            }
-        });
+        // static::updating(function (WorkLog $workLog) {
+        //     // Auto set the latest submission to retreive current user for id
+        //     // when it is currently on evaluator 1
+        //     if (auth()->user()->isEvaluator1()) {
+        //         $workLog->latestSubmission()->evaluator_id = auth()->user()->id;
+        //         if ($workLog->latestSubmission()->evaluated_at) {
+        //             if ($workLog->latestSubmission()->is_accept)
+        //                 $workLog->status = false;
+        //             else
+        //                 $workLog->status = false;
+        //         }
+        //     }
+        // });
     }
 
     // public function scopeWithWhereHas($query, $relation, $constraint){
