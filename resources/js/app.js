@@ -3,7 +3,7 @@ import "./bootstrap";
 import {
     Livewire,
     Alpine,
-} from "../../vendor/livewire/livewire/dist/livewire.esm";
+} from "../../vendor/livewire/livewire/dist/livewire.esm.js";
 import intersect from "@alpinejs/intersect";
 import collapse from "@alpinejs/collapse";
 
