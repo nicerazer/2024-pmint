@@ -29,6 +29,10 @@ class EvaluationForm extends Component
                 'no' => WorkLogCodes::TOREVISE,
             ][$this->is_accept];
 
+            if ($this->is_accept) {
+                $wl->expected_at = now()->addDay();
+            }
+
             $wl->save();
             $this->submission->save();
         });

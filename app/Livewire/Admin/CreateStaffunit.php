@@ -11,7 +11,7 @@ class CreateStaffunit extends Component
 {
     #[Validate('required', message: 'Sila isi nama unit')]
     #[Validate('string', message: 'Sila isi nama unit')]
-    #[Validate('unique:App\Models\StaffUnit,name', message: 'Unit dengan nama tersebut wujud di dalam sistem. Sila isi yang lain.')]
+    // #[Validate('unique:App\Models\StaffUnit,name', message: 'Unit dengan nama tersebut wujud di dalam sistem. Sila isi yang lain.')]
     public $name = '';
     #[Validate('required', message: 'Sila pilih bahagian.')]
     #[Validate('exists:App\Models\StaffSection,id', message: 'Sila pilih bahagian.')]

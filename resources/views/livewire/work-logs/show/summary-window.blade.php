@@ -6,47 +6,47 @@ use App\Helpers\WorkLogCodes;
     <div class="w-full">
         <div class="flex justify-between">
             <h5>
-                <span class="text-xl font-bold">{{ $workLog->workScopeTitle() }}</span>
-                <span class="ml-1 font-light whitespace-nowrap">{{ '# No.' . $workLog->id }}</span>
-                <x-work-logs.status-badge :row="$workLog" />
+                <span class="text-xl font-bold">{{ $worklog->workScopeTitle() }}</span>
+                <span class="ml-1 font-light whitespace-nowrap">{{ '# No.' . $worklog->id }}</span>
+                <x-work-logs.status-badge :row="$worklog" />
             </h5>
             <div>
                 <p class="mb-1 font-bold text-right text-gray-600">Bahagian</p>
-                <p class="mb-3 text-sm text-right">{{ $workLog->unit->section->name }}</p>
+                <p class="mb-3 text-sm text-right">{{ $worklog->unit->section->name }}</p>
             </div>
         </div>
 
         <p class="mt-3 mb-1 font-bold text-gray-600">📝 Nota Aktiviti</p>
-        <p class="mb-3 text-sm">{{ $workLog->description ? $workLog->description : 'Tiada nota' }}</p>
+        <p class="mb-3 text-sm">{{ $worklog->description ? $worklog->description : 'Tiada nota' }}</p>
         <div class="divider divider-vertical"></div>
         <div class="flex justify-between my-5">
             <span class="text-gray-500">Tarikh mula</span>
-            <span>{{ $workLog->created_at->format('jS M Y') }}</span>
+            <span>{{ $worklog->created_at->format('jS M Y') }}</span>
         </div>
-        {{-- @if ($workLog->isSubmitted())
+        {{-- @if ($worklog->isSubmitted())
         @endif
-        @if ($workLog->isClosed())
+        @if ($worklog->isClosed())
         @endif --}}
-        @if ($workLog->isOngoing())
+        @if ($worklog->isOngoing())
             <div class="flex justify-between my-5">
                 <span class="text-gray-500">Jangka Siap</span>
-                <span>{{ $workLog->expected_at->format('jS M Y') }}</span>
+                <span>{{ $worklog->expected_at->format('jS M Y') }}</span>
             </div>
         @endif
-        @if ($workLog->isCompleted())
+        @if ($worklog->isCompleted())
             <div class="flex justify-between my-5">
                 <span class="text-gray-500">Tarikh Selesai</span>
-                <span>{{ $workLog->created_at->format('jS M Y') }}</span>
+                <span>{{ $worklog->created_at->format('jS M Y') }}</span>
             </div>
         @endif
-        @if ($workLog->isToRevise())
+        @if ($worklog->isToRevise())
             <div class="flex justify-between my-5">
                 <span class="text-gray-500">Tarikh Dikembalikan</span>
-                <span>{{ $workLog->created_at->format('jS M Y') }}</span>
+                <span>{{ $worklog->created_at->format('jS M Y') }}</span>
             </div>
         @endif
         <div class="divider divider-vertical"></div>
-        {{-- @if (auth()->user()->isStaff() && $workLog->submitable())
+        {{-- @if (auth()->user()->isStaff() && $worklog->submitable())
             <button class="btn-block btn btn-primary" @click="showSubmissionBox = true">
                 Hantar <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                     class="w-5 h-5">
@@ -56,7 +56,7 @@ use App\Helpers\WorkLogCodes;
                 </svg>
             </button>
         @endif --}}
-        {{-- @if (auth()->user()->isEvaluator1() && $workLog->evaluatable())
+        {{-- @if (auth()->user()->isEvaluator1() && $worklog->evaluatable())
             <button class="btn-block btn btn-primary" @click="showSubmissionBox = true">
                 Nilai Log Aktiviti <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                     fill="currentColor" class="w-5 h-5">
@@ -68,7 +68,7 @@ use App\Helpers\WorkLogCodes;
         @endif --}}
 
     </div>
-    @if (auth()->user()->isEvaluator1() && in_array($workLog->status, [WorkLogCodes::ONGOING, WorkLogCodes::SUBMITTED, WorkLogCodes::TOREVISE]))
+    @if (auth()->user()->isEvaluator1() && in_array($worklog->status, [WorkLogCodes::ONGOING, WorkLogCodes::SUBMITTED, WorkLogCodes::TOREVISE]))
         <form action="" class="mx-auto w-72"><button class="btn btn-block btn-error btn-sm">Batal Log Aktviti</button></form>
     @endif
 </div>{{-- Left Side : Worklog Summary --}}

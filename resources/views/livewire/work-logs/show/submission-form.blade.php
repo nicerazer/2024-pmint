@@ -29,7 +29,7 @@
                         'application/gzip', 'application/pdf', 'application/vnd.rar', 'application/zip', 'application/x-7z-compressed'
                     ]"
                     allowFileSizeValidation maxFileSize="100mb" />
-                @error('attachments')
+                @error('attachments.*')
                     <p class="text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

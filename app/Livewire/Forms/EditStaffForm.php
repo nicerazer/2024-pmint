@@ -66,8 +66,8 @@ class EditStaffForm extends Form
 
             'ic.required' => 'Sila isi no. kad pengenalan.',
             'ic.string' => 'Sila isi no. kad pengenalan.',
-            'ic.unique' => 'Kad pengenalan wujud di dalam sistem. Sila tukar.',
-            'ic.max' => 'Nama tidak boleh melebihi 12. Sila ikut format tanpa \'-\'',
+            'ic.unique' => 'No kad pengenalan wujud di dalam sistem. Sila tukar.',
+            'ic.max' => 'No kad pengenalan tidak boleh melebihi 12. Sila ikut format tanpa \'-\'',
 
             'position:string' => 'Masalah teknikal. Sila muat naik semula halaman.',
             'position:max' => 'Jawatan tidak boleh melebihi 12.',

@@ -28,15 +28,15 @@
     <div class="w-10/12 mx-auto text-sm breadcrumbs">
         <ul>
             <li><a href="/">Halaman Utama</a></li>
-            <li>{{ $workLog->workScopeTitle() }} - No #{{ $workLog->id }}</li>
+            <li>{{ $worklog->workScopeTitle() }} - No #{{ $worklog->id }}</li>
         </ul>
     </div>
     <div class="flex w-10/12 gap-16 mx-auto mt-4 pb-80" x-data="{ selectedWindowTitle: 'showWorkLog', isEditing: false, showSubmissionBox: false }"> <!-- main container -->
 
 
-        <livewire:work-logs.show.summary-window :$workLog />
+        <livewire:work-logs.show.summary-window :worklog="$worklog" />
 
-        <livewire:work-logs.show.submission-window :$workLog />
+        <livewire:work-logs.show.submission-window :worklog="$worklog" />
         {{--
         @push('scripts')
             <script type="module">
@@ -44,7 +44,7 @@
                 const uploadElement = document.getElementById('file-upload');
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                const workLogId = {{ $workLog->id }};
+                const worklogId = {{ $worklog->id }};
 
                 // Create a FilePond instance
                 const pond = FilePond.create(uploadElement, {

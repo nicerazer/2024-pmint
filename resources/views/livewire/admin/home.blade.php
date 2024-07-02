@@ -1,5 +1,5 @@
 <div x-data="{
-    staff_section_id: 1,
+    staff_section_id: -1,
     staff_unit_id: -1,
     staff_id: -1,
     activity_id: -1,
@@ -8,7 +8,8 @@
     is_creating: {{ $model_is_creating ? 1 : 0 }} == 1 ? true : false,
     staff_sections: {{ Illuminate\Support\Js::from($this->staff_sections) }}
 }">
-    <div class="flex gap-4">
+    <!-- Create Menu / Breadcrumbs START -->
+    <section class="flex gap-4">
         <div class="w-full max-w-lg">
             <div role="tablist" class="tabs tabs-bordered">
                 <a role="tab" class="tab" :class="{ 'tab-active': is_creating && model_context == 'staff_section' }" @click="
@@ -59,10 +60,17 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </section>
+    <!-- Create Menu / Breadcrumbs END -->
 
-    <div class="flex gap-4">
+    <!-- Treeview / Mainview START -->
+    <section class="flex gap-4">
         <livewire:navigation.admin-treeview :$staff_sections />
+
+        <div x-show="model_context == 'init'" class="w-full">
+            <h2 class="w-[28rem] mx-auto mt-20 mb-12 text-lg font-medium text-center">👈 Sila klik mana-mana data untuk edit atau item dari menu penciptaan</h2>
+            <img src="{{ asset('assets/empty/6-empty.png') }}" alt="" class="max-w-[30rem] mx-auto">
+        </div>
 
         <div x-show="
             model_context == 'staff_section' && is_creating
@@ -113,7 +121,8 @@
             class="w-full bg-white border card h-fit">
             <livewire:admin.edit-staffunit :$model_id />
         </div>
-    </div>
+    </section>
+    <!-- Treeview / Mainview END -->
 </div>
 
 {{-- @script --}}

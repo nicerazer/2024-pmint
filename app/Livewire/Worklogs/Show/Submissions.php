@@ -9,12 +9,12 @@ use Livewire\Component;
 
 class Submissions extends Component
 {
-    public $workLog;
+    public $worklog;
     public $submissions;
 
     public function render()
     {
-        $this->submissions = Submission::where('work_log_id', $this->workLog->id)->orderByDesc('number')->get();
+        $this->submissions = Submission::where('work_log_id', $this->worklog->id)->orderByDesc('number')->get();
         return view('livewire.work-logs.show.submissions');
     }
 
@@ -22,13 +22,5 @@ class Submissions extends Component
     public function refreshComponent()
     {
         $this->dispatch('$refresh');
-
-        // $this->submissions = Submission::where('work_log_id', $this->workLog->id)->get();
     }
-
-    // #[On('refresh-submissions')]
-    // public function refreshComponent()
-    // {
-    //     $this->dispatch('$refresh');
-    // }
 }

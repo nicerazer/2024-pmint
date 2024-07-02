@@ -1,17 +1,28 @@
 <x-mail::message>
-# Log kerja melebihi jangka tempoh
+# Log kerja anda melebihi jangka tempoh
+## Tajuk
+> {{ $worklog->workScopeTitle }}
+{{--
+## Penerangan
+> {{ $worklog->description }}
+## Tarikh Mula
+> {{ $worklog->started_at }}
+## Unit
+> {{ $worklog->unit->name }}
+## Bahagian
+> {{ $worklog->unit->section->name }}
 
-<x-mail::table>
-|        | Table         | Example  |
-| ------------- |:-------------:| --------:|
-| ID      | Centered      | $10      |
-| Title      | Right-Aligned | $20      |
-</x-mail::table>
+## Jangka tarikh penghantaran:
+<x-mail::panel>
+{{ $worklog->expected_at }}
+</x-mail::panel> --}}
 
-<x-mail::button :url="''">
-Hantar log kerja
+<x-mail::button :url="$url">
+Buka log kerja
 </x-mail::button>
 
+Sila lakukan penghantaran kerja anda secepat mungkin.
+
 Terima kasih,<br>
-{{ config('app.name') }}
+Sistem Log Kerja PMINT
 </x-mail::message>

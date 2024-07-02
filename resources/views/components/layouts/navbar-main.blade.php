@@ -44,7 +44,12 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-white size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                     </svg>
-                    <span class="badge badge-sm indicator-item">8</span>
+                    @php
+                        $notifCounts = auth()->user()->unreadNotifications()->count();
+                    @endphp
+                    @if ($notifCounts)
+                        <span class="badge badge-sm indicator-item">{{ $notifCounts }}</span>
+                    @endif
                 </div>
             </div>
             <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-[24rem] bg-base-100 shadow">
@@ -57,36 +62,12 @@
                         <button class="link link-secondary link-hover">Set baca semua</button>
                     </div>
                     <div class="flex flex-col gap-2 border-b">
-                        @foreach ([1,2,3,4] as $i)
-                            @if ($i % 2 == 0)
-                                <x-notifications.item />
-                            @else
-                                <div class="flex gap-3 px-2 py-2 -mx-2 rounded-lg hover:bg-gray-200">
-                                    <!-- Worklog past due -->
-                                    <div class="relative flex items-center justify-center w-12 h-12">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-ping size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="absolute size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg>
-                                    </div>
-                                    <!-- Notification Content -->
-                                    <div>
-                                        <h3 class="mb-2"><a href="" class="link link-hover">Log kerja anda</a> <span class="text-gray-400">melebihi jangka waktu.</span></h3>
-                                        <div class="text-sm text-gray-400">
-                                            <span>Jangka siap </span>
-                                            <span class="inline-block w-1 h-1 mx-1 mb-0.5 bg-gray-400 rounded-full"></span>
-                                            <span> 1 Jun 2024</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
+                        @foreach (auth()->user()->unreadNotifications()->limit(5)->get() as $notif)
+                            <x-notifications.item :notif="$notif" wire:key="{{ $notif->id }}" />
                         @endforeach
                     </div>
                     <div class="flex flex-row items-center justify-between w-full">
-                        <span>5 belum dibaca</span>
+                        <span>{{ $notifCounts }} belum dibaca</span>
                         <button class="link link-hover link-neutral" onclick="notifModal.showModal()">
                             Buka lagi
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="ml-1 mb-0.5 inline size-5">
@@ -117,20 +98,22 @@
                     <div class="flex gap-4 mb-3">
                         @if (auth()->user()->getMedia('avatar')->count())
                             <img src="{{ auth()->user()->getFirstMediaUrl('avatar') }}" alt="Avatar"
-                                class="w-16 mx-auto bg-white border rounded-full aspect-square">
+                                class="object-contain mx-auto bg-white border rounded-full size-16">
                         @else
                             <div class="w-16 h-16 bg-gray-400 rounded-full"></div>
                         @endif
                         <div class="flex-grow">
                             <h4 class="mb-0 capitalize card-title">{{ auth()->user()->name }}</h4>
-                            <h5 class="mb-2"><span class="mr-2 badge badge-ghost">Id</span> <span class="font-bold">{{ auth()->user()->id }}</span></h5>
-                            <div class="w-4 h-0.5 rounded-full bg-accent"></div>
+                            <div class="flex justify-between gap-3">
+                                <h5 class="text-sm text-gray-500">{{ auth()->user()->email }}</h5>
+                                <h5 class="mb-2"><span class="font-bold"></span>ID<span class="ml-1 badge badge-ghost">{{ auth()->user()->id }}</span></h5>
+                            </div>
+                            {{-- <div class="w-4 h-0.5 rounded-full bg-accent"></div> --}}
                         </div>
 
                     </div>
                     <ul class="p-0 menu">
                         <li><a href="/profile">Profil</a></li>
-                        <li><a href="/notifications">Notifikasi</a></li>
                         <li>
                             <a href="{{ route('logout') }}" class="btn-error btn btn-sm !text-start mt-2">Log Keluar</a>
                             {{-- <button>asdasd</button> --}}

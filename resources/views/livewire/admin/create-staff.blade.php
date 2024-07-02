@@ -1,7 +1,7 @@
 <div class="card-body">
 
     <h2 class="font-bold text-gray-800 card-title">
-        Kemaskini Staf
+        Tambah Staf
     </h2>
     <form wire:submit="save">
         <label class="w-full mb-2 form-control">
@@ -94,18 +94,19 @@
                         @if ($form->has_role_admin) checked="checked" @endif class="checkbox checkbox-primary" />
                 </label>
             </div>
-            <div class="form-control">
-                <label class="cursor-pointer label">
-                    <span class="mr-8 label-text">Penilai 1</span>
-                    <input wire:model="form.has_role_evaluator_1" value="yes" type="checkbox"
-                        @if ($form->has_role_evaluator_1) checked="checked" @endif class="checkbox checkbox-primary" />
-                </label>
-            </div>
+
             <div class="form-control">
                 <label class="cursor-pointer label">
                     <span class="mr-8 label-text">Penilai 2</span>
                     <input wire:model="form.has_role_evaluator_2" value="yes" type="checkbox"
                         @if ($form->has_role_evaluator_2) checked="checked" @endif class="checkbox checkbox-primary" />
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="mr-8 label-text">Penilai 1</span>
+                    <input wire:model="form.has_role_evaluator_1" value="yes" type="checkbox"
+                        @if ($form->has_role_evaluator_1) checked="checked" @endif class="checkbox checkbox-primary" />
                 </label>
             </div>
             <div class="form-control">

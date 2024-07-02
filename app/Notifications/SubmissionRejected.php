@@ -2,6 +2,9 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
+use App\Models\WorkLog;
+use ErrorException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\DatabaseMessage;
@@ -15,9 +18,12 @@ class SubmissionRejected extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(
+        public WorkLog $worklog,
+        public User $author,
+        public User $evaluator
+    )
     {
-        //
     }
 
     /**
@@ -28,10 +34,6 @@ class SubmissionRejected extends Notification
     public function via(object $notifiable): array
     {
         return ['database'];
-    }
-
-    public function toDatabase(): DatabaseMessage {
-        return (new DatabaseMessage);
     }
 
     /**
@@ -52,11 +54,12 @@ class SubmissionRejected extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        // return [
-        //     'reject_id' => ,
-        //     'created_at' => ,
-        //     'body' => '',
-        // ];
-        return [];
+        return [
+            'author_id' => $this->author->id,
+            'evaluator_id' => $this->evaluator->id,
+            'evaluator_name' => $this->evaluator->name,
+            'evaluated_at' => $this->worklog->latestSubmission->evaluated_at,
+            'worklog_id' => $this->worklog->id,
+        ];
     }
 }

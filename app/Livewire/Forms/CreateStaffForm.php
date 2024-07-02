@@ -37,7 +37,6 @@ class CreateStaffForm extends Form
             'position' => [
                 'sometimes', 'nullable', 'string', 'max:50',
             ],
-            'roles' => [ 'array' ],
             'selected_section_id' => [
                 'required', 'exists:App\Models\StaffSection,id'
             ],
@@ -66,8 +65,6 @@ class CreateStaffForm extends Form
 
             'position:string' => 'Masalah teknikal. Sila muat naik semula halaman.',
             'position:max' => 'Jawatan tidak boleh melebihi 12.',
-
-            'roles.array' => 'Masalah teknikal. Sila muat naik semula halaman.',
 
             'selected_section_id.required' => 'Sila pilih bahagian.',
             'selected_section_id.exists' => 'Sila pilih bahagian.',

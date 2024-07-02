@@ -19,8 +19,10 @@ class Month extends Component
     public string $month_translated;
 
     public function addYear() {
-        $this->selected_date->addYear()->setMonth(1);
-        $this->dispatch('update_month', $this->selected_date->toDateString());
+        if ($this->selected_date->year != now()->year) {
+            $this->selected_date->addYear()->setMonth(1);
+            $this->dispatch('update_month', $this->selected_date->toDateString());
+        }
     }
 
     public function subYear() {

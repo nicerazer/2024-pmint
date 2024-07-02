@@ -6,14 +6,20 @@
 <div class="w-[20rem]"><!-- Profile Section -->
     @if (auth()->user()->getMedia('avatar')->count())
         <img src="{{ auth()->user()->getFirstMediaUrl('avatar') }}" alt="Avatar"
-            class="w-[16rem] mb-8 border rounded-full bg-white mx-auto aspect-square">
+            class="size-[16rem] mb-8 border rounded-full bg-white mx-auto object-contain">
     @else
         <div class="flex items-center justify-center text-center border rounded-full bg-slate-300 w-[16rem] h-[16rem] mx-auto">
             Tiada Gambar</div>
     @endif
     <div class="my-4 text-center">
         <h2 class="text-lg font-bold capitalize">{{ auth()->user()->name }}</h2>
-        <p class="text-lg text-gray-600 capitalize">{{ 'Pengurus Besar Khidmat Sokongan' }}</p>
+        <p class="text-lg text-gray-600 capitalize">
+            @if (! auth()->user()->position)
+                <span class="italic text-gray-400">Jawatan belum di set</span>
+            @else
+                {{ auth()->user()->position }}
+            @endif
+        </p>
     </div>
     <a href="{{ route('profile.edit') }}" wire:navigate class="w-full btn btn-secondary btn-sm">
         <span>Kemaskini Profil</span>

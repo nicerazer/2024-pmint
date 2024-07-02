@@ -29,7 +29,7 @@ class WorkLogPastDue extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        return ['mail'];
     }
 
     /**
@@ -39,7 +39,10 @@ class WorkLogPastDue extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('Log kerja melebihi jangka tempoh')
-            ->markdown('mail.worklog-pastdue', ['worklog' => $this->worklog]);
+            ->markdown('mail.worklog-pastdue', [
+                'worklog' => $this->worklog,
+                'url' => url("/worklogs/{$this->worklog->id}"),
+            ]);
     }
 
     /**
@@ -50,7 +53,8 @@ class WorkLogPastDue extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'worklog_id' => $this->worklog->id
+            'worklog_id' => $this->worklog->id,
+            'expected_at' => $this->worklog->expected_at,
         ];
     }
 }

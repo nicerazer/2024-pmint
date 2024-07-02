@@ -42,7 +42,7 @@ class Index extends Component
             $this->worklog_count_in_a_month_by_statuses = [];
             $this->generateStats();
         } else {
-            $this->model_context = session('admin_model_context') ? session('admin_model_context') : 'staff';
+            $this->model_context = session('admin_model_context') ? session('admin_model_context') : 'init';
             $this->model_id = session('admin_model_id') ? session('admin_model_id') : -1;
             $this->model_is_creating = session('admin_is_creating') ? session('admin_is_creating') : false;
         }

@@ -19,10 +19,10 @@
         "opcodesio/log-viewer": "^3.10",
         "phpoffice/phpspreadsheet": "^2.1",
         "rappasoft/laravel-livewire-tables": "^3.2",
-        "spatie/laravel-medialibrary": "^11.0.0",
+        "spatie/laravel-medialibrary": "10.15.0",
         "staudenmeir/eloquent-eager-limit": "^1.0",
-        "symfony/http-client": "^7.0",
-        "symfony/mailgun-mailer": "^7.0"
+        "symfony/http-client": "6.4.9",
+        "symfony/mailgun-mailer": "6.4.9"
     },
     "require-dev": {
         "beyondcode/laravel-er-diagram-generator": "^3.0",

@@ -9,13 +9,12 @@ use Livewire\Component;
 
 class SubmissionWindow extends Component
 {
-    public $workLog;
+    public WorkLog $worklog;
 
     #[On('refresh-submissions')]
     public function refreshComponent()
     {
-        $this->workLog = WorkLog::find($this->workLog->id);
-
+        $this->worklog->refresh();
         $this->dispatch('$refresh');
     }
 

@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class SummaryWindow extends Component
 {
-    public $workLog;
+    public WorkLog $worklog;
 
     public function render()
     {
@@ -18,8 +18,7 @@ class SummaryWindow extends Component
     #[On('refresh-submissions')]
     public function refreshComponent()
     {
-        $this->workLog = WorkLog::find($this->workLog->id);
-        // $this->dispatch('$refresh');
+        $this->worklog->refresh();
     }
 
 }

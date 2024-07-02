@@ -15,9 +15,9 @@
         <form wire:submit="save">
             <label class="w-full mb-2 form-control">
                 <div class="label">
-                    <span class="label-text">Nama Staff</span>
+                    <span class="label-text">Nama Staf</span>
                 </div>
-                <input wire:model="form.name" value="{{ $staff->name }}" type="text" placeholder="Isi nama unit"
+                <input wire:model="form.name" value="{{ $staff->name }}" type="text" placeholder="Isi nama staf"
                     class="w-full input input-bordered" wire:model="name" />
                 @error('form.name')
                     <div class="label">
@@ -53,7 +53,7 @@
                 <div class="label">
                     <span class="label-text">Jawatan</span>
                 </div>
-                <input wire:model="form.position" type="text" placeholder="Isi nama unit"
+                <input wire:model="form.position" type="text" placeholder="Isi jawatan"
                     class="w-full input input-bordered" />
                 @error('form.position')
                     <div class="label">

@@ -25,10 +25,8 @@ class SubmissionForm extends Component
     private $imageCount = 0;
     private $docCount = 0;
 
-    public function save()
-    {
-        Log::debug('Submission Form: Saving initiated');
-        $this->validate([
+    public function rules() {
+        return [
             'attachments' => 'nullable',
             'attachments.*' => ['nullable', 'max:1000000',
                 File::types([
@@ -39,7 +37,15 @@ class SubmissionForm extends Component
                     'application/gzip', 'application/pdf', 'application/vnd.rar', 'application/zip', 'application/x-7z-compressed'
                 ])],
             'body' => 'nullable|string',
-        ]);
+        ];
+    }
+
+    // public function messages() {}
+
+    public function save()
+    {
+        Log::debug('Submission Form: Saving initiated');
+        $this->validate();
         Log::debug('Submission Form: Validated inputs');
         DB::transaction(function () {
             // TODO: Check past submissions for evaluation timestamp. Can continue if filled
@@ -61,13 +67,21 @@ class SubmissionForm extends Component
 
             Log::debug('Submission Form: Created submission');
 
+            // Store by generated name, retreive (download) by original name
             $this->imageCount = 0;
             collect($this->attachments)->each(function($attachment) use ($submission) {
                 if (in_array($attachment->getMimeType(), ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'])) {
-                    $submission->addMedia($attachment->getRealPath())->toMediaCollection('images');
+                    // $submission->addMedia($attachment->getRealPath())->toMediaCollection('images');
+                    $submission->addMedia($attachment->getRealPath())
+                    ->usingName($attachment->getClientOriginalName())
+                    ->toMediaCollection('images');
+
                     $this->imageCount++;
                 } else {
-                    $submission->addMedia($attachment->getRealPath())->toMediaCollection('documents');
+                    // $submission->addMedia($attachment->getRealPath())->toMediaCollection('documents');
+                    $submission->addMedia($attachment->getRealPath())
+                    ->usingName($attachment->getClientOriginalName())
+                    ->toMediaCollection('documents');
                     $this->docCount++;
                 }
 

@@ -34,13 +34,14 @@ class AuthServiceProvider extends ServiceProvider
             return auth()->user()->isStaff() || auth()->user()->isAdmin();
         });
 
-        Gate::define('worklog-update-basic', function(WorkLog $worklog) {
-            return auth()->user()->isStaff() &&
-            $worklog->started_at != null && $worklog->expected_at != null &&
-            // -----
-            $worklog->submitted_at == null &&
-            $worklog->accepted_level_1_at == null &&
-            $worklog->accepted_level_2_at == null;
+        Gate::define('worklog-show-usingstaff', function(WorkLog $worklog) {
+            return true;
+            // return auth()->user()->isStaff() && $worklog->author_id == auth()->user()->id;
+            // $worklog->started_at != null && $worklog->expected_at != null &&
+            // // -----
+            // $worklog->submitted_at == null &&
+            // $worklog->accepted_level_1_at == null &&
+            // $worklog->accepted_level_2_at == null;
         });
 
         Gate::define('worklog-submission', function(User $user, WorkLog $worklog) {

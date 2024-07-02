@@ -39,121 +39,128 @@ class WorkLogController extends Controller
         return view('pages.work-logs.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreWorkLogRequest $request)
-    {
-        if (! Gate::allows('worklog-add')) {
-            return redirect()->back()->with([
-                'message' => 'Pengguna bukan staff, sila hubungi admin.',
-                'status' => 'error',
-            ]);
-        }
-        DB::beginTransaction();
+    // /**
+    //  * Store a newly created resource in storage.
+    //  */
+    // public function store(StoreWorkLogRequest $request)
+    // {
+    //     if (! Gate::allows('worklog-add')) {
+    //         return redirect()->back()->with([
+    //             'message' => 'Pengguna bukan staff, sila hubungi admin.',
+    //             'status' => 'error',
+    //         ]);
+    //     }
+    //     DB::beginTransaction();
 
-        dd($request);
+    //     dd($request);
 
-        $validated = $request->safe()->only([
-            'title', 'image-uploads', 'body'
-        ]);
+    //     $validated = $request->safe()->only([
+    //         'title', 'image-uploads', 'body'
+    //     ]);
 
-        $validated->push('author_id', auth()->user()->id);
+    //     $validated->push('author_id', auth()->user()->id);
 
-        $worklog = WorkLog::create($validated);
+    //     $worklog = WorkLog::create($validated);
 
-        $worklog->submission()->create();
+    //     $worklog->submission()->create();
 
-        $validated = $request->validate([
-            'image-uploads' => 'array'
-        ]);
+    //     $validated = $request->validate([
+    //         'image-uploads' => 'array'
+    //     ]);
 
-        // TODO : is this path or just filename
-        foreach($validated['image-uploads'] as $image) {
-            $worklog->addMedia($image)->toMediaCollection('images');
-        }
+    //     // TODO : is this path or just filename
+    //     foreach($validated['image-uploads'] as $image) {
+    //         $worklog->addMedia($image)->toMediaCollection('images');
+    //     }
 
-        DB::commit();
+    //     DB::commit();
 
-        // TODO : temporary upload process?
-        // Process temporary uploads
-        // - Check if available
-        // - Iterate process
-        // --- Add to media library object
-        // --- This automatically move file from temporary to actual collection
+    //     // TODO : temporary upload process?
+    //     // Process temporary uploads
+    //     // - Check if available
+    //     // - Iterate process
+    //     // --- Add to media library object
+    //     // --- This automatically move file from temporary to actual collection
 
 
-        redirect()->route('worklog.index');
-    }
+    //     redirect()->route('worklog.index');
+    // }
 
     /**
      * Display the specified resource.
      */
-    public function show(WorkLog $workLog)
+    public function show(WorkLog $worklog)
     {
-        return view('pages.work-logs.show.index', compact('workLog'));
+        if (auth()->user()->isStaff() && auth()->user()->id != $worklog->author_id) {
+            return redirect()->route('home')->with([
+                'message' => 'Tidak boleh akses log kerja bukan milik anda.',
+                'status-class' => 'error',
+            ]);
+        }
+
+        return view('pages.work-logs.show.index', ['worklog' => $worklog]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(WorkLog $worklog)
-    {
-        if (! Gate::allows('worklog-update-basic')) {
-            return redirect()->back()->with([
-                'message' => 'Pengguna bukan staff / Masalah data, sila hubungi admin.',
-                'status' => 'error',
-            ]);
-        }
+    // public function edit(WorkLog $worklog)
+    // {
+    //     if (! Gate::allows('worklog-update-basic')) {
+    //         return redirect()->back()->with([
+    //             'message' => 'Pengguna bukan staff / Masalah data, sila hubungi admin.',
+    //             'status' => 'error',
+    //         ]);
+    //     }
 
-        if ($worklog == null) return redirect()->back()->with([
-            'message' => 'Log kerja tidak wujud!',
-            'status' => 'error',
-        ]);
+    //     if ($worklog == null) return redirect()->back()->with([
+    //         'message' => 'Log kerja tidak wujud!',
+    //         'status' => 'error',
+    //     ]);
 
-        return view('pages.worklogs.edit', compact('worklog'));
-    }
+    //     return view('pages.worklogs.edit', compact('worklog'));
+    // }
 
-    public function submit(WorkLog $workLog)
-    {
-        return redirect()->route('work-scopes.index')->with([
-            'status' => FlashStatusCode::SUCCESS,
-            'message' => 'Log kerja selesai dihantar',
-        ]);
-    }
+    // public function submit(WorkLog $workLog)
+    // {
+    //     return redirect()->route('work-scopes.index')->with([
+    //         'status' => FlashStatusCode::SUCCESS,
+    //         'message' => 'Log kerja selesai dihantar',
+    //     ]);
+    // }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateWorkLogRequest $request, WorkLog $worklog)
-    {
-        if (! Gate::allows('worklog-update-basic')) {
-            return redirect()->back()->with([
-                'message' => 'Pengguna bukan staff / Masalah data, sila hubungi admin.',
-                'status' => 'error',
-            ]);
-        }
+    // /**
+    //  * Update the specified resource in storage.
+    //  */
+    // public function update(UpdateWorkLogRequest $request, WorkLog $worklog)
+    // {
+    //     if (! Gate::allows('worklog-update-basic')) {
+    //         return redirect()->back()->with([
+    //             'message' => 'Pengguna bukan staff / Masalah data, sila hubungi admin.',
+    //             'status' => 'error',
+    //         ]);
+    //     }
 
-        $validated = $request->safe()->all();
+    //     $validated = $request->safe()->all();
 
-        $worklog->description = $validated['description'];
-        $worklog->body = $validated['workscope_id'];
+    //     $worklog->description = $validated['description'];
+    //     $worklog->body = $validated['workscope_id'];
 
-        $worklog->expected_at = $validated['expected_at'];
+    //     $worklog->expected_at = $validated['expected_at'];
 
-        $worklog->save();
+    //     $worklog->save();
 
-        return redirect()->back()->with([
-            'message' => 'Kemaskini berjaya',
-            'status' => 'success',
-        ]);
-    }
+    //     return redirect()->back()->with([
+    //         'message' => 'Kemaskini berjaya',
+    //         'status' => 'success',
+    //     ]);
+    // }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(WorkLog $worklog)
-    {
-        //
-    }
+    // /**
+    //  * Remove the specified resource from storage.
+    //  */
+    // public function destroy(WorkLog $worklog)
+    // {
+    //     //
+    // }
 }
